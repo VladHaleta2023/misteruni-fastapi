@@ -1,0 +1,18 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+fastapi = "*"
+httpx = "*"
+uvicorn = "*"
+faster-whisper = "*"
+python-dotenv = "*"
+pydantic = "*"
+g4f = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.12"
