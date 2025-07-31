@@ -1,7 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException, Form
 from faster_whisper import WhisperModel
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from dotenv import load_dotenv
 import tempfile
 import subprocess
@@ -15,6 +15,7 @@ import uuid
 import boto3
 import urllib.parse
 from io import BytesIO
+import copy
 
 load_dotenv()
 port = int(os.getenv("PORT", 4200))
@@ -48,6 +49,7 @@ spacy_models = {
     'en': 'en_core_web_sm',
 }
 
+MAX_ATTEMPTS = 10
 
 class PromptRequest(BaseModel):
     prompt: str
@@ -74,6 +76,15 @@ class TTSRequest(BaseModel):
     part_id: int
     text: str
     language: str = "ru"
+
+class SubtopicsGenerator(BaseModel):
+    changed: str
+    subject: str
+    section: str
+    topic: str
+    subtopics: List[str]
+    attempt: int
+    prompt: str
 
 @app.get("/")
 def root():
@@ -207,6 +218,44 @@ def generate_tts(data: TTSRequest):
         return {"url": public_url}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Błąd generacji TTS lub upload do S3: {str(e)}")
+
+@app.post("/admin/subtopics-generate")
+def subtopics_generate(data: SubtopicsGenerator):
+    try:
+        from criterion_generator import (
+            request_ai,
+            metadata_fill_template,
+            extract_format_from_prompt,
+            parse_output_by_format,
+            detect_changes_by_format,
+            clean_output
+        )
+
+        old_data = copy.deepcopy(data.dict())
+
+        if data.attempt > MAX_ATTEMPTS or data.changed != 'true':
+            return SubtopicsGenerator(**old_data)
+
+        prompt = metadata_fill_template(data.prompt, data.dict())
+        response = request_ai(prompt)
+
+        if not response:
+            raise HTTPException(status_code=500, detail="AI Response is None")
+
+        response = clean_output(response)
+        format_str = extract_format_from_prompt(prompt)
+
+        new_data = parse_output_by_format(format_str, response, data.dict())
+        new_data['attempt'] += 1
+
+        if detect_changes_by_format(old_data, new_data, format_str):
+            new_data['changed'] = 'true'
+        else:
+            new_data['changed'] = 'false'
+
+        return SubtopicsGenerator(**new_data)
+    except RuntimeError as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 if __name__ == "__main__":
