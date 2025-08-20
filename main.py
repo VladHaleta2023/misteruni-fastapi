@@ -1,7 +1,9 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException, Form
+import anti_gui
+
+from fastapi import FastAPI, UploadFile, File, HTTPException, Form, Body
 from faster_whisper import WhisperModel
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List, Any, Dict
 from dotenv import load_dotenv
 import tempfile
 import subprocess
@@ -16,6 +18,28 @@ import boto3
 import urllib.parse
 from io import BytesIO
 import copy
+import json
+import logging
+from g4f.client import Client
+
+client = Client()
+
+top_models = [
+    "gpt-4",
+    "gpt-4o",
+    "gpt-4.1",
+    "gpt-4.1-mini",
+    "qwen-3-235b"
+]
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
+
+if not logger.hasHandlers():
+    handler = logging.StreamHandler()
+    handler.setLevel(logging.INFO)
+    logger.addHandler(handler)
+logger.setLevel(logging.INFO)
 
 load_dotenv()
 port = int(os.getenv("PORT", 4200))
@@ -51,6 +75,58 @@ spacy_models = {
 
 MAX_ATTEMPTS = 10
 
+def fill_placeholders(prompt: str, data: Dict[str, Any]) -> str:
+    def replacer(match: re.Match) -> str:
+        key = match.group(1)
+        value = data.get(key, "")
+        if isinstance(value, list):
+            if not value:
+                return f"{key}Start:\n{key}End:"
+            lines = []
+            for item in value:
+                if isinstance(item, list):
+                    lines.append(";".join(str(subitem) for subitem in item))
+                else:
+                    lines.append(str(item))
+            return f"{key}Start:\n" + "\n".join(lines) + f"\n{key}End:"
+        return str(value)
+    pattern = r"\{\$(\w+)\$\}"
+    return re.sub(pattern, replacer, prompt)
+
+def request_ai(prompt: str, data: Dict[str, Any]) -> Optional[str]:
+    prompt_filled = fill_placeholders(prompt, data)
+
+    for model in top_models:
+        logger.info(f"Model {model} rozpoczęła przetwarzanie zapytania.")
+
+        try:
+            resp = client.chat.completions.create(
+                model=model,
+                messages=[{"role": "user", "content": prompt_filled}],
+                temperature=0,
+                timeout=90,
+                web_search=False,
+            )
+
+            content = resp.choices[0].message.content.strip()
+
+            if "Start:" not in content or "End:" not in content:
+                logger.warning(f"Model {model} zwróciła odpowiedź bez Start: lub End:, próba kolejnego modelу.")
+                continue
+
+            if content:
+                logger.info(f"Model {model} zakończyła działanie z wynikiem.")
+                return content
+            else:
+                logger.info(f"Model {model} zakończyła działanie без wyniku.")
+
+        except Exception as e:
+            logger.error(f"Model {model} nie powiodła się z błędem: {e}")
+            continue
+
+    logger.info("Wszystkie modele nie powiodły się lub nie zwróciły wyniku.")
+    return None
+
 class PromptRequest(BaseModel):
     prompt: str
 
@@ -82,9 +158,61 @@ class SubtopicsGenerator(BaseModel):
     subject: str
     section: str
     topic: str
-    subtopics: List[str]
+    subtopics: List[List]
     attempt: int
     prompt: str
+    errors: List[str]
+
+class TaskGenerator(BaseModel):
+    changed: str
+    subject: str
+    section: str
+    topic: str
+    subtopics: List[List]
+    outputSubtopics: List[str]
+    tasks: List[str]
+    difficulty: int
+    threshold: int
+    text: str
+    attempt: int
+    prompt: str
+    errors: List[str]
+
+class SolutionGenerator(BaseModel):
+    changed: str
+    text: str
+    solution: str
+    attempt: int
+    prompt: str
+    errors: List[str]
+
+class OptionsGenerator(BaseModel):
+    changed: str
+    text: str
+    solution: str
+    options: List[str]
+    correctOptionIndex: int
+    attempt: int
+    prompt: str
+    errors: List[str]
+
+class ProblemsGenerator(BaseModel):
+    changed: str
+    text: str
+    solution: str
+    options: List[str]
+    subtopics: List[str]
+    correctOptionIndex: int
+    outputSubtopics: List[list]
+    difficulty: int
+    subject: str
+    section: str
+    topic: str
+    userSolution: str
+    userOptionIndex: int
+    attempt: int
+    prompt: str
+    errors: List[str]
 
 @app.get("/")
 def root():
@@ -221,42 +349,167 @@ def generate_tts(data: TTSRequest):
 
 @app.post("/admin/subtopics-generate")
 def subtopics_generate(data: SubtopicsGenerator):
+    old_data = copy.deepcopy(data.dict())
+
     try:
-        from criterion_generator import (
-            request_ai,
-            metadata_fill_template,
-            extract_format_from_prompt,
-            parse_output_by_format,
-            detect_changes_by_format,
-            clean_output
+        from ai_generator import (
+            parse_subtopics_response
         )
 
-        old_data = copy.deepcopy(data.dict())
-
-        if data.attempt > MAX_ATTEMPTS or data.changed != 'true':
+        if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
             return SubtopicsGenerator(**old_data)
 
-        prompt = metadata_fill_template(data.prompt, data.dict())
-        response = request_ai(prompt)
+        response = request_ai(old_data['prompt'], old_data, model)
+        new_data = copy.deepcopy(old_data)
+        previous_errors = copy.deepcopy(old_data['errors'])
+        new_data['subtopics'] = parse_subtopics_response(old_data['subtopics'], response, old_data['errors'])
+        new_data['errors'] = old_data['errors']
 
-        if not response:
-            raise HTTPException(status_code=500, detail="AI Response is None")
+        logger.info(previous_errors)
+        logger.info(new_data['errors'])
 
-        response = clean_output(response)
-        format_str = extract_format_from_prompt(prompt)
+        if sorted(new_data['subtopics']) == sorted(old_data['subtopics']) and sorted(previous_errors) == sorted(new_data['errors']):
+            new_data['changed'] = "false"
 
-        new_data = parse_output_by_format(format_str, response, data.dict())
-        new_data['attempt'] += 1
-
-        if detect_changes_by_format(old_data, new_data, format_str):
-            new_data['changed'] = 'true'
-        else:
-            new_data['changed'] = 'false'
+        new_data['attempt'] = new_data['attempt'] + 1
 
         return SubtopicsGenerator(**new_data)
     except RuntimeError as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        old_data['errors'].append(str(e))
+        old_data['changed'] = 'true'
+        old_data['attempt'] += 1
+        return SubtopicsGenerator(**old_data)
 
+@app.post("/admin/task-generate")
+def task_generate(data: TaskGenerator):
+    old_data = copy.deepcopy(data.dict())
+
+    try:
+        from ai_generator import (
+            parse_task_response,
+            parse_task_output_subtopics_response
+        )
+
+        if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
+            return TaskGenerator(**old_data)
+
+        response = request_ai(old_data['prompt'], old_data)
+        new_data = copy.deepcopy(old_data)
+        previous_errors = copy.deepcopy(old_data['errors'])
+        new_data['text'] = parse_task_response(old_data['text'], response, old_data['errors'])
+        new_data['outputSubtopics'] = parse_task_output_subtopics_response(old_data['outputSubtopics'], old_data['subtopics'],
+                                                                       response, old_data['errors'])
+        new_data['errors'] = old_data['errors']
+
+        if new_data['text'] == old_data['text'] and sorted(new_data['outputSubtopics']) == sorted(old_data['outputSubtopics']) and sorted(previous_errors) == sorted(new_data['errors']):
+            new_data['changed'] = "false"
+
+        new_data['attempt'] = new_data['attempt'] + 1
+
+        return TaskGenerator(**new_data)
+    except RuntimeError as e:
+        old_data['errors'].append(str(e))
+        old_data['changed'] = 'true'
+        old_data['attempt'] += 1
+        return TaskGenerator(**old_data)
+
+@app.post("/admin/solution-generate")
+def solution_generate(data: SolutionGenerator):
+    old_data = copy.deepcopy(data.dict())
+
+    try:
+        from ai_generator import (
+            parse_solution_response
+        )
+
+        if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
+            return SolutionGenerator(**old_data)
+
+        response = request_ai(old_data['prompt'], old_data)
+        new_data = copy.deepcopy(old_data)
+        previous_errors = copy.deepcopy(old_data['errors'])
+        new_data['solution'] = parse_solution_response(old_data['solution'], response, old_data['errors'])
+        new_data['errors'] = old_data['errors']
+
+        if new_data['solution'] == old_data['solution'] and sorted(previous_errors) == sorted(new_data['errors']):
+            new_data['changed'] = "false"
+
+        new_data['attempt'] = new_data['attempt'] + 1
+
+        return SolutionGenerator(**new_data)
+    except RuntimeError as e:
+        old_data['errors'].append(str(e))
+        old_data['changed'] = 'true'
+        old_data['attempt'] += 1
+        return SolutionGenerator(**old_data)
+
+@app.post("/admin/options-generate")
+def options_generate(data: OptionsGenerator):
+    old_data = copy.deepcopy(data.dict())
+
+    try:
+        from ai_generator import (
+            parse_options_response
+        )
+
+        if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
+            return OptionsGenerator(**old_data)
+
+        response = request_ai(old_data['prompt'], old_data)
+        print(response)
+        new_data = copy.deepcopy(old_data)
+        previous_errors = copy.deepcopy(old_data['errors'])
+        result = parse_options_response(old_data, response, old_data['errors'])
+        new_data['options'] = result['options']
+        new_data['correctOptionIndex'] = result['correctOptionIndex']
+        new_data['errors'] = old_data['errors']
+
+        if new_data['correctOptionIndex'] == old_data['correctOptionIndex'] and sorted(new_data['options']) == sorted(old_data['options']) and sorted(previous_errors) == sorted(new_data['errors']):
+            new_data['changed'] = "false"
+
+        new_data['attempt'] = new_data['attempt'] + 1
+
+        return OptionsGenerator(**new_data)
+    except RuntimeError as e:
+        old_data['errors'].append(str(e))
+        old_data['changed'] = 'true'
+        old_data['attempt'] += 1
+        return OptionsGenerator(**old_data)
+
+@app.post("/admin/problems-generate")
+def problems_generate(data: ProblemsGenerator):
+    old_data = copy.deepcopy(data.dict())
+
+    print(old_data)
+
+    try:
+        from ai_generator import (
+            parse_subtopics_response,
+            parse_output_subtopics_response
+        )
+
+        if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
+            return ProblemsGenerator(**old_data)
+
+        response = request_ai(old_data['prompt'], old_data)
+        new_data = copy.deepcopy(old_data)
+        previous_errors = copy.deepcopy(old_data['errors'])
+        result = parse_subtopics_response(old_data['outputSubtopics'], response, old_data['errors'], "Procent opanowania")
+        result = parse_output_subtopics_response(old_data['outputSubtopics'], result, old_data['subtopics'], old_data['errors'])
+        new_data['outputSubtopics'] = result
+        new_data['errors'] = old_data['errors']
+
+        if sorted(new_data['outputSubtopics']) == sorted(old_data['outputSubtopics']) and sorted(previous_errors) == sorted(new_data['errors']):
+            new_data['changed'] = "false"
+
+        new_data['attempt'] = new_data['attempt'] + 1
+
+        return ProblemsGenerator(**new_data)
+    except RuntimeError as e:
+        old_data['errors'].append(str(e))
+        old_data['changed'] = 'true'
+        old_data['attempt'] += 1
+        return ProblemsGenerator(**old_data)
 
 if __name__ == "__main__":
     import uvicorn
