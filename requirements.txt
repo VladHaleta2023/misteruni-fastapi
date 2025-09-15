@@ -3,7 +3,7 @@ uvicorn[standard]
 faster-whisper
 python-dotenv
 pydantic
-torch
-torchvision
-torchaudio
 g4f[all]
+spacy
+gTTS
+boto3

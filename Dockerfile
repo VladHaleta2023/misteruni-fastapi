@@ -1,22 +1,41 @@
-FROM ubuntu:22.04
+# Берём официальный образ PyTorch с CUDA
+FROM pytorch/pytorch:2.8.0-cuda12.9-cudnn9-runtime
 
+# Устанавливаем системные зависимости
 RUN apt-get update && apt-get install -y \
-    python3.11 python3.11-distutils ffmpeg curl \
+    ffmpeg \
+    curl \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
-RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.11
+# Локаль для pip
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
 
+# Рабочая директория
 WORKDIR /app
 
+# Копируем зависимости
 COPY requirements.txt /app/
 
-RUN python3.11 -m pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+# Устанавливаем зависимости Python и всегда последнюю версию g4f
+RUN python3 -m pip install --no-cache-dir -r requirements.txt \
+    && python3 -m pip install --upgrade g4f
 
-RUN python3.11 -m pip install --no-cache-dir -r requirements.txt
+# Загружаем модели spacy один раз при сборке
+RUN python3 -m spacy download pl_core_news_sm \
+    && python3 -m spacy download ru_core_news_sm \
+    && python3 -m spacy download en_core_web_sm
 
+# Копируем весь проект
 COPY . /app
 
-ENV PORT=10000
-EXPOSE 10000
+# Переменные окружения
+ENV PORT=4200
 
-CMD ["python3.11", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "10000", "--timeout-keep-alive", "900", "--timeout-graceful-shutdown", "900"]
+# Экспонируем порт
+EXPOSE 4200
+
+# CMD для запуска FastAPI через uvicorn
+CMD ["python3.11", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "4200", "--timeout-keep-alive", "900", "--timeout-graceful-shutdown", "900"]

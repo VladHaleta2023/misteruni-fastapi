@@ -11,8 +11,12 @@ faster-whisper = "*"
 python-dotenv = "*"
 pydantic = "*"
 g4f = "*"
+spacy = "*"
+torch = {version="*", index="https://download.pytorch.org/whl/cpu"}
+torchvision = {version="*", index="https://download.pytorch.org/whl/cpu"}
+torchaudio = {version="*", index="https://download.pytorch.org/whl/cpu"}
 
 [dev-packages]
 
 [requires]
-python_version = "3.12"
+python_version = "3.11"

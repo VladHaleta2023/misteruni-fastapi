@@ -1,0 +1,1 @@
+{"user": null, "model": "gpt-4.1-2025-04-14", "provider": "AnyProvider", "completion_tokens": 429, "completion_tokens_details": {"accepted_prediction_tokens": 0, "audio_tokens": 0, "reasoning_tokens": 0, "rejected_prediction_tokens": 0}, "prompt_tokens": 258, "prompt_tokens_details": {"audio_tokens": 0, "cached_tokens": 0}, "total_tokens": 687}

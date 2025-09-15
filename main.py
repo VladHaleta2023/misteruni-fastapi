@@ -1,6 +1,6 @@
 import anti_gui
 
-from fastapi import FastAPI, UploadFile, File, HTTPException, Form, Body
+from fastapi import FastAPI, UploadFile, File, HTTPException, Form, Body, Request
 from faster_whisper import WhisperModel
 from pydantic import BaseModel
 from typing import Optional, List, Any, Dict
@@ -20,21 +20,25 @@ from io import BytesIO
 import copy
 import json
 import logging
+import sys
+import asyncio
+import random
 from g4f.client import Client
 
 client = Client()
 
 top_models = [
     "gpt-4",
-    "gpt-4o",
-    "gpt-4.1",
-    "gpt-4.1-mini",
-    "qwen-3-235b"
+    "gpt-4o-mini",
+    "gpt-4.1-nano"
 ]
 
-logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
-
+logger = logging.getLogger("app_logger")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    force=True
+)
 if not logger.hasHandlers():
     handler = logging.StreamHandler()
     handler.setLevel(logging.INFO)
@@ -73,7 +77,16 @@ spacy_models = {
     'en': 'en_core_web_sm',
 }
 
-MAX_ATTEMPTS = 10
+nlp_models = {}
+for lang, model_name in spacy_models.items():
+    try:
+        nlp_models[lang] = spacy.load(model_name)
+        logger.info(f"Model SpaCy dla {lang} jest pobrana: {model_name}")
+    except Exception as e:
+        logger.warning(f"Nie udało się podrać model {model_name} dla {lang}: {e}")
+        nlp_models[lang] = None
+
+MAX_ATTEMPTS = 5
 
 def fill_placeholders(prompt: str, data: Dict[str, Any]) -> str:
     def replacer(match: re.Match) -> str:
@@ -93,39 +106,73 @@ def fill_placeholders(prompt: str, data: Dict[str, Any]) -> str:
     pattern = r"\{\$(\w+)\$\}"
     return re.sub(pattern, replacer, prompt)
 
-def request_ai(prompt: str, data: Dict[str, Any]) -> Optional[str]:
+async def request_ai(prompt: str, data: Dict[str, Any], request: Request) -> Optional[str]:
     prompt_filled = fill_placeholders(prompt, data)
+    abort_event = asyncio.Event()
 
-    for model in top_models:
+    async def monitor_disconnect():
+        while not abort_event.is_set():
+            if await request.is_disconnected():
+                logger.info("Client disconnected, aborting AI call")
+                abort_event.set()
+            await asyncio.sleep(0.1)
+
+    async def call_model(model: str) -> Optional[str]:
         logger.info(f"Model {model} rozpoczęła przetwarzanie zapytania.")
 
+        if abort_event.is_set():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
         try:
-            resp = client.chat.completions.create(
-                model=model,
-                messages=[{"role": "user", "content": prompt_filled}],
-                temperature=0,
-                timeout=90,
-                web_search=False,
+            resp = await asyncio.wait_for(
+                asyncio.to_thread(
+                    lambda: client.chat.completions.create(
+                        model=model,
+                        messages=[{"role": "user", "content": prompt_filled}],
+                        temperature=0,
+                        web_search=False,
+                        stream=False,
+                    )
+                ),
+                timeout=45
             )
 
+            if abort_event.is_set():
+                raise HTTPException(status_code=499, detail="Client disconnected")
+
             content = resp.choices[0].message.content.strip()
-
             if "Start:" not in content or "End:" not in content:
-                logger.warning(f"Model {model} zwróciła odpowiedź bez Start: lub End:, próba kolejnego modelу.")
-                continue
+                logger.warning(f"Model {model} zwróciła odpowiedź bez Start: lub End:, próba kolejnego modelu.")
+                return None
 
-            if content:
-                logger.info(f"Model {model} zakończyła działanie z wynikiem.")
-                return content
-            else:
-                logger.info(f"Model {model} zakończyła działanie без wyniku.")
+            logger.info(f"✅ Model {model} zwróciła poprawny wynik.")
+            return content if content else None
 
+        except asyncio.TimeoutError:
+            logger.error(f"⏳ Model {model} przekroczyła limit czasu 45s.")
+            await asyncio.sleep(random.uniform(0.5, 1.5))
+            return None
         except Exception as e:
-            logger.error(f"Model {model} nie powiodła się z błędem: {e}")
-            continue
+            logger.error(f"❌ Model {model} nie powiodła się z błędem: {e}")
+            await asyncio.sleep(random.uniform(0.5, 1.5))
+            return None
 
-    logger.info("Wszystkie modele nie powiodły się lub nie zwróciły wyniku.")
-    return None
+    monitor_task = asyncio.create_task(monitor_disconnect())
+
+    try:
+        for model in top_models:
+            if abort_event.is_set():
+                raise HTTPException(status_code=499, detail="Client disconnected")
+
+            result = await call_model(model)
+            if result is not None:
+                return result
+
+        logger.info("Wszystkie modele nie powiodły się lub nie zwróciły wyniku.")
+        await asyncio.sleep(random.uniform(0.5, 1.5))
+        return None
+    finally:
+        monitor_task.cancel()
 
 class PromptRequest(BaseModel):
     prompt: str
@@ -178,6 +225,31 @@ class TaskGenerator(BaseModel):
     prompt: str
     errors: List[str]
 
+class InteractiveTaskGenerator(BaseModel):
+    changed: str
+    subject: str
+    section: str
+    topic: str
+    subtopics: List[List]
+    difficulty: int
+    text: str
+    translate: str
+    attempt: int
+    prompt: str
+    errors: List[str]
+
+class QuestionsTaskGenerator(BaseModel):
+    changed: str
+    subject: str
+    section: str
+    topic: str
+    difficulty: int
+    text: str
+    questions: List[str]
+    attempt: int
+    prompt: str
+    errors: List[str]
+
 class SolutionGenerator(BaseModel):
     changed: str
     text: str
@@ -215,7 +287,7 @@ class ProblemsGenerator(BaseModel):
     errors: List[str]
 
 @app.get("/")
-def root():
+async def root():
     return {"message": f"Serwer działa na porcie {port}"}
 
 
@@ -310,16 +382,18 @@ async def transcribe_audio_part(
     )
 
 
-def split_text_into_sentences(text: str, language: str = 'ru'):
-    model_name = spacy_models.get(language, 'ru_core_news_sm')
-    try:
-        nlp = spacy.load(model_name)
-        doc = nlp(text)
-        sentences = [sent.text.strip() for sent in doc.sents if sent.text.strip()]
-        return sentences if sentences else [text.strip()]
-    except Exception:
-        sentences = re.split(r'(?<=[.!?。！？])\s+', text)
-        return [s.strip() for s in sentences if s.strip()]
+def split_text_into_sentences(text: str, language: str = 'ru') -> list[str]:
+    nlp = nlp_models.get(language)
+    if nlp:
+        try:
+            doc = nlp(text)
+            sentences = [sent.text.strip() for sent in doc.sents if sent.text.strip()]
+            if sentences:
+                return sentences
+        except Exception as e:
+            logger.warning(f"SpaCy failed, fallback to regex: {e}")
+    sentences = re.split(r'(?<=[.!?。！？])\s+', text)
+    return [s.strip() for s in sentences if s.strip()]
 
 
 @app.post("/admin/split-into-sentences", response_model=SplitIntoSentencesResponse)
@@ -348,7 +422,7 @@ def generate_tts(data: TTSRequest):
         raise HTTPException(status_code=500, detail=f"Błąd generacji TTS lub upload do S3: {str(e)}")
 
 @app.post("/admin/subtopics-generate")
-def subtopics_generate(data: SubtopicsGenerator):
+async def subtopics_generate(data: SubtopicsGenerator, request: Request):
     old_data = copy.deepcopy(data.dict())
 
     try:
@@ -359,7 +433,14 @@ def subtopics_generate(data: SubtopicsGenerator):
         if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
             return SubtopicsGenerator(**old_data)
 
-        response = request_ai(old_data['prompt'], old_data, model)
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
+        response = await request_ai(old_data['prompt'], old_data, request)
+
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
         new_data = copy.deepcopy(old_data)
         previous_errors = copy.deepcopy(old_data['errors'])
         new_data['subtopics'] = parse_subtopics_response(old_data['subtopics'], response, old_data['errors'])
@@ -381,7 +462,7 @@ def subtopics_generate(data: SubtopicsGenerator):
         return SubtopicsGenerator(**old_data)
 
 @app.post("/admin/task-generate")
-def task_generate(data: TaskGenerator):
+async def task_generate(data: TaskGenerator, request: Request):
     old_data = copy.deepcopy(data.dict())
 
     try:
@@ -393,7 +474,14 @@ def task_generate(data: TaskGenerator):
         if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
             return TaskGenerator(**old_data)
 
-        response = request_ai(old_data['prompt'], old_data)
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
+        response = await request_ai(old_data['prompt'], old_data, request)
+
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
         new_data = copy.deepcopy(old_data)
         previous_errors = copy.deepcopy(old_data['errors'])
         new_data['text'] = parse_task_response(old_data['text'], response, old_data['errors'])
@@ -413,8 +501,84 @@ def task_generate(data: TaskGenerator):
         old_data['attempt'] += 1
         return TaskGenerator(**old_data)
 
+@app.post("/admin/interactive-task-generate")
+async def interactive_task_generate(data: InteractiveTaskGenerator, request: Request):
+    old_data = copy.deepcopy(data.dict())
+
+    try:
+        from ai_generator import (
+            parse_interactive_task_text_response,
+            parse_interactive_task_translate_response
+        )
+
+        if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
+            return InteractiveTaskGenerator(**old_data)
+
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
+        response = await request_ai(old_data['prompt'], old_data, request)
+
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
+        new_data = copy.deepcopy(old_data)
+        previous_errors = copy.deepcopy(old_data['errors'])
+        new_data['text'] = parse_interactive_task_text_response(old_data['text'], response, old_data['errors'])
+        new_data['translate'] = parse_interactive_task_translate_response(old_data['translate'], response, old_data['errors'])
+        new_data['errors'] = old_data['errors']
+
+        if new_data['text'] == old_data['text'] and new_data['translate'] == old_data['translate'] and sorted(previous_errors) == sorted(new_data['errors']):
+            new_data['changed'] = "false"
+
+        new_data['attempt'] = new_data['attempt'] + 1
+
+        return InteractiveTaskGenerator(**new_data)
+    except RuntimeError as e:
+        old_data['errors'].append(str(e))
+        old_data['changed'] = 'true'
+        old_data['attempt'] += 1
+        return InteractiveTaskGenerator(**old_data)
+
+@app.post("/admin/questions-task-generate")
+async def questions_task_generate(data: QuestionsTaskGenerator, request: Request):
+    old_data = copy.deepcopy(data.dict())
+
+    try:
+        from ai_generator import (
+            parse_questions_response
+        )
+
+        if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
+            return QuestionsTaskGenerator(**old_data)
+
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
+        response = await request_ai(old_data['prompt'], old_data, request)
+
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
+        new_data = copy.deepcopy(old_data)
+        previous_errors = copy.deepcopy(old_data['errors'])
+        new_data['questions'] = parse_questions_response(old_data['questions'], response, old_data['errors'])
+        new_data['errors'] = old_data['errors']
+
+        if sorted(new_data['questions']) == sorted(old_data['questions']) and sorted(previous_errors) == sorted(new_data['errors']):
+            new_data['changed'] = "false"
+
+        new_data['attempt'] = new_data['attempt'] + 1
+
+        return QuestionsTaskGenerator(**new_data)
+    except RuntimeError as e:
+        old_data['errors'].append(str(e))
+        old_data['changed'] = 'true'
+        old_data['attempt'] += 1
+        return QuestionsTaskGenerator(**old_data)
+
 @app.post("/admin/solution-generate")
-def solution_generate(data: SolutionGenerator):
+async def solution_generate(data: SolutionGenerator, request: Request):
     old_data = copy.deepcopy(data.dict())
 
     try:
@@ -425,7 +589,14 @@ def solution_generate(data: SolutionGenerator):
         if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
             return SolutionGenerator(**old_data)
 
-        response = request_ai(old_data['prompt'], old_data)
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
+        response = await request_ai(old_data['prompt'], old_data, request)
+
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
         new_data = copy.deepcopy(old_data)
         previous_errors = copy.deepcopy(old_data['errors'])
         new_data['solution'] = parse_solution_response(old_data['solution'], response, old_data['errors'])
@@ -444,7 +615,7 @@ def solution_generate(data: SolutionGenerator):
         return SolutionGenerator(**old_data)
 
 @app.post("/admin/options-generate")
-def options_generate(data: OptionsGenerator):
+async def options_generate(data: OptionsGenerator, request: Request):
     old_data = copy.deepcopy(data.dict())
 
     try:
@@ -455,8 +626,14 @@ def options_generate(data: OptionsGenerator):
         if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
             return OptionsGenerator(**old_data)
 
-        response = request_ai(old_data['prompt'], old_data)
-        print(response)
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
+        response = await request_ai(old_data['prompt'], old_data, request)
+
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
         new_data = copy.deepcopy(old_data)
         previous_errors = copy.deepcopy(old_data['errors'])
         result = parse_options_response(old_data, response, old_data['errors'])
@@ -477,10 +654,8 @@ def options_generate(data: OptionsGenerator):
         return OptionsGenerator(**old_data)
 
 @app.post("/admin/problems-generate")
-def problems_generate(data: ProblemsGenerator):
+async def problems_generate(data: ProblemsGenerator, request: Request):
     old_data = copy.deepcopy(data.dict())
-
-    print(old_data)
 
     try:
         from ai_generator import (
@@ -491,7 +666,14 @@ def problems_generate(data: ProblemsGenerator):
         if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
             return ProblemsGenerator(**old_data)
 
-        response = request_ai(old_data['prompt'], old_data)
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
+        response = await request_ai(old_data['prompt'], old_data, request)
+
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
         new_data = copy.deepcopy(old_data)
         previous_errors = copy.deepcopy(old_data['errors'])
         result = parse_subtopics_response(old_data['outputSubtopics'], response, old_data['errors'], "Procent opanowania")
