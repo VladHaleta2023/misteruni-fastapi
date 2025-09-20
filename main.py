@@ -28,9 +28,24 @@ from g4f.client import Client
 client = Client()
 
 top_models = [
+    "deepseek-v3",   # очень сильная reasoning-модель
+    "deepseek-r1",   # ещё более мощная reasoning LLM
+    "deepseek-r1-turbo",  # оптимизированная версия для reasoning
+    "deepseek-r1-distill-llama-70b",  # чуть слабее, но подходит
+    "deepseek-r1-distill-qwen-14b",   # разумный баланс
+    "deepseek-r1-distill-qwen-32b",   # хороший reasoning
+    "deepseek-v3-0324",  # оптимизированная версия
+    "deepseek-v3-0324-turbo",
+    "deepseek-r1-0528",
+    "deepseek-r1-0528-turbo",
     "gpt-4",
-    "gpt-4o-mini",
-    "gpt-4.1-nano"
+    "gpt-4o-mini",   # компактнее, но всё ещё хорошо справляется
+    "gpt-4.1",       # обновлённый GPT-4 с улучшенным reasoning
+    "gpt-4.1-mini",  # более быстрый и дешёвый вариант
+    "gpt-4.1-nano",  # лёгкая версия, но справляется с текстовыми задачами
+    "gpt-4.5",       # топовая версия GPT-4 (лучше всего для сложных задач)
+    "grok-3",        # от xAI, сильный reasoning
+    "grok-3-r1"      # reasoning-ориентированный Grok
 ]
 
 logger = logging.getLogger("app_logger")
@@ -86,7 +101,7 @@ for lang, model_name in spacy_models.items():
         logger.warning(f"Nie udało się podrać model {model_name} dla {lang}: {e}")
         nlp_models[lang] = None
 
-MAX_ATTEMPTS = 5
+MAX_ATTEMPTS = 2
 
 def fill_placeholders(prompt: str, data: Dict[str, Any]) -> str:
     def replacer(match: re.Match) -> str:
@@ -109,6 +124,8 @@ def fill_placeholders(prompt: str, data: Dict[str, Any]) -> str:
 async def request_ai(prompt: str, data: Dict[str, Any], request: Request) -> Optional[str]:
     prompt_filled = fill_placeholders(prompt, data)
     abort_event = asyncio.Event()
+
+    logger.info("Prompt:\n" + prompt_filled)
 
     async def monitor_disconnect():
         while not abort_event.is_set():
@@ -141,12 +158,9 @@ async def request_ai(prompt: str, data: Dict[str, Any], request: Request) -> Opt
                 raise HTTPException(status_code=499, detail="Client disconnected")
 
             content = resp.choices[0].message.content.strip()
-            if "Start:" not in content or "End:" not in content:
-                logger.warning(f"Model {model} zwróciła odpowiedź bez Start: lub End:, próba kolejnego modelu.")
-                return None
 
             logger.info(f"✅ Model {model} zwróciła poprawny wynik.")
-            return content if content else None
+            return content
 
         except asyncio.TimeoutError:
             logger.error(f"⏳ Model {model} przekroczyła limit czasu 45s.")
@@ -492,6 +506,10 @@ async def task_generate(data: TaskGenerator, request: Request):
         if new_data['text'] == old_data['text'] and sorted(new_data['outputSubtopics']) == sorted(old_data['outputSubtopics']) and sorted(previous_errors) == sorted(new_data['errors']):
             new_data['changed'] = "false"
 
+        if new_data['text'] != "" and len(new_data['outputSubtopics']) != 0:
+            new_data['changed'] = "false"
+            return TaskGenerator(**new_data)
+
         new_data['attempt'] = new_data['attempt'] + 1
 
         return TaskGenerator(**new_data)
@@ -531,6 +549,10 @@ async def interactive_task_generate(data: InteractiveTaskGenerator, request: Req
         if new_data['text'] == old_data['text'] and new_data['translate'] == old_data['translate'] and sorted(previous_errors) == sorted(new_data['errors']):
             new_data['changed'] = "false"
 
+        if new_data['text'] != "" and new_data['translate'] != "":
+            new_data['changed'] = "false"
+            return InteractiveTaskGenerator(**new_data)
+
         new_data['attempt'] = new_data['attempt'] + 1
 
         return InteractiveTaskGenerator(**new_data)
@@ -567,6 +589,10 @@ async def questions_task_generate(data: QuestionsTaskGenerator, request: Request
 
         if sorted(new_data['questions']) == sorted(old_data['questions']) and sorted(previous_errors) == sorted(new_data['errors']):
             new_data['changed'] = "false"
+
+        if len(new_data['questions']) != 0:
+            new_data['changed'] = "false"
+            return QuestionsTaskGenerator(**new_data)
 
         new_data['attempt'] = new_data['attempt'] + 1
 
@@ -605,6 +631,10 @@ async def solution_generate(data: SolutionGenerator, request: Request):
         if new_data['solution'] == old_data['solution'] and sorted(previous_errors) == sorted(new_data['errors']):
             new_data['changed'] = "false"
 
+        if new_data['solution'] != "":
+            new_data['changed'] = "false"
+            return SolutionGenerator(**new_data)
+
         new_data['attempt'] = new_data['attempt'] + 1
 
         return SolutionGenerator(**new_data)
@@ -637,12 +667,17 @@ async def options_generate(data: OptionsGenerator, request: Request):
         new_data = copy.deepcopy(old_data)
         previous_errors = copy.deepcopy(old_data['errors'])
         result = parse_options_response(old_data, response, old_data['errors'])
+
         new_data['options'] = result['options']
         new_data['correctOptionIndex'] = result['correctOptionIndex']
         new_data['errors'] = old_data['errors']
 
         if new_data['correctOptionIndex'] == old_data['correctOptionIndex'] and sorted(new_data['options']) == sorted(old_data['options']) and sorted(previous_errors) == sorted(new_data['errors']):
             new_data['changed'] = "false"
+
+        if len(new_data['options']) == 4:
+            new_data['changed'] = "false"
+            return OptionsGenerator(**new_data)
 
         new_data['attempt'] = new_data['attempt'] + 1
 
@@ -671,6 +706,8 @@ async def problems_generate(data: ProblemsGenerator, request: Request):
 
         response = await request_ai(old_data['prompt'], old_data, request)
 
+        logger.info(f"Response: {response}")
+
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
 
@@ -683,6 +720,10 @@ async def problems_generate(data: ProblemsGenerator, request: Request):
 
         if sorted(new_data['outputSubtopics']) == sorted(old_data['outputSubtopics']) and sorted(previous_errors) == sorted(new_data['errors']):
             new_data['changed'] = "false"
+
+        if len(new_data['outputSubtopics']) != 0:
+            new_data['changed'] = "false"
+            return ProblemsGenerator(**new_data)
 
         new_data['attempt'] = new_data['attempt'] + 1
 
