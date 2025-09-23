@@ -5,14 +5,13 @@ services:
     plan: free
     region: frankfurt
     buildCommand: |
-      apt-get update && apt-get install -y ffmpeg curl libgl1-mesa-glx libglib2.0-0 build-essential python3-dev && rm -rf /var/lib/apt/lists/*
+      apt-get update && apt-get install -y ffmpeg curl libglib2.0-0 && rm -rf /var/lib/apt/lists/*
       pip install --upgrade pip setuptools wheel
       pip install --no-cache-dir -r requirements.txt
-      pip install --upgrade g4f
       python -m spacy validate
-      python -m spacy download pl_core_news_sm-3.7.0 --direct
-      python -m spacy download ru_core_news_sm-3.7.0 --direct
-      python -m spacy download en_core_web_sm-3.7.1 --direct
+      python -m spacy download pl_core_news_sm --direct
+      python -m spacy download ru_core_news_sm --direct
+      python -m spacy download en_core_web_sm --direct
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT --timeout-keep-alive 900 --timeout-graceful-shutdown 900
     envVars:
       - key: AWS_ACCESS_KEY
