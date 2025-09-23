@@ -8,9 +8,6 @@ services:
       apt-get update && apt-get install -y ffmpeg curl libglib2.0-0 && rm -rf /var/lib/apt/lists/*
       pip install --upgrade pip setuptools wheel
       pip install --no-cache-dir -r requirements.txt
-      pip install --no-cache-dir https://github.com/explosion/spacy-models/releases/download/pl_core_news_sm-3.6.0/pl_core_news_sm-3.6.0-py3-none-any.whl
-      pip install --no-cache-dir https://github.com/explosion/spacy-models/releases/download/ru_core_news_sm-3.6.0/ru_core_news_sm-3.6.0-py3-none-any.whl
-      pip install --no-cache-dir https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.6.0/en_core_web_sm-3.6.0-py3-none-any.whl
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT --timeout-keep-alive 900 --timeout-graceful-shutdown 900
     envVars:
       - key: AWS_ACCESS_KEY

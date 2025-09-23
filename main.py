@@ -92,14 +92,17 @@ spacy_models = {
     'en': 'en_core_web_sm',
 }
 
-nlp_models = {}
-for lang, model_name in spacy_models.items():
-    try:
-        nlp_models[lang] = spacy.load(model_name)
-        logger.info(f"Model SpaCy dla {lang} jest pobrana: {model_name}")
-    except Exception as e:
-        logger.warning(f"Nie udało się podrać model {model_name} dla {lang}: {e}")
-        nlp_models[lang] = None
+nlp_models: Dict[str, Optional[spacy.language.Language]] = {}
+
+@app.on_event("startup")
+async def load_spacy_models():
+    for lang, model_name in spacy_models.items():
+        try:
+            nlp_models[lang] = spacy.load(model_name)
+            logger.info(f"Model SpaCy dla {lang} jest pobrana: {model_name}")
+        except Exception as e:
+            logger.warning(f"Nie udało się podrać model {model_name} dla {lang}: {e}")
+            nlp_models[lang] = None
 
 MAX_ATTEMPTS = 2
 
