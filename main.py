@@ -75,7 +75,7 @@ s3 = boto3.client(
 BUCKET_NAME = os.getenv("AWS_BUCKET")
 REGION = os.getenv("AWS_REGION")
 
-whisper_model = WhisperModel("small", device="cpu", compute_type="int8")
+whisper_model = WhisperModel("tiny", device="cpu", compute_type="int8")
 
 MAX_FILE_SIZE = 10 * 1024 * 1024
 
