@@ -8,7 +8,6 @@ services:
       apt-get update && apt-get install -y ffmpeg curl libglib2.0-0 && rm -rf /var/lib/apt/lists/*
       pip install --upgrade pip setuptools wheel
       pip install --no-cache-dir -r requirements.txt
-      python -m spacy validate
       python -m spacy download pl_core_news_sm --direct
       python -m spacy download ru_core_news_sm --direct
       python -m spacy download en_core_web_sm --direct
