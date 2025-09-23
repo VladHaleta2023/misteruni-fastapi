@@ -1,6 +1,5 @@
 fastapi
 uvicorn[standard]
-faster-whisper
 python-dotenv
 pydantic
 spacy
@@ -8,3 +7,5 @@ gTTS
 boto3
 httpx
 g4f[all]
+numpy
+thinc
