@@ -59,6 +59,15 @@ def find_last_semicolon_outside_braces(s: str) -> int:
             return i
     return -1
 
+def extract_wrong_words(words: list) -> list:
+    wrong_words = []
+    for item in words:
+        if ";" in item:
+            wrong_words.append(item.split(";")[0].strip())
+        else:
+            wrong_words.append(item.strip())
+    return wrong_words
+
 def parse_subtopics_response(old_subtopics: list, response: str, errors: list, percent_message: str="Ocena ważności") -> list:
     try:
         start_idx = response.find("Start:")
@@ -211,6 +220,35 @@ def parse_task_response(old_text: str, response: str, errors: list) -> str:
         pattern = r'\b([A-Da-d1-4ivxIVX])[\)\.\-:]'
         if re.search(pattern, text_no_latex):
             errors.append("Błąd: tekst zadania zawiera potencjalne warianty odpowiedzi (np. A), B), 1.), i), etc.)")
+            return old_text
+
+        return final_text
+
+    except Exception as e:
+        errors.append(f"Błąd nieoczekiwany podczas parsowania: {str(e)}")
+        return old_text
+
+def parse_words_output_text_response(old_text: str, response: str, errors: list) -> str:
+    try:
+        response = response.replace('\r\n', '\n').strip()
+
+        start_match = re.search(r'Start\s*:', response, re.IGNORECASE)
+        end_match = re.search(r'End\s*:', response, re.IGNORECASE)
+
+        if not start_match:
+            errors.append("Błąd parsowania: brak etykiety Start:")
+            return old_text
+        if not end_match:
+            errors.append("Błąd parsowania: brak etykiety End:")
+            return old_text
+        if end_match.start() <= start_match.end():
+            errors.append("Błąd parsowania: etykieta End: znajduje się przed Start:")
+            return old_text
+
+        final_text = response[start_match.end(): end_match.start()].strip()
+
+        if not final_text:
+            errors.append("Błąd: tekst pojaśnienia jest pusty")
             return old_text
 
         return final_text
@@ -454,6 +492,49 @@ def parse_task_output_subtopics_response(old_subtopics: list, subtopics: list, r
     except Exception as e:
         errors.append(f"Błąd nieoczekiwany podczas parsowania podtematów: {str(e)}")
         return old_subtopics
+
+def parse_output_words_response(old_words: list, words: list, response: str, errors: list) -> list:
+    try:
+        start_idx = response.find("wordsStart:")
+        end_idx = response.find("wordsEnd:", start_idx)
+        if start_idx == -1:
+            errors.append("Błąd parsowania: brak etykiety wordsStart:")
+            return old_words
+        if end_idx == -1:
+            errors.append("Błąd parsowania: brak etykiety wordsEnd:")
+            return old_words
+        if end_idx <= start_idx:
+            errors.append("Błąd parsowania: etykieta wordsEnd: znajduje się przed wordsStart:")
+            return old_words
+
+        content = response[start_idx + len("wordsStart:"): end_idx].strip()
+        if not content:
+            errors.append("Błąd parsowania: brak wyrazów pomiędzy wordsStart: a wordsEnd:")
+            return old_words
+
+        lines = [line.strip() for line in content.splitlines() if line.strip()]
+        lines = extract_wrong_words(lines)
+        lines = remove_empty_lines(lines)
+        unique_lines = list(dict.fromkeys(lines))
+        if len(unique_lines) < len(lines):
+            errors.append("Usunięto powtarzające się wyrazy.")
+
+        filtered_words = []
+
+        for name in unique_lines:
+            if not any(name == w[0] for w in words):
+                errors.append(f"Wyraz '{name}' nie znajduje się w liście words.")
+            else:
+                filtered_words.append(name)
+
+        if not filtered_words:
+            return old_words
+
+        return filtered_words
+
+    except Exception as e:
+        errors.append(f"Błąd nieoczekiwany podczas parsowania wyrazów: {str(e)}")
+        return old_words
 
 subtopics_prompt = """Jesteś ekspertem edukacyjnym specjalizującym się w tworzeniu kompletnej i logicznie uporządkowanej siatki tematycznej na poziomie Matura Rozszerzona.
 Twoim zadaniem jest wygenerowanie szczegółowych, kompletnych i jednoznacznie zdefiniowanych podtematów dla:

@@ -300,6 +300,16 @@ class ProblemsGenerator(BaseModel):
     prompt: str
     errors: List[str]
 
+class WordsGenerator(BaseModel):
+    changed: str
+    text: str
+    words: List[List]
+    outputWords: List[str]
+    outputText: str
+    attempt: int
+    prompt: str
+    errors: List[str]
+
 @app.get("/")
 async def root():
     return {"message": f"Serwer działa na porcie {port}"}
@@ -518,6 +528,50 @@ async def task_generate(data: TaskGenerator, request: Request):
         old_data['changed'] = 'true'
         old_data['attempt'] += 1
         return TaskGenerator(**old_data)
+
+@app.post("/admin/words-generate")
+async def words_generate(data: WordsGenerator, request: Request):
+    old_data = copy.deepcopy(data.dict())
+
+    try:
+        from ai_generator import (
+            parse_words_output_text_response,
+            parse_output_words_response
+        )
+
+        if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
+            return WordsGenerator(**old_data)
+
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
+        response = await request_ai(old_data['prompt'], old_data, request)
+
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
+        new_data = copy.deepcopy(old_data)
+        previous_errors = copy.deepcopy(old_data['errors'])
+        new_data['outputText'] = parse_words_output_text_response(old_data['outputText'], response, old_data['errors'])
+        new_data['outputWords'] = parse_output_words_response(old_data['outputWords'], old_data['words'],
+                                                                       response, old_data['errors'])
+        new_data['errors'] = old_data['errors']
+
+        if new_data['outputText'] == old_data['outputText'] and sorted(new_data['outputWords']) == sorted(old_data['outputWords']) and sorted(previous_errors) == sorted(new_data['errors']):
+            new_data['changed'] = "false"
+
+        if new_data['outputText'] != "" and len(new_data['outputWords']) != 0:
+            new_data['changed'] = "false"
+            return WordsGenerator(**new_data)
+
+        new_data['attempt'] = new_data['attempt'] + 1
+
+        return WordsGenerator(**new_data)
+    except RuntimeError as e:
+        old_data['errors'].append(str(e))
+        old_data['changed'] = 'true'
+        old_data['attempt'] += 1
+        return WordsGenerator(**old_data)
 
 @app.post("/admin/interactive-task-generate")
 async def interactive_task_generate(data: InteractiveTaskGenerator, request: Request):
