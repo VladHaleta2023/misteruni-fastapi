@@ -19,13 +19,17 @@ WORKDIR /app
 COPY requirements.txt /app/
 
 # Устанавливаем Python зависимости
+# Сначала numpy, потом остальные
 RUN python3 -m pip install --upgrade pip setuptools wheel \
-    && python3 -m pip install --no-cache-dir -r requirements.txt
+    && python3 -m pip install --no-cache-dir numpy==1.26.2 \
+    && python3 -m pip install --no-cache-dir -r requirements.txt \
+    && pip install --no-cache-dir --force-reinstall thinc==8.1.7
 
-# Загружаем spaCy модели через Python, напрямую с GitHub
-RUN pip install https://github.com/explosion/spacy-models/releases/download/pl_core_news_sm-3.6.0/pl_core_news_sm-3.6.0-py3-none-any.whl \
-    && pip install https://github.com/explosion/spacy-models/releases/download/ru_core_news_sm-3.6.0/ru_core_news_sm-3.6.0-py3-none-any.whl \
-    && pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.6.0/en_core_web_sm-3.6.0-py3-none-any.whl
+# Загружаем spaCy модели напрямую
+RUN pip install --no-cache-dir \
+    https://github.com/explosion/spacy-models/releases/download/pl_core_news_sm-3.6.0/pl_core_news_sm-3.6.0-py3-none-any.whl \
+    https://github.com/explosion/spacy-models/releases/download/ru_core_news_sm-3.6.0/ru_core_news_sm-3.6.0-py3-none-any.whl \
+    https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.6.0/en_core_web_sm-3.6.0-py3-none-any.whl
 
 # Копируем проект
 COPY . /app
