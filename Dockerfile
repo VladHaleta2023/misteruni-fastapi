@@ -23,9 +23,9 @@ RUN python3 -m pip install --upgrade pip setuptools wheel \
     && python3 -m pip install --no-cache-dir -r requirements.txt
 
 # Загружаем spaCy модели через Python, напрямую с GitHub
-RUN python3 -m spacy download pl_core_news_sm --direct \
-    && python3 -m spacy download ru_core_news_sm --direct \
-    && python3 -m spacy download en_core_web_sm --direct
+RUN pip install https://github.com/explosion/spacy-models/releases/download/pl_core_news_sm-3.6.0/pl_core_news_sm-3.6.0-py3-none-any.whl \
+    && pip install https://github.com/explosion/spacy-models/releases/download/ru_core_news_sm-3.6.0/ru_core_news_sm-3.6.0-py3-none-any.whl \
+    && pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.6.0/en_core_web_sm-3.6.0-py3-none-any.whl
 
 # Копируем проект
 COPY . /app
