@@ -154,7 +154,7 @@ async def request_ai(prompt: str, data: Dict[str, Any], request: Request) -> Opt
                         stream=False,
                     )
                 ),
-                timeout=45
+                timeout=90
             )
 
             if abort_event.is_set():
@@ -166,7 +166,7 @@ async def request_ai(prompt: str, data: Dict[str, Any], request: Request) -> Opt
             return content
 
         except asyncio.TimeoutError:
-            logger.error(f"⏳ Model {model} przekroczyła limit czasu 45s.")
+            logger.error(f"⏳ Model {model} przekroczyła limit czasu 90s.")
             await asyncio.sleep(random.uniform(0.5, 1.5))
             return None
         except Exception as e:
