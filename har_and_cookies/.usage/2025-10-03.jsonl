@@ -1,0 +1,4 @@
+{"user": null, "model": "deepseek-ai/DeepSeek-V3", "provider": "AnyProvider", "prompt_tokens": 1409, "total_tokens": 1647, "completion_tokens": 238, "estimated_cost": 0.0007472400000000001, "prompt_tokens_details": null}
+{"user": null, "model": "deepseek-ai/DeepSeek-V3-0324", "provider": "AnyProvider", "prompt_tokens": 577, "total_tokens": 602, "completion_tokens": 25, "estimated_cost": 0.00016625, "prompt_tokens_details": null}
+{"user": null, "model": "deepseek-ai/DeepSeek-V3-0324", "provider": "AnyProvider", "prompt_tokens": 974, "total_tokens": 1063, "completion_tokens": 89, "estimated_cost": 0.00032182, "prompt_tokens_details": null}
+{"user": null, "model": "deepseek-ai/DeepSeek-V3-0324", "provider": "AnyProvider", "prompt_tokens": 1096, "total_tokens": 1184, "completion_tokens": 88, "estimated_cost": 0.00035144, "prompt_tokens_details": null}

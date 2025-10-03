@@ -1,0 +1,6 @@
+{"user": null, "model": "deepseek-ai/DeepSeek-V3-0324", "provider": "AnyProvider", "prompt_tokens": 1423, "total_tokens": 1664, "completion_tokens": 241, "estimated_cost": 0.00056783, "prompt_tokens_details": null}
+{"user": null, "model": "deepseek-ai/DeepSeek-V3", "provider": "AnyProvider", "prompt_tokens": 1761, "total_tokens": 2246, "completion_tokens": 485, "estimated_cost": 0.00110083, "prompt_tokens_details": null}
+{"user": null, "model": "deepseek-ai/DeepSeek-V3", "provider": "AnyProvider", "prompt_tokens": 1360, "total_tokens": 1691, "completion_tokens": 331, "estimated_cost": 0.00081139, "prompt_tokens_details": null}
+{"user": null, "model": "deepseek-ai/DeepSeek-V3", "provider": "AnyProvider", "prompt_tokens": 645, "total_tokens": 725, "completion_tokens": 80, "estimated_cost": 0.0003163, "prompt_tokens_details": null}
+{"user": null, "model": "deepseek-ai/DeepSeek-V3", "provider": "AnyProvider", "prompt_tokens": 1118, "total_tokens": 1327, "completion_tokens": 209, "estimated_cost": 0.00061085, "prompt_tokens_details": null}
+{"user": null, "model": "deepseek-ai/DeepSeek-V3", "provider": "AnyProvider", "prompt_tokens": 928, "total_tokens": 1120, "completion_tokens": 192, "estimated_cost": 0.00052352, "prompt_tokens_details": null}

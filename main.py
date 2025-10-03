@@ -1,5 +1,3 @@
-import anti_gui
-
 from fastapi import FastAPI, UploadFile, File, HTTPException, Form, Body, Request
 #from faster_whisper import WhisperModel
 from pydantic import BaseModel
@@ -75,7 +73,7 @@ s3 = boto3.client(
 BUCKET_NAME = os.getenv("AWS_BUCKET")
 REGION = os.getenv("AWS_REGION")
 
-#whisper_model = WhisperModel("tiny", device="cpu", compute_type="int8")
+#whisper_model = WhisperModel("small", device="cpu", compute_type="int8")
 
 MAX_FILE_SIZE = 10 * 1024 * 1024
 
@@ -234,10 +232,10 @@ class TaskGenerator(BaseModel):
     topic: str
     subtopics: List[List]
     outputSubtopics: List[str]
-    tasks: List[str]
     difficulty: int
     threshold: int
     text: str
+    note: str
     attempt: int
     prompt: str
     errors: List[str]
@@ -288,6 +286,7 @@ class OptionsGenerator(BaseModel):
 class ProblemsGenerator(BaseModel):
     changed: str
     text: str
+    explanation: str
     solution: str
     options: List[str]
     subtopics: List[str]
@@ -327,86 +326,86 @@ def full_plan_generate(data: PromptRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-#def is_allowed_file(filename: str) -> bool:
-#    ext = os.path.splitext(filename.lower())[1]
-#    return ext in ALLOWED_EXTENSIONS
+# def is_allowed_file(filename: str) -> bool:
+#     ext = os.path.splitext(filename.lower())[1]
+#     return ext in ALLOWED_EXTENSIONS
 #
 #
-#def convert_to_wav(input_bytes: bytes) -> str:
-#    with tempfile.NamedTemporaryFile(delete=False) as input_tmp:
-#        input_tmp.write(input_bytes)
-#        input_tmp_path = input_tmp.name
+# def convert_to_wav(input_bytes: bytes) -> str:
+#     with tempfile.NamedTemporaryFile(delete=False) as input_tmp:
+#         input_tmp.write(input_bytes)
+#         input_tmp_path = input_tmp.name
 #
-#    output_tmp = tempfile.NamedTemporaryFile(suffix=".wav", delete=False)
-#    output_tmp_path = output_tmp.name
-#    output_tmp.close()
+#     output_tmp = tempfile.NamedTemporaryFile(suffix=".wav", delete=False)
+#     output_tmp_path = output_tmp.name
+#     output_tmp.close()
 #
-#    cmd = [
-#        "ffmpeg", "-y", "-i", input_tmp_path,
-#        "-ar", "16000", "-ac", "1",
-#        "-f", "wav", output_tmp_path
-#    ]
-#    result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-#    os.remove(input_tmp_path)
+#     cmd = [
+#         "ffmpeg", "-y", "-i", input_tmp_path,
+#         "-ar", "16000", "-ac", "1",
+#         "-f", "wav", output_tmp_path
+#     ]
+#     result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+#     os.remove(input_tmp_path)
 #
-#    if result.returncode != 0:
-#        os.remove(output_tmp_path)
-#        raise HTTPException(status_code=400, detail="Błąd konwersji pliku audio (ffmpeg).")
+#     if result.returncode != 0:
+#         os.remove(output_tmp_path)
+#         raise HTTPException(status_code=400, detail="Błąd konwersji pliku audio (ffmpeg).")
 #
-#    return output_tmp_path
+#     return output_tmp_path
 #
 #
-#@app.post("/admin/audio-transcribe-part", response_model=TranscriptionPartResponse)
-#async def transcribe_audio_part(
-#        file: UploadFile = File(...),
-#        part_id: int = Form(...),
-#        subject: Optional[str] = Form(None),
-#        language: Optional[str] = Form(None)
-#):
-#    language = language or 'ru'
-#    subject = subject or 'Brak przedmiotu'
-#    filename = file.filename.lower()
+# @app.post("/admin/audio-transcribe-part", response_model=TranscriptionPartResponse)
+# async def transcribe_audio_part(
+#         file: UploadFile = File(...),
+#         part_id: int = Form(...),
+#         subject: Optional[str] = Form(None),
+#         language: Optional[str] = Form(None)
+# ):
+#     language = language or 'ru'
+#     subject = subject or 'Brak przedmiotu'
+#     filename = file.filename.lower()
 #
-#    if not is_allowed_file(filename):
-#        raise HTTPException(status_code=400, detail="Nieobsługiwany format pliku audio.")
+#     if not is_allowed_file(filename):
+#         raise HTTPException(status_code=400, detail="Nieobsługiwany format pliku audio.")
 #
-#    audio_bytes = await file.read()
-#    if len(audio_bytes) > MAX_FILE_SIZE:
-#        raise HTTPException(status_code=400, detail="Plik audio jest zbyt duży. Maksymalnie 100 MB.")
+#     audio_bytes = await file.read()
+#     if len(audio_bytes) > MAX_FILE_SIZE:
+#         raise HTTPException(status_code=400, detail="Plik audio jest zbyt duży. Maksymalnie 100 MB.")
 #
-#    try:
-#        wav_path = convert_to_wav(audio_bytes)
+#     try:
+#         wav_path = convert_to_wav(audio_bytes)
 #
-#        with wave.open(wav_path, "rb") as wav_file:
-#            frames = wav_file.getnframes()
-#            rate = wav_file.getframerate()
-#            duration = frames / float(rate)
+#         with wave.open(wav_path, "rb") as wav_file:
+#             frames = wav_file.getnframes()
+#             rate = wav_file.getframerate()
+#             duration = frames / float(rate)
 #
-#        if duration > MAX_AUDIO_DURATION:
-#            os.remove(wav_path)
-#            raise HTTPException(
-#                status_code=400,
-#                detail=f"Plik audio jest za długi: {duration:.2f} sekund. Maksymalnie 30 minut."
-#            )
+#         if duration > MAX_AUDIO_DURATION:
+#             os.remove(wav_path)
+#             raise HTTPException(
+#                 status_code=400,
+#                 detail=f"Plik audio jest za długi: {duration:.2f} sekund. Maksymalnie 30 minut."
+#             )
 #
-#        segments, info = whisper_model.transcribe(
-#            wav_path,
-#            beam_size=5,
-#            language=language,
-#            temperature=0.2
-#        )
-#        transcription = " ".join(segment.text.strip() for segment in segments).strip()
-#        os.remove(wav_path)
-#    except Exception as e:
-#        raise HTTPException(status_code=500, detail=f"Błąd serwera: {str(e)}")
+#         segments, info = whisper_model.transcribe(
+#             wav_path,
+#             beam_size=5,
+#             language=language,
+#             temperature=0.2
+#         )
+#         transcription = " ".join(segment.text.strip() for segment in segments).strip()
+#         os.remove(wav_path)
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=f"Błąd serwera: {str(e)}")
 #
-#    return TranscriptionPartResponse(
-#        part_id=int(part_id),
-#        transcription=str(transcription),
-#        language=str(info.language),
-#        language_probability=float(round(info.language_probability, 2)) if info.language_probability is not None else None,
-#        subject=str(subject) if subject else None
-#    )
+#     return TranscriptionPartResponse(
+#         part_id=int(part_id),
+#         transcription=str(transcription),
+#         language=str(info.language),
+#         language_probability=float(round(info.language_probability, 2)) if info.language_probability is not None else None,
+#         subject=str(subject) if subject else None
+#     )
 
 
 def split_text_into_sentences(text: str, language: str = 'ru') -> list[str]:
@@ -495,6 +494,7 @@ async def task_generate(data: TaskGenerator, request: Request):
     try:
         from ai_generator import (
             parse_task_response,
+            parse_note_response,
             parse_task_output_subtopics_response
         )
 
@@ -512,14 +512,15 @@ async def task_generate(data: TaskGenerator, request: Request):
         new_data = copy.deepcopy(old_data)
         previous_errors = copy.deepcopy(old_data['errors'])
         new_data['text'] = parse_task_response(old_data['text'], response, old_data['errors'])
+        new_data['note'] = parse_note_response(old_data['note'], response, old_data['errors'])
         new_data['outputSubtopics'] = parse_task_output_subtopics_response(old_data['outputSubtopics'], old_data['subtopics'],
                                                                        response, old_data['errors'])
         new_data['errors'] = old_data['errors']
 
-        if new_data['text'] == old_data['text'] and sorted(new_data['outputSubtopics']) == sorted(old_data['outputSubtopics']) and sorted(previous_errors) == sorted(new_data['errors']):
+        if new_data['text'] == old_data['text'] and new_data['note'] == old_data['note'] and sorted(new_data['outputSubtopics']) == sorted(old_data['outputSubtopics']) and sorted(previous_errors) == sorted(new_data['errors']):
             new_data['changed'] = "false"
 
-        if new_data['text'] != "" and len(new_data['outputSubtopics']) != 0:
+        if new_data['text'] != "" and new_data['note'] != "" and len(new_data['outputSubtopics']) != 0:
             new_data['changed'] = "false"
             return TaskGenerator(**new_data)
 
@@ -563,7 +564,7 @@ async def words_generate(data: WordsGenerator, request: Request):
         if new_data['outputText'] == old_data['outputText'] and sorted(new_data['outputWords']) == sorted(old_data['outputWords']) and sorted(previous_errors) == sorted(new_data['errors']):
             new_data['changed'] = "false"
 
-        if new_data['outputText'] != "" and len(new_data['outputWords']) != 0:
+        if new_data['outputText'] != "":
             new_data['changed'] = "false"
             return WordsGenerator(**new_data)
 
@@ -752,7 +753,8 @@ async def problems_generate(data: ProblemsGenerator, request: Request):
     try:
         from ai_generator import (
             parse_subtopics_response,
-            parse_output_subtopics_response
+            parse_output_subtopics_response,
+            parse_explanation_response
         )
 
         if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
@@ -773,12 +775,13 @@ async def problems_generate(data: ProblemsGenerator, request: Request):
         result = parse_subtopics_response(old_data['outputSubtopics'], response, old_data['errors'], "Procent opanowania")
         result = parse_output_subtopics_response(old_data['outputSubtopics'], result, old_data['subtopics'], old_data['errors'])
         new_data['outputSubtopics'] = result
+        new_data['explanation'] = parse_explanation_response(old_data['explanation'], response, old_data['errors'])
         new_data['errors'] = old_data['errors']
 
-        if sorted(new_data['outputSubtopics']) == sorted(old_data['outputSubtopics']) and sorted(previous_errors) == sorted(new_data['errors']):
+        if new_data['explanation'] == old_data['explanation'] and sorted(new_data['outputSubtopics']) == sorted(old_data['outputSubtopics']) and sorted(previous_errors) == sorted(new_data['errors']):
             new_data['changed'] = "false"
 
-        if len(new_data['outputSubtopics']) != 0:
+        if len(new_data['outputSubtopics']) != 0 and new_data['explanation'] != "":
             new_data['changed'] = "false"
             return ProblemsGenerator(**new_data)
 

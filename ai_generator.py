@@ -1,5 +1,3 @@
-import anti_gui
-
 import logging
 import re
 from typing import List
@@ -129,10 +127,6 @@ def parse_subtopics_response(old_subtopics: list, response: str, errors: list, p
                     continue
 
                 score = int(score_str)
-                if not (0 <= score <= 100):
-                    errors.append(f"{percent_message} poza zakresem 0-100: '{score_str}' w podtemacie '{line}'")
-                    has_error = True
-                    continue
             except ValueError:
                 errors.append(f"{percent_message} nie jest liczbą całkowitą: '{score_str}' w podtemacie '{line}'")
                 has_error = True
@@ -211,22 +205,83 @@ def parse_task_response(old_text: str, response: str, errors: list) -> str:
             errors.append(f"Błąd LaTeX w tekście zadania: '{final_text}'")
             return old_text
 
-        def remove_latex_segments(text):
-            text = re.sub(r'\$.*?\$', '', text)
-            text = re.sub(r'\\\[.*?\\\]', '', text)
-            return text
+        def remove_answer_variants(text):
+            pattern = r'(^|\s)[A-Da-d1-4ivxIVX]+[\)\.\-:]'
+            cleaned = re.sub(pattern, '', text)
+            cleaned = re.sub(r'\s+', ' ', cleaned).strip()
+            return cleaned
 
-        text_no_latex = remove_latex_segments(final_text)
-        pattern = r'\b([A-Da-d1-4ivxIVX])[\)\.\-:]'
-        if re.search(pattern, text_no_latex):
-            errors.append("Błąd: tekst zadania zawiera potencjalne warianty odpowiedzi (np. A), B), 1.), i), etc.)")
-            return old_text
+        final_text = remove_answer_variants(final_text)
 
         return final_text
 
     except Exception as e:
         errors.append(f"Błąd nieoczekiwany podczas parsowania: {str(e)}")
         return old_text
+
+def parse_note_response(old_note: str, response: str, errors: list) -> str:
+    try:
+        response = response.replace('\r\n', '\n').strip()
+
+        start_match = re.search(r'noteStart\s*:', response, re.IGNORECASE)
+        end_match = re.search(r'noteEnd\s*:', response, re.IGNORECASE)
+
+        if not start_match:
+            errors.append("Błąd parsowania: brak etykiety noteStart:")
+            return old_note
+        if not end_match:
+            errors.append("Błąd parsowania: brak etykiety noteEnd:")
+            return old_note
+        if end_match.start() <= start_match.end():
+            errors.append("Błąd parsowania: etykieta End: znajduje się przed Start:")
+            return old_note
+
+        final_text = response[start_match.end(): end_match.start()].strip()
+
+        if not final_text:
+            errors.append("Błąd: tekst zadania jest pusty")
+            return old_note
+
+        if not validate_latex(final_text, errors):
+            errors.append(f"Błąd LaTeX w tekście zadania: '{final_text}'")
+            return old_note
+        return final_text
+
+    except Exception as e:
+        errors.append(f"Błąd nieoczekiwany podczas parsowania: {str(e)}")
+        return old_note
+
+def parse_explanation_response(old_explanation: str, response: str, errors: list) -> str:
+    try:
+        response = response.replace('\r\n', '\n').strip()
+
+        start_match = re.search(r'explanationStart\s*:', response, re.IGNORECASE)
+        end_match = re.search(r'explanationEnd\s*:', response, re.IGNORECASE)
+
+        if not start_match:
+            errors.append("Błąd parsowania: brak etykiety explanationStart:")
+            return old_explanation
+        if not end_match:
+            errors.append("Błąd parsowania: brak etykiety explanationEnd:")
+            return old_explanation
+        if end_match.start() <= start_match.end():
+            errors.append("Błąd parsowania: etykieta End: znajduje się przed Start:")
+            return old_explanation
+
+        final_text = response[start_match.end(): end_match.start()].strip()
+
+        if not final_text:
+            errors.append("Błąd: tekst zadania jest pusty")
+            return old_explanation
+
+        if not validate_latex(final_text, errors):
+            errors.append(f"Błąd LaTeX w tekście zadania: '{final_text}'")
+            return old_explanation
+        return final_text
+
+    except Exception as e:
+        errors.append(f"Błąd nieoczekiwany podczas parsowania: {str(e)}")
+        return old_explanation
 
 def parse_words_output_text_response(old_text: str, response: str, errors: list) -> str:
     try:
