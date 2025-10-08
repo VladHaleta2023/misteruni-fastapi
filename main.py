@@ -27,21 +27,18 @@ client = Client()
 
 top_models = [
     "deepseek-v3",   # очень сильная reasoning-модель
+    "gpt-4",
+    "gpt-4.1",       # обновлённый GPT-4 с улучшенным reasoning
+    "gpt-4.5",       # топовая версия GPT-4 (лучше всего для сложных задач)
     "deepseek-r1",   # ещё более мощная reasoning LLM
     "deepseek-r1-turbo",  # оптимизированная версия для reasoning
-    "deepseek-r1-distill-llama-70b",  # чуть слабее, но подходит
-    "deepseek-r1-distill-qwen-14b",   # разумный баланс
-    "deepseek-r1-distill-qwen-32b",   # хороший reasoning
     "deepseek-v3-0324",  # оптимизированная версия
     "deepseek-v3-0324-turbo",
     "deepseek-r1-0528",
     "deepseek-r1-0528-turbo",
-    "gpt-4",
     "gpt-4o-mini",   # компактнее, но всё ещё хорошо справляется
-    "gpt-4.1",       # обновлённый GPT-4 с улучшенным reasoning
     "gpt-4.1-mini",  # более быстрый и дешёвый вариант
     "gpt-4.1-nano",  # лёгкая версия, но справляется с текстовыми задачами
-    "gpt-4.5",       # топовая версия GPT-4 (лучше всего для сложных задач)
     "grok-3",        # от xAI, сильный reasoning
     "grok-3-r1"      # reasoning-ориентированный Grok
 ]
@@ -152,7 +149,7 @@ async def request_ai(prompt: str, data: Dict[str, Any], request: Request) -> Opt
                         stream=False,
                     )
                 ),
-                timeout=90
+                timeout=60
             )
 
             if abort_event.is_set():
@@ -164,7 +161,7 @@ async def request_ai(prompt: str, data: Dict[str, Any], request: Request) -> Opt
             return content
 
         except asyncio.TimeoutError:
-            logger.error(f"⏳ Model {model} przekroczyła limit czasu 90s.")
+            logger.error(f"⏳ Model {model} przekroczyła limit czasu 60s.")
             await asyncio.sleep(random.uniform(0.5, 1.5))
             return None
         except Exception as e:
@@ -278,6 +275,7 @@ class OptionsGenerator(BaseModel):
     text: str
     solution: str
     options: List[str]
+    explanations: List[str]
     correctOptionIndex: int
     attempt: int
     prompt: str
@@ -728,12 +726,13 @@ async def options_generate(data: OptionsGenerator, request: Request):
 
         new_data['options'] = result['options']
         new_data['correctOptionIndex'] = result['correctOptionIndex']
+        new_data['explanations'] = result['explanations']
         new_data['errors'] = old_data['errors']
 
-        if new_data['correctOptionIndex'] == old_data['correctOptionIndex'] and sorted(new_data['options']) == sorted(old_data['options']) and sorted(previous_errors) == sorted(new_data['errors']):
+        if new_data['correctOptionIndex'] == old_data['correctOptionIndex'] and sorted(new_data['explanations']) == sorted(new_data['explanations']) and sorted(new_data['options']) == sorted(old_data['options']) and sorted(previous_errors) == sorted(new_data['errors']):
             new_data['changed'] = "false"
 
-        if len(new_data['options']) == 4:
+        if len(new_data['options']) == 4 and len(new_data['explanations']) == 4:
             new_data['changed'] = "false"
             return OptionsGenerator(**new_data)
 

@@ -407,7 +407,8 @@ def parse_solution_response(old_solution: str, response: str, errors: list) -> s
 def parse_options_response(old_data: dict, response: str, errors: list) -> dict:
     final_data = {
         "options": old_data.get("options", []),
-        "correctOptionIndex": old_data.get("correctOptionIndex", 0)
+        "correctOptionIndex": old_data.get("correctOptionIndex", 0),
+        "explanations": []
     }
 
     try:
@@ -429,7 +430,6 @@ def parse_options_response(old_data: dict, response: str, errors: list) -> dict:
             return final_data
 
         lines = [line.strip() for line in content.splitlines() if line.strip()]
-        lines = remove_empty_lines(lines)
         unique_lines = list(dict.fromkeys(lines))
         if len(unique_lines) < len(lines):
             errors.append("Usunięto powtarzające się warianty.")
@@ -460,10 +460,32 @@ def parse_options_response(old_data: dict, response: str, errors: list) -> dict:
         except ValueError:
             errors.append(f"Numer lub index prawidłowej odpowiedzi nie jest liczbą całkowitą: '{score_line}'")
 
+        explanations = []
+        for i in range(1, 5):
+            start_tag = f"option{i}Start:"
+            end_tag = f"option{i}End:"
+            start_pos = response.find(start_tag)
+            end_pos = response.find(end_tag, start_pos)
+
+            if start_pos == -1 or end_pos == -1:
+                errors.append(f"Brakuje bloku wyjaśnienia: {start_tag} lub {end_tag}")
+                explanations.append("")
+                continue
+
+            explanation_content = response[start_pos + len(start_tag): end_pos].strip()
+            if not explanation_content:
+                errors.append(f"Wyjaśnienie {i} jest puste.")
+            explanations.append(explanation_content)
+
+        if len(explanations) != 4:
+            errors.append(f"Niepoprawna liczba wyjaśnień: {len(explanations)}, oczekiwano 4.")
+
+        final_data["explanations"] = explanations
+
         return final_data
 
     except Exception as e:
-        errors.append(f"Błąd nieoczekiwany podczas parsowania podtematów: {str(e)}")
+        errors.append(f"Błąd nieoczekiwany podczas parsowania: {str(e)}")
         return final_data
 
 def parse_output_subtopics_response(old_subtopics: list, new_subtopics: list, subtopics: list, errors: list) -> list:
