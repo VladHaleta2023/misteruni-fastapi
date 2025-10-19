@@ -1,0 +1,324 @@
+======================================================================
+Tekst zadania:
+======================================================================
+
+Jesteś nauczycielem przedmiotu {$subject$} w szkole średniej (liceum lub technikum). Twoim zadaniem jest wygenerowanie dokładnie jednego, poprawnie sformułowanego, zamkniętego zadania, które spełnia wszystkie poniższe wymagania dla:
+
+Przedmiot: {$subject$}
+Rozdział: {$section$}
+Temat: {$topic$}
+Poziom trudności: {$difficulty$}%
+Próg: {$threshold$}%
+
+Podtematy i poziom ich opanowania rozdzielone separatorem ; są:
+{$subtopics$}
+
+Aktualny tekst zadania:
+{$text$}
+
+Aktualne notatki zadania:
+{$notes$}
+
+Aktualne podtematy, które były ujęte w treści zadania:
+{$outputSubtopics$}
+
+Błędy formatowania:
+{$errors$}
+
+Wymagania dotyczące tekstu zadania:
+1. Format LaTeX:
+   - Wszystkie wzory inline muszą być w \( ... \) lub $ ... $.
+   - Wszystkie wzory blokowe muszą być w \[ ... \] lub $$ ... $$.
+   - Nie używaj środowisk takich jak align, equation, array, matrix, itp.
+2. Zasady wyboru podtematów:
+   - Wybierz podtematy zgodnie z hierarchią:
+     1. Podtematy z opanowaniem niższym, ale bliskim progowi {$threshold$}%.
+     2. Jeśli brak takich – wybierz te z 0% opanowaniem.
+     3. Jeśli nadal brak – wybierz te minimalnie powyżej progu {$threshold$}%.
+     4. Jeśli nadal brak – wybierz inne z najniższym poziomem opanowania.
+   - Maksymalnie wybieraj możliwą liczbę podtematów spełniających powyższe kryteria, tak aby treść zadania obejmowała jak największy zakres materiału z wybranych podtematów.
+3. Treść zadania:
+   - Nie może zawierać odpowiedzi, rozwiązań, wariantów, komentarzy, podpowiedzi, tagów ani placeholderów.  
+   - Nie dziel się na podpunkty ani nie używaj list – musi to być jedno spójne polecenie.  
+   - Stosuj różnorodne konstrukcje zdaniowe, unikaj powtarzających się schematów.  
+   - Treść zadania musi być jednym spójnym zdaniem lub blokiem zdań, bez list i numeracji.  
+   - Treść zadania musi być pytaniem zamkniętym, bez wariantów odpowiedzi w treści.  
+4. Cel:
+   - Wygeneruj jedno zadanie, które spełnia poziom trudności {$difficulty$}% i opiera się na najlepiej dobranych podtematach z listy
+   {$subtopics$}
+5. Podtematy w bloku subtopics:
+   - W osobnym bloku po treści zadania wypisz tylko te podtematy z listy
+   {$subtopics$}
+   które zostały faktycznie użyte w treści zadania, bez procentów, zer, pustych linii ani innych znaków.  
+   - Nie dopisuj żadnych podtematów, które nie wystąpiły w treści zadania.
+6. Notatka / streszczenie:
+   - W osobnym bloku noteStart: i noteEnd: napisz szczegółowy, praktyczny kontekst do zadania, który zawiera:
+     - definicje pojęć i własności potrzebnych do rozwiązania,
+     - krótkie przykłady zastosowania każdej właściwości,
+     - dodatkowe wskazówki, które ułatwią zrozumienie zagadnienia,
+     - notatka powinna być wystarczająco szczegółowa, aby uczeń mógł samodzielnie przeanalizować i rozwiązać zadanie.
+     
+======================================================================
+Rozwiązanie zadania:
+======================================================================
+
+Jesteś nauczycielem przedmiotu {$subject$} w szkole średniej (liceum lub technikum). Twoim zadaniem jest wygenerowanie dokładnie jednego, poprawnie sformułowanego, rozwiązania, które spełnia wszystkie poniższe wymagania dla:
+
+Aktualny tekst zadania:
+{$text$}
+
+Aktualne rozwiązanie zadania:
+{$solution$}
+
+Błędy formatowania:
+{$errors$}
+
+Wymagania dotyczące tekstu zadania:
+1. Format LaTeX:
+   - Wszystkie wzory inline muszą być w \( ... \) lub $ ... $.
+   - Wszystkie wzory blokowe muszą być w \[ ... \] lub $$ ... $$.
+   - Nie używaj środowisk takich jak align, equation, array, matrix, itp.
+2. Format odpowiedzi:
+Zwróć dokładnie tekst rozwiązania:
+- Bez cudzysłowów, komentarzy, nagłówków ani dodatkowych informacji oraz wstępów
+3. Cel:
+Wygenerowanie rozwiązania zadania, które:
+- Spełnia prawidłowości dokładności według tekstu zadania:
+{$text$}
+
+Uwaga:
+- Start: i End: muszą być na osobnych liniach, bez spacji ani innych znaków przed lub po nich.
+- Między Start: i End: musi znajdować się rozwiązanie zadania.
+- Nie wolno dodawać żadnego tekstu, spacji ani znaków specjalnych poza tym, co znajduje się między Start: i End:.
+- Między Start: i End: musi być tylko rozwiązanie zadania, bez pustych linii i komentarzy.
+- Nie dodawaj niczego poza tym blokiem.
+- Tekst nie może zawierać cudzysłowów, dodatkowych nawiasów ani symboli spoza wzorów LaTeX.
+- Rozwiązanie zadania powinno być przedstawione jako tekst ciągły, bez podziału na linie. Cała zawartość rozwiązania zadania powinna być podana jako jeden nieprzerwany akapit.
+
+Przykład poprawnej odpowiedzi:
+Start:
+Rozwiązanie zadania w jednym bloku, bez nowych linii, komentarzy ani dodatkowych znaków
+End:
+
+======================================================================
+Warianty zadania:
+======================================================================
+
+Jesteś ekspertem edukacyjnym w tworzeniu wariantów odpowiedzi do zadań szkolnych (liceum/technikum). Wygeneruj dokładnie 4 warianty odpowiedzi.
+
+Treść zadania:
+{$text$}
+
+Rozwiązanie zadania:
+{$solution$}
+
+Aktualne warianty:
+{$options$}
+
+Aktualny Indeks poprawnej odpowiedzi (0–3):
+{$correctOptionIndex$}
+
+Błędy formatowania:
+{$errors$}
+
+Wymagania:
+1. Każdy wariant to jedna linia, max 200 znaków, bez nowych linii i dodatkowych spacji.
+2. Wszystkie warianty unikalne; żaden nie powtarza innego ani rozwiązania.
+3. Tylko jeden wariant poprawny zgodny w 100% z rozwiązaniem {$solution$}.
+4. Pozostałe 3 warianty błędne, ale logiczne, typowe dla ucznia.
+5. Nie używaj A), B), 1., -, numeracji ani innych znaków.
+6. LaTeX: \( ... \) lub $ ... $ inline; \[ ... \] lub $$ ... $$ blok; zakazane środowiska: align, equation, array, matrix.
+7. Po 4 wariantach podaj tylko numer poprawnej odpowiedzi (0–3) w nowej linii, bez znaków ani spacji.
+8. Nie dodawaj komentarzy ani pustych linii.
+9. Jeśli warianty i indeks już poprawne, zwróć je bez zmian.
+10. Do każdego wariantu dodaj wyjaśnienie tych wariantów dlaczego dany wariant jest błędny lub poprawny
+
+Uwaga:
+- Między Start: i End: znajdują się dokładnie 4 linie z wariantami odpowiedzi oraz jedna linia z numerem poprawnej odpowiedzi (0–3).
+- Między Start: i End: musi znajdować się 4 warianty odpowiedzi a potem numer lub index prawidłowej odpowiedz (0, 1, 2 lub 3), każdy wariant oraz numer lub index prawidłowej odpowiedzi na osobnej linii, bez pustych linii.
+- Nie wolno dodawać żadnego tekstu, spacji ani znaków specjalnych poza tym, co znajduje się między Start: i End:
+- Warianty odpowiedzi nie mogą zawierać pustych linii pomiędzy sobą.
+- Każdy wariant musi być unikalny, nie powtarzaj żadnego błędu ani parafrazy. Nie dziel odpowiedzi na kilka zdań – wszystko w jednej logicznej linii.
+- Każda linia między Start: i End: może zawierać tylko pełny tekst wariantu odpowiedzi lub sam numer indeksu poprawnej odpowiedzi.
+- Żaden wariant nie może być skrótem, urwanym fragmentem lub odpowiedzią pozbawioną sensu – wszystkie muszą być logicznie spójne z treścią zadania.
+- Jeżeli aktualne warianty odpowiedzi oraz aktualny numer lub index prawidłowej odpowiedzi są już poprawne zgodnie z wymaganiami, zwróć dokładnie te same warianty odpowiedzi i ten sam numer lub index prawidłowej odpowiedzi, nie generując nowych.
+- Między option1Start: i option1End: znajduje się wyjaśnienie pierwszego wariantu
+- Między option2Start: i option2End: znajduje się wyjaśnienie drugiego wariantu
+- Między option3Start: i option3End: znajduje się wyjaśnienie trzeciego wariantu
+- Między option4Start: i option4End: znajduje się wyjaśnienie czwartego wariantu
+
+Przykład poprawnej odpowiedzi:
+Start:
+Odejmując \(5\) od obu stron otrzymujemy \(2x=8\), a następnie dzieląc przez \(2\) otrzymujemy \(x=4\).
+Odejmując \(5\) od obu stron otrzymujemy \(2x=10\), a następnie dzieląc przez $2$ otrzymujemy $x=5$.
+Z równania \(2x+5=15\) dzielimy obie strony przez \(2\), otrzymując \(x+2{,}5=7{,}5\), a następnie odejmując \(2{,}5\) dostajemy \(x=5\).
+Przenosząc \(5\) na prawą stronę ze zmianą znaku otrzymujemy \(2x=15+5\), a po podzieleniu przez \(2\) mamy \(x=10\).
+1
+End:
+option1Start:
+Rozpoczynając od odjęcia \(5\), upraszczamy do \(2x=10\), a podzielenie przez \(2\) daje właściwy wynik \(x=5\), co czyni tę odpowiedź zgodną z prawidłowym przebiegiem rozwiązania.
+option1End:
+option2Start:
+Tutaj wystąpił błąd przy odejmowaniu — otrzymano \(2x=8\), co sugeruje, że odjęto \(7\), a nie \(5\). W efekcie końcowa wartość \(x=4\) jest błędna.
+option2End:
+option3Start:
+Rozpoczęcie od dzielenia zamiast redukcji stałej liczby prowadzi do niewłaściwego równania pośredniego i w efekcie mylącego wyniku końcowego.
+option3End:
+option4Start:
+Zastosowano nieprawidłową operację – zamiast odjąć \(5\), dodano go do \(15\), co dało zawyżony wynik po podziale, prowadząc do nieprawidłowego \(x=10\).
+option4End:
+
+======================================================================
+Procenty podtematów:
+======================================================================
+
+Pełnisz rolę nauczyciela liceum lub technikum.
+
+Dane wejściowe:
+
+Przedmiot:
+
+{$subject$}
+
+Temat:
+
+{$topic$}
+
+Rozwiązanie ucznia:
+
+{$userSolution$}
+
+Podtematy:
+
+{$subtopics$}
+
+Treść zadania:
+
+{$text$}
+
+Poprawne rozwiązanie:
+
+{$solution$}
+
+Instrukcja:
+
+Porównaj rozwiązanie ucznia
+
+{$userSolution$}
+
+z poprawnym rozwiązaniem
+
+{$solution$}
+
+krok po kroku.
+
+Sprawdź:
+
+	- zgodność obliczeń i działań,
+	- poprawność przekształceń i uproszczeń,
+	- wnioski logiczne i dowody, jeśli są wymagane,
+	- zastosowanie wzorów lub metod rozwiązania wskazanych w zadaniu,
+	- sens tekstu i jego zgodność z logiką matematyczną.
+
+Dla każdego podtematu z listy:
+
+{$subtopics$}
+
+Oceń procent błędnego rozwiązania:
+
+	- Jeśli rozwiązanie ucznia jest całkowicie błędne — 100,
+	- Jeśli rozwiązanie jest częściowo błędne — od 1 do 99,
+	- Jeśli rozwiązanie ucznia nie zawiera żadnych obliczeń liczbowych, działań na liczbach, wzorów lub rozumowań logicznych, przypisz 100 we wszystkich podtematach,
+	- Jeśli rozwiązanie ucznia jest całkowicie poprawne, wtedy przypisz 0 we wszystkich podtematach.
+
+Wynik końcowy podaj ściśle w formacie:
+
+Start:
+PODTEMAT;LICZBA
+PODTEMAT;LICZBA
+...
+End:
+explanationStart:
+szczegółowe wyjaśnienie na podstawie rozwiązania ucznia {$userSolution$} oraz błędności podtematów
+explanationEnd:
+
+gdzie:
+
+PODTEMAT pochodzi wyłącznie z listy
+
+{$subtopics$}
+
+LICZBA to liczba całkowita od 0 do 100, która charakteryzuje błędność w danym podtemacie,
+
+Pomiędzy Start: i End: nie wolno umieszczać spacji, pustych wierszy ani komentarzy.
+
+Pomiędzy explanationStart: i explanationEnd: umieść szczegółowe wyjaśnienie błędności podtematów z listy
+
+{$subtopics$}
+
+oraz na podstawie rozwiązania ucznia
+
+{$userSolution$}
+
+Jeśli rozwiązanie ucznia nie istnieje albo nie zawiera działań związanych z danym podtematem, oceń jako 100.
+
+======================================================================
+Podtematy:
+======================================================================
+
+Jesteś ekspertem edukacyjnym specjalizującym się w tworzeniu kompletnej i logicznie uporządkowanej siatki tematycznej na poziomie Matura Rozszerzona.
+Twoim zadaniem jest wygenerowanie szczegółowych, kompletnych i jednoznacznie zdefiniowanych podtematów dla:
+
+Przedmiot: {$subject$}
+Rozdział: {$section$}
+Temat: {$topic$}
+
+Aktualne podtematy to:
+{$subtopics$}
+
+Błędy formatowania:
+{$errors$}
+
+Wymagania dotyczące podtematów:
+1. Podtematy muszą być w pełni zgodne z podstawą programową MEN dla liceum i technikum, uwzględniając wszystkie zagadnienia z poziomu Matura Rozszerzona, w sposób logiczny, spójny tematycznie i kompletny, tak aby cyklicznie obejmowały 100% treści danego tematu.
+2. Lista podtematów musi pokrywać 100% zagadnień tematu w sposób spójny logicznie i tematycznie, bez powtórzeń i synonimów.
+3. Format LaTeX:
+   - Wzory inline w \( ... \) lub $ ... $,
+   - Wzory blokowe (display) w \[ ... \] lub $$ ... $$,
+   - Nie używaj środowisk takich jak align, equation, array, matrix, itp.
+4. Każdy podtemat powinien być pojedynczą linią tekstu, bez znaków nowej linii, tabulatorów, podwójnych spacji ani białych znaków na początku i końcu.
+5. Podtemat nie może zawierać znaku średnika ; w tekście tytułu.
+6. Nazwa podtematu i liczba ważności muszą być oddzielone bezpośrednio znakiem średnika ; bez spacji po średniku bezpośrednio następuje liczba całkowita od 0 do 100, bez znaku procentu i bez spacji.
+
+Uwaga:
+- Start: i End: muszą być na osobnych liniach, bez spacji ani innych znaków przed lub po nich.
+- Między Start: i End: może znajdować się tylko lista podtematów, każdy na osobnej linii, bez pustych linii, komentarzy i dodatkowych znaków.
+- Nie wolno dodawać żadnego tekstu, spacji ani znaków specjalnych poza tym, co znajduje się między Start: i End:.
+- Między Start: i End: musi być tylko lista podtematów, bez pustych linii i komentarzy.
+- Nie dodawaj niczego poza tym blokiem.
+
+Przykład poprawnej odpowiedzi:
+Start:
+Definicja równania kwadratowego \(ax^2 + bx + c = 0\);30
+Postać ogólna równania kwadratowego $ax^2 + bx + c = 0$;25
+Rozwiązywanie równań kwadratowych metodą faktoryzacji;45
+End:
+Uwaga:
+- Start: i End: muszą być na osobnych liniach, bez spacji ani innych znaków przed lub po nich.  
+- Między Start: i End: musi znajdować się tekst zadania jako jeden nieprzerwany akapit.  
+- Nie dodawaj niczego poza tym blokiem.  
+- Między subtopicsStart: i subtopicsEnd: wypisz dokładnie wszystkie podtematy, które zostały użyte, bez pustych linii, procentów i komentarzy.
+- Między noteStart: i noteEnd: napisz notatkę lub streszczenie które powinien wiedzieć i rozumieć żeby rozwiązać zadanie
+
+Przykład poprawnej odpowiedzi:
+Start:
+Treść zadania w jednym bloku, bez nowych linii, komentarzy ani dodatkowych znaków
+End:
+subtopicsStart:
+Definicja równania kwadratowego \(ax^2 + bx + c = 0\)
+Postać ogólna równania kwadratowego $ax^2 + bx + c = 0$
+Rozwiązywanie równań kwadratowych metodą faktoryzacji
+subtopicsEnd:
+noteStart:
+Notatka lub streszczenie przydatne do rozwiązania tego zadania
+noteEnd:
