@@ -54,7 +54,7 @@
 5.8 Równania i nierówności liniowe z parametrami
 5.9 Funkcja liniowa - zastosowania
 
-6. Planimetria
+6. Planimetria – trójkąty i wielokąty
 6.1 Miary kątów w trójkącie
 6.2 Trójkąty przystające
 6.3 Twierdzenie Talesa
@@ -118,7 +118,7 @@
 11.7 Pole trójkąta
 11.8 Pole czworokąta
 
-12. Planimetria
+12. Planimetria – okręgi i czworokąty
 12.1 Okrąg
 12.2 Koło
 12.3 Wzajemne położenie okręgu i prostej

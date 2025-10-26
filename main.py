@@ -21,27 +21,7 @@ import logging
 import sys
 import asyncio
 import random
-from g4f.client import Client
-
-client = Client()
-
-top_models = [
-    "deepseek-v3",   # очень сильная reasoning-модель
-    "gpt-4",
-    "gpt-4.1",       # обновлённый GPT-4 с улучшенным reasoning
-    "gpt-4.5",       # топовая версия GPT-4 (лучше всего для сложных задач)
-    "deepseek-r1",   # ещё более мощная reasoning LLM
-    "deepseek-r1-turbo",  # оптимизированная версия для reasoning
-    "deepseek-v3-0324",  # оптимизированная версия
-    "deepseek-v3-0324-turbo",
-    "deepseek-r1-0528",
-    "deepseek-r1-0528-turbo",
-    "gpt-4o-mini",   # компактнее, но всё ещё хорошо справляется
-    "gpt-4.1-mini",  # более быстрый и дешёвый вариант
-    "gpt-4.1-nano",  # лёгкая версия, но справляется с текстовыми задачами
-    "grok-3",        # от xAI, сильный reasoning
-    "grok-3-r1"      # reasoning-ориентированный Grok
-]
+from openai import OpenAI
 
 logger = logging.getLogger("app_logger")
 logging.basicConfig(
@@ -49,14 +29,19 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(message)s",
     force=True
 )
+
 if not logger.hasHandlers():
     handler = logging.StreamHandler()
     handler.setLevel(logging.INFO)
     logger.addHandler(handler)
+
 logger.setLevel(logging.INFO)
 
 load_dotenv()
 port = int(os.getenv("PORT", 4200))
+api_key = os.environ.get("DEEPSEEK_API_KEY")
+
+client = OpenAI(api_key=api_key, base_url="https://api.deepseek.com")
 
 app = FastAPI()
 
@@ -121,70 +106,31 @@ def fill_placeholders(prompt: str, data: Dict[str, Any]) -> str:
 
 async def request_ai(prompt: str, data: Dict[str, Any], request: Request) -> Optional[str]:
     prompt_filled = fill_placeholders(prompt, data)
-    abort_event = asyncio.Event()
-
-    logger.info("Prompt:\n" + prompt_filled)
-
-    async def monitor_disconnect():
-        while not abort_event.is_set():
-            if await request.is_disconnected():
-                logger.info("Client disconnected, aborting AI call")
-                abort_event.set()
-            await asyncio.sleep(0.1)
-
-    async def call_model(model: str) -> Optional[str]:
-        logger.info(f"Model {model} rozpoczęła przetwarzanie zapytania.")
-
-        if abort_event.is_set():
-            raise HTTPException(status_code=499, detail="Client disconnected")
-
-        try:
-            resp = await asyncio.wait_for(
-                asyncio.to_thread(
-                    lambda: client.chat.completions.create(
-                        model=model,
-                        messages=[{"role": "user", "content": prompt_filled}],
-                        temperature=0,
-                        web_search=False,
-                        stream=False,
-                    )
-                ),
-                timeout=60
-            )
-
-            if abort_event.is_set():
-                raise HTTPException(status_code=499, detail="Client disconnected")
-
-            content = resp.choices[0].message.content.strip()
-
-            logger.info(f"✅ Model {model} zwróciła poprawny wynik.")
-            return content
-
-        except asyncio.TimeoutError:
-            logger.error(f"⏳ Model {model} przekroczyła limit czasu 60s.")
-            await asyncio.sleep(random.uniform(0.5, 1.5))
-            return None
-        except Exception as e:
-            logger.error(f"❌ Model {model} nie powiodła się z błędem: {e}")
-            await asyncio.sleep(random.uniform(0.5, 1.5))
-            return None
-
-    monitor_task = asyncio.create_task(monitor_disconnect())
+    logger.info("Model deepseek-chat started processing request...")
 
     try:
-        for model in top_models:
-            if abort_event.is_set():
-                raise HTTPException(status_code=499, detail="Client disconnected")
+        resp = await asyncio.wait_for(
+            asyncio.to_thread(
+                lambda: client.chat.completions.create(
+                    model="deepseek-chat",
+                    messages=[{"role": "user", "content": prompt_filled}],
+                    temperature=0,
+                    stream=False,
+                )
+            ),
+            timeout=90
+        )
 
-            result = await call_model(model)
-            if result is not None:
-                return result
+        content = resp.choices[0].message.content.strip()
+        logger.info("✅ Model deepseek-chat returned a valid result.")
+        return content
 
-        logger.info("Wszystkie modele nie powiodły się lub nie zwróciły wyniku.")
-        await asyncio.sleep(random.uniform(0.5, 1.5))
+    except asyncio.TimeoutError:
+        logger.error("⏳ Model deepseek-chat timed out after 90 seconds.")
         return None
-    finally:
-        monitor_task.cancel()
+    except Exception as e:
+        logger.error(f"❌ Model deepseek-chat failed with error: {e}")
+        return None
 
 class PromptRequest(BaseModel):
     prompt: str
@@ -227,6 +173,7 @@ class TaskGenerator(BaseModel):
     subject: str
     section: str
     topic: str
+    literature: str
     subtopics: List[List]
     outputSubtopics: List[str]
     difficulty: int
@@ -457,9 +404,6 @@ async def subtopics_generate(data: SubtopicsGenerator, request: Request):
         if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
             return SubtopicsGenerator(**old_data)
 
-        if await request.is_disconnected():
-            raise HTTPException(status_code=499, detail="Client disconnected")
-
         response = await request_ai(old_data['prompt'], old_data, request)
 
         if await request.is_disconnected():
@@ -474,6 +418,9 @@ async def subtopics_generate(data: SubtopicsGenerator, request: Request):
         logger.info(new_data['errors'])
 
         if sorted(new_data['subtopics']) == sorted(old_data['subtopics']) and sorted(previous_errors) == sorted(new_data['errors']):
+            new_data['changed'] = "false"
+
+        if len(new_data['subtopics']) != 0:
             new_data['changed'] = "false"
 
         new_data['attempt'] = new_data['attempt'] + 1
