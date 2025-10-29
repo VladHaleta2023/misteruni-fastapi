@@ -49,21 +49,21 @@
 3.8 Narrative tenses: Past Simple + Past Continuous
 3.9 Narrative tenses: Past Perfect in narratives
 
-4. Vocabulary: Family and Home (A2)
+4. Stories: Family and Home (A2)
 4.1 My family and relatives
 4.2 Daily routines and free time
 4.3 My house and room
 4.4 My neighborhood and community
 4.5 Household chores
 
-5. Vocabulary: Food and Health (A2)
+5. Stories: Food and Health (A2)
 5.1 Meals and eating habits
 5.2 At the restaurant
 5.3 Healthy and unhealthy food
 5.4 Common illnesses and treatments
 5.5 Doing sports and staying fit
 
-6. Vocabulary: School and Learning (A2)
+6. Stories: School and Learning (A2)
 6.1 School life and favorite subjects
 6.2 Teachers and classmates
 6.3 Exams and grades
@@ -97,35 +97,35 @@
 8.11 Modals of deduction & speculation
 8.12 Talking about ability in past/future (can/could, will be able to)
 
-9. Vocabulary: Work and Professions (B1)
+9. Stories: Work and Professions (B1)
 9.1 Jobs and professions
 9.2 Qualities of a good employee
 9.3 Job interview
 9.4 Working conditions
 9.5 Future career plans
 
-10. Vocabulary: Shopping and Money (B1)
+10. Stories: Shopping and Money (B1)
 10.1 At the supermarket
 10.2 Online shopping
 10.3 Advertising and consumerism
 10.4 Customer complaints
 10.5 Saving and spending money
 
-11. Vocabulary: Travel and Holidays (B1)
+11. Stories: Travel and Holidays (B1)
 11.1 Holidays and trips
 11.2 At the airport
 11.3 Hotels and accommodation
 11.4 Sightseeing and monuments
 11.5 Means of transport
 
-12. Vocabulary: Arts, Music, and Literature (B1)
+12. Stories: Arts, Music, and Literature (B1)
 12.1 Music and favorite bands
 12.2 Books and reading
 12.3 Films and cinema
 12.4 Museums and galleries
 12.5 Cultural events and festivals
 
-13. Vocabulary: Fixed Expressions (B1)
+13. Stories: Fixed Expressions (B1)
 13.1 Time expressions
 13.2 Common idioms
 13.3 Functional expressions in conversation
@@ -163,21 +163,21 @@
 15.11 Reported speech & tense sequence
 15.12 Advanced passive forms with participles
 
-16. Vocabulary: Media and Communication (B2)
+16. Stories: Media and Communication (B2)
 16.1 Social networks and online privacy
 16.2 Newspapers and TV
 16.3 Fake news and misinformation
 16.4 Modern communication tools
 16.5 The influence of information
 
-17. Vocabulary: Environment and Nature (B2)
+17. Stories: Environment and Nature (B2)
 17.1 Weather and climate
 17.2 Pollution and recycling
 17.3 Renewable energy
 17.4 Endangered animals
 17.5 Protecting the planet
 
-18. Vocabulary: Society and Volunteering (B2)
+18. Stories: Society and Volunteering (B2)
 18.1 Roles in households and generations
 18.2 Volunteering and charity work
 18.3 Homelessness and poverty
@@ -236,42 +236,42 @@
 22.12 Verb patterns & complements
 22.13 Future time clauses & first conditional
 
-23. Vocabulary: Law and Justice (B2+)
+23. Stories: Law and Justice (B2+)
 23.1 Types of crimes
 23.2 Police and justice system
 23.3 Cybercrime and online safety
 23.4 Punishment and rehabilitation
 23.5 Youth and crime
 
-24. Vocabulary: Science and Technology (B2+)
+24. Stories: Science and Technology (B2+)
 24.1 Important inventions
 24.2 The Internet and digital life
 24.3 Artificial intelligence
 24.4 Space exploration
 24.5 Technology in everyday life
 
-25. Vocabulary: Cultural Heritage and Identity (B2+)
+25. Stories: Cultural Heritage and Identity (B2+)
 25.1 Traditions and customs
 25.2 National and cultural identity
 25.3 Multicultural society
 25.4 Tolerance and stereotypes
 25.5 Festivals and celebrations
 
-26. Vocabulary: Global Economy and Finance (B2+)
+26. Stories: Global Economy and Finance (B2+)
 26.1 Money and banking
 26.2 Entrepreneurship and startups
 26.3 Global trade
 26.4 Work–life balance
 26.5 Advertising and marketing
 
-27. Vocabulary: Politics, Human Rights, and Education (B2+)
+27. Stories: Politics, Human Rights, and Education (B2+)
 27.1 Wars and conflicts
 27.2 Climate change and migration
 27.3 Human rights
 27.4 International cooperation
 27.5 Political systems
 
-28. Vocabulary: Psychology, Skills, and Learning (B2+)
+28. Stories: Psychology, Skills, and Learning (B2+)
 28.1 Emotions and feelings
 28.2 Motivation and goals
 28.3 Social influence and conformity

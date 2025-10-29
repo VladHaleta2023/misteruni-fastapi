@@ -1,0 +1,45 @@
+Przedmiot Typ: Language
+Lexical Typ: Stories
+Grammar Typ: Grammar
+
+======================================================================
+Tekst zadania:
+======================================================================
+
+Jesteś nauczycielem przedmiotu {$subject$} w szkole średniej (liceum lub technikum). Napisz krótkie opowiadanie w języku angielskim, które ma dokładnie 2 akapity. W tekście użyj jak najwięcej elementów gramatyki z listy podtematów, które mają najwyższy procent opanowania oraz pełne tłumaczenie w języku polskim.
+
+Przedmiot: {$subject$}
+Rozdział: {$section$}
+Temat: {$topic$}
+Poziom trudności: {$difficulty$}%
+
+- W tekście opowiadania obowiązkowo użyj elementów gramatyki z listy podtematów, które podano poniżej. Priorytetowo zastosuj te, które mają najwyższy procent opanowania. Procenty są podane po średniku.
+Tematy gramatyki i poziom ich opanowania rozdzielone separatorem ; są:
+{$subtopics$}
+
+Aktualny tekst opowiadania w języku angielskim:
+{$text$}
+
+Aktualne tłumaczenie tekstu opowiadania w języku polskim:
+{$translate$}
+
+Błędy formatowania:
+{$errors$}
+
+Uwaga:
+- Start: i End: muszą być na osobnych liniach, bez spacji ani innych znaków przed lub po nich.
+- Między Start: i End: musi znajdować się tekst opowiadania w języku angielskim jako dwa akapity napisane ciągłym tekstem w jednej linii, bez znaków nowej linii, pustych wierszy czy jakichkolwiek separatorów.
+- Między translateStart: i translateEnd: wypisz pełne tłumaczenie w języku polskim w tej samej strukturze: dwa akapity napisane ciągłym tekstem w jednej linii, bez znaków nowej linii, pustych wierszy czy separatorów.
+- Polskie tłumaczenie musi mieć dokładnie taką samą liczbę zdań w każdym akapicie jak angielski oryginał, a każde zdanie musi odpowiadać treściowo jednemu zdaniu w angielskim tekście. Nie dziel ani nie łącz zdań i zachowaj wszystkie znaki interpunkcyjne dokładnie tak, jak w angielskim oryginale.
+- Nie dodawaj ani pojaśnień, pustych linii, komentarzy.
+- Nie powtarzaj informacji o przedmiocie, rozdziale, temacie ani błędach w odpowiedzi.
+- Tekst w blokach Start, End, translateStart i translateEnd musi być całkowicie w jednej linii, bez nowej linii, pustych wierszy, separatorów lub innych dodatkowych znaków.
+- Nie używaj znaków końca linii w środku tekstu; cały tekst powinien być ciągły.
+
+Przykład poprawnej odpowiedzi:
+Start:
+Yesterday I woke up early because I wanted to go to the park. The sun was shining, and the birds were singing. While I was walking down the street, I saw my friend Anna. She was riding her bike and waving at me. We talked for a few minutes about what we did last weekend. I told her I visited my grandparents, and she said she was studying for an exam all Saturday. Suddenly, it started raining, so we ran to the nearest café and had some coffee together.
+End:
+translateStart:
+Wczoraj obudziłem się wcześnie, ponieważ chciałem pójść do parku. Słońce świeciło, a ptaki śpiewały. Kiedy szedłem ulicą, zobaczyłem moją przyjaciółkę Annę. Jechała na rowerze i machała do mnie. Rozmawialiśmy przez kilka minut o tym, co robiliśmy w zeszły weekend. Powiedziałem jej, że odwiedziłem dziadków, a ona powiedziała, że uczyła się do egzaminu przez całą sobotę. Nagle zaczęło padać, więc pobiegliśmy do najbliższej kawiarni i wypiliśmy razem kawę.
+translateEnd:

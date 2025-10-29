@@ -1,0 +1,2697 @@
+[
+    {
+        "sectionName": "Lektury Starożytności",
+        "topicName": "Mitologia - Jan Parandowski",
+        "literature": "Mitologia - Jan Parandowski"
+    },
+    {
+        "sectionName": "Lektury Biblii",
+        "topicName": "Biblia: Księga Hioba",
+        "literature": "Biblia: Księga Hioba"
+    },
+    {
+        "sectionName": "Lektury Biblii",
+        "topicName": "Biblia: Pieśń nad Pieśniami",
+        "literature": "Biblia: Pieśń nad Pieśniami"
+    },
+    {
+        "sectionName": "Lektury Biblii",
+        "topicName": "Biblia: Księga Psalmów",
+        "literature": "Biblia: Księga Psalmów"
+    },
+    {
+        "sectionName": "Lektury Biblii",
+        "topicName": "Biblia: Apokalipsa św. Jana",
+        "literature": "Biblia: Apokalipsa św. Jana"
+    },
+    {
+        "sectionName": "Biblia w literaturze i kulturze",
+        "topicName": "Historia Abrahama",
+        "literature": "Biblia: Księga Rodzaju"
+    },
+    {
+        "sectionName": "Biblia w literaturze i kulturze",
+        "topicName": "Cierpienie w Biblii",
+        "literature": "Biblia: Księga Hioba"
+    },
+    {
+        "sectionName": "Biblia w literaturze i kulturze",
+        "topicName": "Wiersz o Hiobie z XX wieku",
+        "literature": "Powrót Hioba - Anna Kamieńska"
+    },
+    {
+        "sectionName": "Biblia w literaturze i kulturze",
+        "topicName": "Współczesne nawiązania do Pieśni nad Pieśniami",
+        "literature": "Pejzaż - Edward Stachura\nOdłamałam gałąź miłości"
+    },
+    {
+        "sectionName": "Biblia w literaturze i kulturze",
+        "topicName": "Biblijna wizja końca świata",
+        "literature": "Biblia: Apokalipsa św. Jana"
+    },
+    {
+        "sectionName": "Literatura greków i rzymian",
+        "topicName": "Mit o złotym wieku",
+        "literature": "Mitologia, część I Grecja - Jan Parandowski"
+    },
+    {
+        "sectionName": "Lektury Biblii",
+        "topicName": "Biblia: Księga Rodzaju",
+        "literature": "Biblia: Księga Rodzaju"
+    },
+    {
+        "sectionName": "Biblia w literaturze i kulturze",
+        "topicName": "Miłość nie tylko duchowa",
+        "literature": "Biblia: Pieśń nad Pieśniami"
+    },
+    {
+        "sectionName": "Biblia w literaturze i kulturze",
+        "topicName": "Psalmy inspiracją dla poetów wszystkich czasów",
+        "literature": "Psalm 30 - Czesław Miłosz\nPsalm niedoskonały - Józef Łobodowski\nPsalm Adama - Piotr Matywiecki"
+    },
+    {
+        "sectionName": "Literatura greków i rzymian",
+        "topicName": "Pojedynek bez szans na zwycięstwo",
+        "literature": "Mitologia, część I Grecja (mit o Marsjaszu) - Jan Parandowski\nApollo i Marsjasz - Zbigniew Herbert"
+    },
+    {
+        "sectionName": "Literatura greków i rzymian",
+        "topicName": "Racje Kreona",
+        "literature": "Antygona - Sofokles\nInfografika: Teatr grecki"
+    },
+    {
+        "sectionName": "Średniowiecze",
+        "topicName": "Zło brakiem dobra",
+        "literature": "Wyznania - Święty Augustyn"
+    },
+    {
+        "sectionName": "Średniowiecze",
+        "topicName": "Opowieść o miłości nieszczęśliwej",
+        "literature": "Dzieje Tristana i Izoldy\n[tutaj leży Izold jasnowłosa...] - Halina Poświatowska"
+    },
+    {
+        "sectionName": "Średniowiecze",
+        "topicName": "Średniowieczni w krzywym zwierciadle satyry",
+        "literature": "Rozmowa Mistrza Polikarpa ze Śmiercią\nWywiad - Miron Białoszewski"
+    },
+    {
+        "sectionName": "Średniowiecze",
+        "topicName": "Teologiczna summa średniowiecza",
+        "literature": "Wiara i rozum - Tomasz z Akwinu"
+    },
+    {
+        "sectionName": "Barok",
+        "topicName": "Miłość w wierszach Jana Andrzeja Morsztyna",
+        "literature": "Redivivatus - Jan Andrzej Morsztyn\nNa koszulę brudną - Jan Andrzej Morsztyn"
+    },
+    {
+        "sectionName": "Barok",
+        "topicName": "Słowa wieloznaczne",
+        "literature": "Cuda miłości. Sonet - Jan Andrzej Morsztyn"
+    },
+    {
+        "sectionName": "Barok",
+        "topicName": "Błędny rycerz wśród realiów życia",
+        "literature": "Don Kichot z La Manczy - Miguel de Cervantes Saavedra"
+    },
+    {
+        "sectionName": "Romantyzm – wprowadzenie i poezja",
+        "topicName": "Wielkość i wolność w romantyzmie",
+        "literature": "Wykłady z filozofii dziejów - Wilhelm Friedrich Hegel"
+    },
+    {
+        "sectionName": "Romantyzm – powieść, dramat, poezja polska",
+        "topicName": "Polski arcydramat romantyczny",
+        "literature": "Dziady, część III - Adam Mickiewicz"
+    },
+    {
+        "sectionName": "Romantyzm – powieść, dramat, poezja polska",
+        "topicName": "Romantyczny prometeizm",
+        "literature": "Dziady, część III - Adam Mickiewicz"
+    },
+    {
+        "sectionName": "Romantyzm – powieść, dramat, poezja polska",
+        "topicName": "Współczesne nawiązania do mesjanizmu",
+        "literature": "Klęska - Adam Zagajewski\nIn hora mortis - Wojciech Wencel"
+    },
+    {
+        "sectionName": "Pozytywizm – filozofia, społeczeństwo i postęp",
+        "topicName": "Wiek pary i elektryczności",
+        "literature": "Jakiejcywilizacji Polacy potrzebują - Jerzy Jedlicki\nKilka uwag nad powieścią - Eliza Orzeszkowa\nPleśń społeczna i literacka - Aleksander Świętochowski\nMyi wy - Aleksander Świętochowski\nUtylitaryzm w literaturze - Piotr Chmielowski"
+    },
+    {
+        "sectionName": "Pozytywizm – filozofia, społeczeństwo i postęp",
+        "topicName": "Realizm w powieści",
+        "literature": "Powieść i autorytety - Michał Głowiński"
+    },
+    {
+        "sectionName": "Młoda Polska – dramat, powieść i analiza społeczna",
+        "topicName": "Obraz wsi polskiej",
+        "literature": "Wesele - Stanisław Wyspiański"
+    },
+    {
+        "sectionName": "Lektury Dwudziestolecie Międzywojenne",
+        "topicName": "Szewcy - Stanisław Ignacy Witkiewicz",
+        "literature": "Szewcy - Stanisław Ignacy Witkiewicz"
+    },
+    {
+        "sectionName": "Lektury Renesans",
+        "topicName": "Żywot człowieka poczciwego - Mikołaj Rej",
+        "literature": "Żywot człowieka poczciwego - Mikołaj Rej"
+    },
+    {
+        "sectionName": "Biblia w literaturze i kulturze",
+        "topicName": "Życie, śmierć i los - Księga Koheleta",
+        "literature": "Biblia: Księga Eklezjasty"
+    },
+    {
+        "sectionName": "Młoda Polska – poezja, modernizm i estetyka",
+        "topicName": "Poezja symboli",
+        "literature": "Krzak dzikiej róży w Ciemnych Smreczynach - Jan Kasprowicz\nLiść klonu - Piotr Sommer"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Groteska, awangarda i katastrofizm",
+        "topicName": "Mechanizmy rewolucji",
+        "literature": "Szewcy - Stanisław Ignacy Witkiewicz"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Groteska, awangarda i katastrofizm",
+        "topicName": "Obraz nowoczesnego miasta",
+        "literature": "Ulica Krokodyli - Bruno Schulz"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Groteska, awangarda i katastrofizm",
+        "topicName": "Awangardowa nowoczesność",
+        "literature": "Rzeczywistość Zdegradowana - Artur Sandauer"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Groteska, awangarda i katastrofizm",
+        "topicName": "Groteska w Ferdydurke",
+        "literature": "Ferdydurke - Witold Gombrowicz"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Groteska, awangarda i katastrofizm",
+        "topicName": "Katastrofizm w poezji",
+        "literature": "Legenda, Żal - Józef Czechowicz"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Groteska, awangarda i katastrofizm",
+        "topicName": "Poetyckie obrazy śmierci i przemijania",
+        "literature": "Ballada z tamtej strony - Józef Czechowicz\nFotografia szkolna - Józef Baran"
+    },
+    {
+        "sectionName": "Lektury Biblii",
+        "topicName": "Biblia: Księga Koheleta",
+        "literature": "Biblia: Księga Koheleta"
+    },
+    {
+        "sectionName": "Biblia w literaturze i kulturze",
+        "topicName": "Biblijne źródła kultury europejskiej",
+        "literature": "Rozmowy o Biblii - Anna Świderkówna"
+    },
+    {
+        "sectionName": "Biblia w literaturze i kulturze",
+        "topicName": "Parafraza opowieści biblijnej",
+        "literature": "Ofiarowanie - Gustaw Herling-Grudziński"
+    },
+    {
+        "sectionName": "Literatura greków i rzymian",
+        "topicName": "Siła perswazji",
+        "literature": "Retoryka - Arystoteles\nIliada - Homer"
+    },
+    {
+        "sectionName": "Literatura greków i rzymian",
+        "topicName": "Świat idei i świat realny",
+        "literature": "Jaskinia - Platon\nO urządzeniu państwa - Platon"
+    },
+    {
+        "sectionName": "Literatura greków i rzymian",
+        "topicName": "Horacy jako wychowawca",
+        "literature": "Ojczyzna - okrętem - Horacy\nW stylu Horacego - Josif Brodski"
+    },
+    {
+        "sectionName": "Lektury Średniowiecze",
+        "topicName": "Rozmowa Mistrza Polikarpa ze Śmiercią",
+        "literature": "Rozmowa Mistrza Polikarpa ze Śmiercią"
+    },
+    {
+        "sectionName": "Barok",
+        "topicName": "Sarmata wobec Innego i nieznanego",
+        "literature": "Pamiętniki - Jan Chryzostom Pasek"
+    },
+    {
+        "sectionName": "Romantyzm – wprowadzenie i poezja",
+        "topicName": "Romantyczna wizja natury",
+        "literature": "Cierpienia młodego Wertera - Johann Wolfgang Goethe"
+    },
+    {
+        "sectionName": "Romantyzm – wprowadzenie i poezja",
+        "topicName": "Cierpienie kobiety w Fauście",
+        "literature": "Faust - Johann Wolfgang Goethe"
+    },
+    {
+        "sectionName": "Romantyzm – manifesty, historia, patriotyzm",
+        "topicName": "Miłość romantyczna w popkulturze",
+        "literature": "Z nim będziesz szczęśliwsza - Edward Stachura\nChciałbym umrzeć z miłości - Przemysław Myszor"
+    },
+    {
+        "sectionName": "Romantyzm – powieść, dramat, poezja polska",
+        "topicName": "W kostiumie historycznym",
+        "literature": "Konrad Wallenrod - Adam Mickiewicz"
+    },
+    {
+        "sectionName": "Romantyzm – dylematy i postawy",
+        "topicName": "Dylematy egzystencjalne Kordiana",
+        "literature": "Kordian - Juliusz Słowacki"
+    },
+    {
+        "sectionName": "Romantyzm – dylematy i postawy",
+        "topicName": "Śmierć bohatera romantycznego",
+        "literature": "Kordian - Juliusz Słowacki\nTwój głos - Czesław Miłosz"
+    },
+    {
+        "sectionName": "Pozytywizm – filozofia, społeczeństwo i postęp",
+        "topicName": "Pozytywistka o powstaniu styczniowym",
+        "literature": "Gloria victis - Eliza Orzeszkowa"
+    },
+    {
+        "sectionName": "Pozytywizm – filozofia, społeczeństwo i postęp",
+        "topicName": "Polskie gospodarstwo",
+        "literature": "Nad Niemnem - Eliza Orzeszkowa\nPan Tadeusz - Adam Mickiewicz"
+    },
+    {
+        "sectionName": "Pozytywizm – filozofia, społeczeństwo i postęp",
+        "topicName": "Liryka wyznania",
+        "literature": "Kubek - Maria Konopnicka\nNiekochana - Tomasz Jastrun"
+    },
+    {
+        "sectionName": "Lektury Dwudziestolecie Międzywojenne",
+        "topicName": "Sklepy cynamonowe - Bruno Schulz",
+        "literature": "Sklepy cynamonowe - Bruno Schulz"
+    },
+    {
+        "sectionName": "Lektury Starożytności",
+        "topicName": "Edyp Król - Sofokles",
+        "literature": "Edyp Król - Sofokles"
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – II wojna światowa i okupacja niemiecka",
+        "topicName": "Portret nazisty",
+        "literature": "Rozmowy z katem - Kazimierz Moczarski"
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – II wojna światowa i okupacja niemiecka",
+        "topicName": "Współczesna polszczyzna kolokwialna",
+        "literature": "Styl potoczny - centrum systemu stylowego języka - Jerzy Bartmiński"
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – II wojna światowa i okupacja niemiecka",
+        "topicName": "Partyzanci w poezji",
+        "literature": "Polskie lasy - Stanisław Baliński\nLeśni - Stanisław Grochowiak"
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – II wojna światowa i okupacja niemiecka",
+        "topicName": "Głos pokolenia wojennego",
+        "literature": "Pokolenie - Krzysztof Kamil Baczyński\nTen czas - Krzysztof Kamil Baczyński\nByłeś jak wielkie, stare drzewo… - Krzysztof Kamil Baczyński\nBiała magia - Krzysztof Kamil Baczyński\nNiebo złote ci otworzę… - Krzysztof Kamil Baczyński\nHej, chłopcy, bagnet na broń!… - Krystyna Krahelska"
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – II wojna światowa i okupacja niemiecka",
+        "topicName": "Historiozofia czasów wojny",
+        "literature": "Droga tajemnic - Tadeusz Gajcy\nEpitafium - Tadeusz Gajcy"
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – II wojna światowa i okupacja niemiecka",
+        "topicName": "Los wojennej emigracji",
+        "literature": "Wróć nas do kraju - Kazimierz Wierzyński\nKtokolwiek jesteś bez ojczyzny - Kazimierz Wierzyński"
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – II wojna światowa i okupacja niemiecka",
+        "topicName": "Moralność świadka historii",
+        "literature": "Campo di Fiori - Czesław Miłosz\nBiedny chrześcijanin patrzy na getto - Czesław Miłosz"
+    },
+    {
+        "sectionName": "Literatura Współczesna",
+        "topicName": "Współczesność w refleksji Olgi Tokarczuk",
+        "literature": "Bieguni - Olga Tokarczuk"
+    },
+    {
+        "sectionName": "Literatura Współczesna",
+        "topicName": "Pamięć o Zagładzie",
+        "literature": "Rzeczy, których nie wyrzuciłem - Marcin Wicha"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Totalitaryzm, ironia i fantastyka jako diagnoza świata",
+        "topicName": "Frazeologia w języku",
+        "literature": "Kwadrat mowy o sobie - Miron Białoszewski\nZbiorowe ustalanie charakteru Pani Dokt - Miron Białoszewski\nPrędko prędko! - Miron Białoszewski"
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – II wojna światowa i okupacja niemiecka",
+        "topicName": "Skąd zło?",
+        "literature": "Ucieczka od wolności - Erich Fromm\nPamięć i tożsamość - Jan Paweł II"
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – Sowiecka okupacja, łagry i refleksja nad człowiekiem",
+        "topicName": "Czy można ocalić wartości?",
+        "literature": "U nas w Auschwitzu - Tadeusz Borowski\nInny świat. Zapiski sowieckie - Gustaw Herling-Grudziński"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Świat po wojnie i filozofia egzystencjalna",
+        "topicName": "Absurd życia w filozofii egzystencji",
+        "literature": "Mit Syzyfa - Albert Camus"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Świat po wojnie i filozofia egzystencjalna",
+        "topicName": "Totalitaryzm jako system",
+        "literature": "Rok 1984 - George Orwell"
+    },
+    {
+        "sectionName": "Romantyzm – wprowadzenie i poezja",
+        "topicName": "Tajemniczy buntownik - Giaur Byrona",
+        "literature": "Giaur - George Byron"
+    },
+    {
+        "sectionName": "Romantyzm – powieść, dramat, poezja polska",
+        "topicName": "\"Polały się łzy…\" - wzór lapidarności poezji",
+        "literature": "Polały się łzy… - Adam Mickiewicz\nOczy - Julian Przyboś\n[Zapisy mego czucia…] - Czesław Miłosz"
+    },
+    {
+        "sectionName": "Romantyzm – dylematy i postawy",
+        "topicName": "Lechici i Wenedowie - przedkowie Słowian?",
+        "literature": "Lilla Weneda - Juliusz Słowacki"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Świat po wojnie i filozofia egzystencjalna",
+        "topicName": "Utopia - antyutopia - dystopia",
+        "literature": "Rok 1984 - George Orwell"
+    },
+    {
+        "sectionName": "Literatura Współczesna",
+        "topicName": "Rok 1989 - konsekwencje przełomu politycznego",
+        "literature": "Literatura polska 1976-1998 - Przemysław Czapliński, Piotr Śliwiński"
+    },
+    {
+        "sectionName": "Średniowiecze",
+        "topicName": "Konflikt władzy świeckiej i duchownej",
+        "literature": "Kronika polska - Gall Anonim\nHymn do świętego Stanisława - Wincenty z Kielczy"
+    },
+    {
+        "sectionName": "Oświecenie",
+        "topicName": "Miłość sentymentalna w sielankach Karpińskeigo",
+        "literature": "Laura i Filon - Franciszek Karpiński\nDo Justyny. Tęskność na wiosnę - Franciszek Karpiński"
+    },
+    {
+        "sectionName": "Romantyzm – manifesty, historia, patriotyzm",
+        "topicName": "Romantyczna wrażliwość w czasach wojny",
+        "literature": "Ballady i romanse - Władysław Broniewski\nMoże właśnie teraz warto zacząć - Serhij Żadan"
+    },
+    {
+        "sectionName": "Romantyzm – manifesty, historia, patriotyzm",
+        "topicName": "Kryptologia w Złotym żuku Poego",
+        "literature": "Złoty żuk - Edgar Allan Poe"
+    },
+    {
+        "sectionName": "Romantyzm – manifesty, historia, patriotyzm",
+        "topicName": "Antynomie miłości romantycznej",
+        "literature": "Dziady, część IV - Adam Mickiewicz"
+    },
+    {
+        "sectionName": "Romantyzm – dylematy i postawy",
+        "topicName": "Miłość i obowiązek",
+        "literature": "Lilla Weneda - Juliusz Słowacki\nWiedźmin - Andrzej Sapkowski"
+    },
+    {
+        "sectionName": "Romantyzm – miłość, sztuka i naród",
+        "topicName": "Miłość romantyczna w listach poety",
+        "literature": "List do Delfiny Potockiej - Zygmunt Krasiński\nListy do Jerzego Lubomirskiego - Zygmunt Krasiński"
+    },
+    {
+        "sectionName": "Romantyzm – miłość, sztuka i naród",
+        "topicName": "Dziecko w świecie romantycznych wyobrażeń",
+        "literature": "Nie-Boska komedia - Zygmunt Krasiński"
+    },
+    {
+        "sectionName": "Romantyzm – miłość, sztuka i naród",
+        "topicName": "Rola jednostki w dziejach",
+        "literature": "Bema pamięci żałobny rapsod - Cyprian Norwid"
+    },
+    {
+        "sectionName": "Pozytywizm – filozofia, społeczeństwo i postęp",
+        "topicName": "Koniec pozytywistycznego idealizmu",
+        "literature": "Mendel Gdański - Maria Konopnicka"
+    },
+    {
+        "sectionName": "Lektury Oświecenie",
+        "topicName": "Listy z podróży - Ignacy Krasicki",
+        "literature": "Listy z podróży - Ignacy Krasicki"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Moralność, poezja i codzienność PRL",
+        "topicName": "Rozważania o kondycji człowieka",
+        "literature": "Oeconomia divina - Czesław Miłosz"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Moralność, poezja i codzienność PRL",
+        "topicName": "Moralny kompas w poezji",
+        "literature": "Pan Cogito o postawie wyprostowanej - Zbigniew Herbert"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Moralność, poezja i codzienność PRL",
+        "topicName": "Obowiązki wobec ludzi i arcydzieł",
+        "literature": "Duszyczka - Zbigniew Herbert"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Moralność, poezja i codzienność PRL",
+        "topicName": "Codzienność w poezji",
+        "literature": "Mójtestament śpiącego - Miron Białoszewski\nDo NN*** - Miron Białoszewski\nSzumy, zlepy, ciągi - Miron Białoszewski"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Moralność, poezja i codzienność PRL",
+        "topicName": "Egzystencjalizm w poezji Białoszewskiego",
+        "literature": "Autoportret odczuwany - Miron Białoszewski\nŻycia sam zapach - Miron Białoszewski\nMironczarnia - Miron Białoszewski\nWypisyz morza - Miron Białoszewski"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Groteska, awangarda i katastrofizm",
+        "topicName": "Czym jest groteska?",
+        "literature": "Próba określenia istoty groteskowości - Wolfgang Kayser"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Groteska, awangarda i katastrofizm",
+        "topicName": "Katastroficzna wizja przyszłości",
+        "literature": "Szewcy - Stanisław Ignacy Witkiewicz"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Groteska, awangarda i katastrofizm",
+        "topicName": "Dialog z młodopolską tradycją",
+        "literature": "Szewcy - Stanisław Ignacy Witkiewicz"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Groteska, awangarda i katastrofizm",
+        "topicName": "Mityzacja kobiety w Ptakach",
+        "literature": "Ptaki - Bruno Schulz"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Groteska, awangarda i katastrofizm",
+        "topicName": "Obraz ojca w opowiadaniu Schulza",
+        "literature": "Noc Wielkiego Sezonu - Bruno Schulz"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Groteska, awangarda i katastrofizm",
+        "topicName": "Przemoc symboliczna w Ferdydurke",
+        "literature": "Ferdydurke - Witold Gombrowicz"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Groteska, awangarda i katastrofizm",
+        "topicName": "Nowe pojęcie męskości",
+        "literature": "Ferdydurke - Witold Gombrowicz"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Groteska, awangarda i katastrofizm",
+        "topicName": "Kobieta i jej cierpienie",
+        "literature": "Mistrz i Małgorzata - Michaił Bułhakow"
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – II wojna światowa i okupacja niemiecka",
+        "topicName": "Inna wojna",
+        "literature": "Wojna, projekt nowoczesności - Jerzy Święch"
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – II wojna światowa i okupacja niemiecka",
+        "topicName": "Walka przegranych",
+        "literature": "Alarm - Antoni Słonimski\nPolska Podziemna - Stanisław Baliński"
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – II wojna światowa i okupacja niemiecka",
+        "topicName": "Heroizm w nieludzkim świecie",
+        "literature": "Święty - Jan Józef Szczepański"
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – II wojna światowa i okupacja niemiecka",
+        "topicName": "Codzienność w getcie",
+        "literature": "Zdążyć przed Panem Bogiem - Hanna Krall\nDżem - Etgar Keret"
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – II wojna światowa i okupacja niemiecka",
+        "topicName": "Ciężar wojennych wspomnień",
+        "literature": "Pożegnanie mojej martwej klasy - Irit Amiel"
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – II wojna światowa i okupacja niemiecka",
+        "topicName": "Poetycka rekonstrukcja wartości",
+        "literature": "Lament - Tadeusz Różewicz\nOcalony - Tadeusz Różewicz"
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – II wojna światowa i okupacja niemiecka",
+        "topicName": "Powstanie warszawskie w eseju",
+        "literature": "Kinderszenen - Jarosław Marek Rymkiewicz"
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – Sowiecka okupacja, łagry i refleksja nad człowiekiem",
+        "topicName": "Okupacja sowiecka na Kresach",
+        "literature": "Droga donikąd - Józef Mackiewicz"
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – II wojna światowa i okupacja niemiecka",
+        "topicName": "Pamięć o powstaniu warszawskim",
+        "literature": "Budując barykadę - Anna Świrszczyńska\nPamiętnik z powstania warszawskiego - Miron Białoszewski"
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – Sowiecka okupacja, łagry i refleksja nad człowiekiem",
+        "topicName": "Los polskich jeńców wojennych",
+        "literature": "Na nieludzkiej ziemi - Józef Czapski"
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – Sowiecka okupacja, łagry i refleksja nad człowiekiem",
+        "topicName": "Świadectwo rzeczywistości łagrowej",
+        "literature": "Inny świat. Zapiski sowieckie - Gustaw Herling-Grudziński"
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – Sowiecka okupacja, łagry i refleksja nad człowiekiem",
+        "topicName": "Kryzys Europy",
+        "literature": "Esej dla Kassandry - Jerzy Stempowski"
+    },
+    {
+        "sectionName": "Romantyzm – powieść, dramat, poezja polska",
+        "topicName": "Romantyczny topos ojczyzny - współcześnie",
+        "literature": "Pan Tadeusz - Adam Mickiewicz\nKraj podobny do innych - Ewa Lipska"
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – II wojna światowa i okupacja niemiecka",
+        "topicName": "Historia człowieka - historia wojen",
+        "literature": "Pierwsza przechadzka - Leopold Staff\nRozmowa z Historią - Władysław Broniewski"
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – II wojna światowa i okupacja niemiecka",
+        "topicName": "Zagłada - oczami świadków",
+        "literature": "Pianista - Władysław Szpilman"
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – II wojna światowa i okupacja niemiecka",
+        "topicName": "Obóz - fabryka śmierci",
+        "literature": "Ludzie, którzy szli - Tadeusz Borowski\nProszę państwa do gazu - Tadeusz Borowski"
+    },
+    {
+        "sectionName": "Średniowiecze",
+        "topicName": "Czym jest asceza?",
+        "literature": "Legenda o świętym Aleksym\nMalowani święci - Jan Twardowski"
+    },
+    {
+        "sectionName": "Oświecenie",
+        "topicName": "Filozofia oświecenia",
+        "literature": "Zabobon - Denis Diderot\nPostęp i szczęście ludzkości - Jean-Jacques Rousseau"
+    },
+    {
+        "sectionName": "Oświecenie",
+        "topicName": "Obyczaj sarmacki w krzywym zwierciadle",
+        "literature": "Pijaństwo - Ignacy Krasicki\nW Polskę idziemy - Wojciech Młynarski"
+    },
+    {
+        "sectionName": "Romantyzm – dylematy i postawy",
+        "topicName": "Poeta i śmierć",
+        "literature": "Testament mój - Juliusz Słowacki\nTestament - Taras Szewczenko"
+    },
+    {
+        "sectionName": "Romantyzm – miłość, sztuka i naród",
+        "topicName": "Kiedy umiera geniusz",
+        "literature": "Czarne kwiaty - Cyprian Norwid"
+    },
+    {
+        "sectionName": "Romantyzm – miłość, sztuka i naród",
+        "topicName": "Tragiczna ciągłość losów polskich w XIX i XX w.",
+        "literature": "Pielgrzym - Cyprian Norwid\nGranica - Czesław Miłosz"
+    },
+    {
+        "sectionName": "Pozytywizm – filozofia, społeczeństwo i postęp",
+        "topicName": "Realistyczny obraz społeczeństwa",
+        "literature": "Lalka - Bolesław Prus"
+    },
+    {
+        "sectionName": "Młoda Polska – poezja, modernizm i estetyka",
+        "topicName": "Dekadencka Młoda Polska",
+        "literature": "Dziś - Kazimierz Przerwa-Tetmajer\nKoniec wieku XIX - Kazimierz Przerwa-Tetmajer"
+    },
+    {
+        "sectionName": "Młoda Polska – poezja, modernizm i estetyka",
+        "topicName": "Miłość w Młodej Polsce",
+        "literature": "[Lubię, kiedy kobieta…] - Kazimierz Przerwa-Tetmajer\n[A kiedy będziesz moją żoną…] - Kazimierz Przerwa-Tetmajer"
+    },
+    {
+        "sectionName": "Młoda Polska – poezja, modernizm i estetyka",
+        "topicName": "Kreacyjne właściwości języka",
+        "literature": "Widok ze Świnicy do Doliny Wierchcichej - Kazimierz Przerwa-Tetmajer\nDeszczjesienny - Leopold Staff"
+    },
+    {
+        "sectionName": "Młoda Polska – poezja, modernizm i estetyka",
+        "topicName": "Franciszkańskie widzenie przyrody",
+        "literature": "Pokój wsi - Leopold Staff\nMagdaleno, ciszo polna - Bronisława Ostrowska"
+    },
+    {
+        "sectionName": "Młoda Polska – poezja, modernizm i estetyka",
+        "topicName": "Kult sztuki w modernizmie",
+        "literature": "Dzieje sześciu pojęć - Władysław Tatarkiewicz\nEvviva l'arte! - Kazimierz Przerwa-Tetmajer\n[I ciągle widzę ich twarze…] - Stanisław Wyspiański"
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – Sowiecka okupacja, łagry i refleksja nad człowiekiem",
+        "topicName": "Przeciw wojnie",
+        "literature": "Do przyjaciół - Anna Kamieńska\nWojenka - Lao Che"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Świat po wojnie i filozofia egzystencjalna",
+        "topicName": "Europa po roku 1945",
+        "literature": "Powojnie - Tony Judt"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Świat po wojnie i filozofia egzystencjalna",
+        "topicName": "Powojenna filozofia",
+        "literature": "Egzystencjalizm jest humanizmem - Jean-Paul Sartre"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Świat po wojnie i filozofia egzystencjalna",
+        "topicName": "Epidemia jako parabola",
+        "literature": "Dżuma - Albert Camus"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Świat po wojnie i filozofia egzystencjalna",
+        "topicName": "Problematyka egzystencjalna w Dżumie",
+        "literature": "Dżuma - Albert Camus"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Świat po wojnie i filozofia egzystencjalna",
+        "topicName": "Heroizm wbrew nadziei",
+        "literature": "Dżuma - Albert Camus"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Świat po wojnie i filozofia egzystencjalna",
+        "topicName": "Ocalić wiarę?",
+        "literature": "Dżuma - Albert Camus"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Świat po wojnie i filozofia egzystencjalna",
+        "topicName": "Człowiek w totalitaryzmie",
+        "literature": "Rok 1984 - George Orwell"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Świat po wojnie i filozofia egzystencjalna",
+        "topicName": "Przestrogi dla polityków",
+        "literature": "Do polityka - Czesław Miłosz\nKtóry skrzywdziłeś - Czesław Miłosz"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Świat po wojnie i filozofia egzystencjalna",
+        "topicName": "Propaganda dla polityków",
+        "literature": "Rok 1984 - George Orwell"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Moralność, poezja i codzienność PRL",
+        "topicName": "Poezja o moralności",
+        "literature": "Traktat moralny - Czesław Miłosz"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Moralność, poezja i codzienność PRL",
+        "topicName": "Rozum w służbie prawdy",
+        "literature": "Zaklęcie - Czesław Miłosz\nKiedy księżyc - Czesław Miłosz"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Moralność, poezja i codzienność PRL",
+        "topicName": "Niezgoda na zło",
+        "literature": "Pieśń o bębnie - Zbigniew Herbert\nDawni Mistrzowie - Zbigniew Herbert\nPotęga smaku - Zbigniew Herbert"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Moralność, poezja i codzienność PRL",
+        "topicName": "Etos człowieka myślącego",
+        "literature": "Przesłanie Pana Cogito - Zbigniew Herbert"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Moralność, poezja i codzienność PRL",
+        "topicName": "Prawdy o człowieczeństwie",
+        "literature": "Lascaux - Zbigniew Herbert"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Moralność, poezja i codzienność PRL",
+        "topicName": "Eros i Tanatos",
+        "literature": "[namiętność to jest to] - Halina Poświatowska\n[ptaku mojego serca] - Halina Poświatowska"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Moralność, poezja i codzienność PRL",
+        "topicName": "Poprawność i norma w języku",
+        "literature": "Głowienie - Miron Białoszewski"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Moralność, poezja i codzienność PRL",
+        "topicName": "Życie w blokowisku",
+        "literature": "Wiersze baby z bloku - Miron Białoszewski"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Moralność, poezja i codzienność PRL",
+        "topicName": "Idea władzy w dramacie Mrożka",
+        "literature": "Tango - Sławomir Mrożek"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Moralność, poezja i codzienność PRL",
+        "topicName": "Dyskusja z tradycją romantyczną",
+        "literature": "Tango - Sławomir Mrożek"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Totalitaryzm, ironia i fantastyka jako diagnoza świata",
+        "topicName": "Surrealistyczny obraz komunizmu",
+        "literature": "Kronika oblężonego miasta - Sławomir Mrożek"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Totalitaryzm, ironia i fantastyka jako diagnoza świata",
+        "topicName": "Totalitaryzm alegorycznie",
+        "literature": "Lolo - Sławomir Mrożek"
+    },
+    {
+        "sectionName": "Literatura Współczesna",
+        "topicName": "Życie bez nadziei",
+        "literature": "Antygona w Nowym Jorku - Janusz Głowacki"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Totalitaryzm, ironia i fantastyka jako diagnoza świata",
+        "topicName": "Przeciw zafałszowaniu języka i świata",
+        "literature": "Spójrzmy prawdzie w oczy - Stanisław Barańczak\nCo jest grane - Stanisław Barańczak"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Totalitaryzm, ironia i fantastyka jako diagnoza świata",
+        "topicName": "Poezja lingwistyczna Stanisława Barańczaka",
+        "literature": "Określona epoka - Stanisław Barańczak\nZa czym państwo stoją - Stanisław Barańczak"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Totalitaryzm, ironia i fantastyka jako diagnoza świata",
+        "topicName": "Surrealizm i groteska w Małej Apokalipsie",
+        "literature": "Mała Apokalipsa - Tadeusz Konwicki"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Totalitaryzm, ironia i fantastyka jako diagnoza świata",
+        "topicName": "Skarlałe społeczeństwo",
+        "literature": "Mała Apokalipsa - Tadeusz Konwicki"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Totalitaryzm, ironia i fantastyka jako diagnoza świata",
+        "topicName": "Miłość niemożliwa w skolonizowanym świecie",
+        "literature": "Mała Apokalipsa - Tadeusz Konwicki"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Totalitaryzm, ironia i fantastyka jako diagnoza świata",
+        "topicName": "Stan wojenny w prozie",
+        "literature": "Porządnyczłowiek - Marek Nowakowski"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Totalitaryzm, ironia i fantastyka jako diagnoza świata",
+        "topicName": "Poetycka parabola Zbigniewa Herberta",
+        "literature": "Raport z oblężonego Miasta - Zbigniew Herbert"
+    },
+    {
+        "sectionName": "Romantyzm – miłość, sztuka i naród",
+        "topicName": "O misji pisarza - krytycznie",
+        "literature": "Trans-Atlantyk - Witold Gombrowicz"
+    },
+    {
+        "sectionName": "Lektury Pozytywizm",
+        "topicName": "Potop - Henryk Sienkiewicz",
+        "literature": "Potop - Henryk Sienkiewicz"
+    },
+    {
+        "sectionName": "Młoda Polska – poezja, modernizm i estetyka",
+        "topicName": "Sonia Marmieładowa - grzesznica i święta",
+        "literature": "Zbrodnia i kara - Fiodor Dostojewski"
+    },
+    {
+        "sectionName": "Oświecenie",
+        "topicName": "Renesans, barok i klasycyzm w sztuce",
+        "literature": ""
+    },
+    {
+        "sectionName": "Romantyzm – miłość, sztuka i naród",
+        "topicName": "Romantyczna synteza sztuk",
+        "literature": "Sztuka - Theophille Gautier"
+    },
+    {
+        "sectionName": "Pozytywizm – bohaterowie, miłość i realistyczna powieść",
+        "topicName": "Topos theatrum mundi",
+        "literature": "O żywocie ludzkim - Jak Kochanowski\nLalka - Bolesław Prus"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Groteska, awangarda i katastrofizm",
+        "topicName": "Surrealizm w kinie",
+        "literature": ""
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Totalitaryzm, ironia i fantastyka jako diagnoza świata",
+        "topicName": "Stan wojenny w ujęciu satyrycznym",
+        "literature": "Wybuch stanu - Miron Białoszewski\nPiosenka Kici Koci do stanu wojennego - Miron Białoszewski\n3 maj - Miron Białoszewski"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Totalitaryzm, ironia i fantastyka jako diagnoza świata",
+        "topicName": "Stan wojenny w oczach Zachodu",
+        "literature": "Profesor Andrews w Warszawie - Olga Tokarczuk"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Totalitaryzm, ironia i fantastyka jako diagnoza świata",
+        "topicName": "W świecie fantastyki naukowej",
+        "literature": "Wizja lokalna - Stanisław Lem"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Totalitaryzm, ironia i fantastyka jako diagnoza świata",
+        "topicName": "Powieść science fiction jako parabola",
+        "literature": "Wizja lokalna - Stanisław Lem"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Totalitaryzm, ironia i fantastyka jako diagnoza świata",
+        "topicName": "Możliwe społeczeństwa przyszłości",
+        "literature": "Wizja lokalna - Stanisław Lem"
+    },
+    {
+        "sectionName": "Młoda Polska – poezja, modernizm i estetyka",
+        "topicName": "Młoda Polska - początki modernizmu",
+        "literature": "Legenda Młodej Polski - Stanisław Brzozowski"
+    },
+    {
+        "sectionName": "Literatura greków i rzymian",
+        "topicName": "Sąd Parysa i jego konsekwencje",
+        "literature": "Mitologia Greków i Rzymian - Zygmunt Kubiak"
+    },
+    {
+        "sectionName": "Literatura greków i rzymian",
+        "topicName": "Miłość silniejsza niż śmierć",
+        "literature": "Przechadzka z Orfeuszem - Jacek Kaczmarski"
+    },
+    {
+        "sectionName": "Literatura greków i rzymian",
+        "topicName": "Walka i wojna w Iliadzie",
+        "literature": "Iliada (Pieśń XXII) - Homer"
+    },
+    {
+        "sectionName": "Literatura greków i rzymian",
+        "topicName": "Pycha i przebaczenie w Iliadzie",
+        "literature": "Iliada (Pieśń XXIV) - Homer"
+    },
+    {
+        "sectionName": "Literatura greków i rzymian",
+        "topicName": "Wędrówka w Odysei Homera",
+        "literature": "Odyseja - Homer\nOdys - Leopold Staff"
+    },
+    {
+        "sectionName": "Literatura greków i rzymian",
+        "topicName": "Tragedia i tragizm",
+        "literature": "Poetyka - Arystoteles\nTragedia attycka - Janusz Misiewicz"
+    },
+    {
+        "sectionName": "Literatura greków i rzymian",
+        "topicName": "Racje Antygony",
+        "literature": "Antygona - Sofokles"
+    },
+    {
+        "sectionName": "Literatura greków i rzymian",
+        "topicName": "Mądrość w krzywym zwierciadle",
+        "literature": "Chmury - Arystofanes"
+    },
+    {
+        "sectionName": "Literatura greków i rzymian",
+        "topicName": "Herodot czytany przez Kapuścińskiego",
+        "literature": "Podróże z Herodotem - Ryszard Kapuściński"
+    },
+    {
+        "sectionName": "Literatura greków i rzymian",
+        "topicName": "Filozofia sztuką życia",
+        "literature": "Obrona Sokratesa - Platon"
+    },
+    {
+        "sectionName": "Literatura greków i rzymian",
+        "topicName": "Heroizm i miłość w Eneidzie",
+        "literature": "Eneida - Wergiliusz"
+    },
+    {
+        "sectionName": "Literatura greków i rzymian",
+        "topicName": "Epikurejskie carpe diem",
+        "literature": "Do Leukonoe - Horacy"
+    },
+    {
+        "sectionName": "Literatura greków i rzymian",
+        "topicName": "Stoicyzm Horacego",
+        "literature": "Do Mecenasa - Horacy\nDo Pompejusza Grosfusa - Horacy"
+    },
+    {
+        "sectionName": "Literatura greków i rzymian",
+        "topicName": "Poeta natchniony",
+        "literature": "Wzniosłem pomnik - Horacy"
+    },
+    {
+        "sectionName": "Literatura greków i rzymian",
+        "topicName": "Język oficjalny i nieoficjalny",
+        "literature": "Gwara młodzieżowa - Ewa Baniecka"
+    },
+    {
+        "sectionName": "Lektury Średniowiecze",
+        "topicName": "Bogurodzica",
+        "literature": "Bogurodzica"
+    },
+    {
+        "sectionName": "Lektury Średniowiecze",
+        "topicName": "Lament świętokrzyski",
+        "literature": "Lament świętokrzyski"
+    },
+    {
+        "sectionName": "Lektury Średniowiecze",
+        "topicName": "Legenda o św. Aleksym",
+        "literature": "Legenda o św. Aleksym"
+    },
+    {
+        "sectionName": "Lektury Średniowiecze",
+        "topicName": "Kwiatki św. Franciszka z Asyżu",
+        "literature": "Kwiatki św. Franciszka z Asyżu"
+    },
+    {
+        "sectionName": "Lektury Średniowiecze",
+        "topicName": "Pieśń o Rolandzie",
+        "literature": "Pieśń o Rolandzie"
+    },
+    {
+        "sectionName": "Średniowiecze",
+        "topicName": "Tysiąc lat kultury średniowiecza",
+        "literature": "Kultura średniowiecznej Europy - Jacques Le Goff"
+    },
+    {
+        "sectionName": "Średniowiecze",
+        "topicName": "Trwałość i zmiana w języku",
+        "literature": "Język Bogurodzicy wczesnośredniowieczny czy późnośredniowieczny"
+    },
+    {
+        "sectionName": "Średniowiecze",
+        "topicName": "Średniowieczny wzór rycerza",
+        "literature": "Pieśń o Rolandzie"
+    },
+    {
+        "sectionName": "Średniowiecze",
+        "topicName": "Średniowieczny wzór władcy",
+        "literature": "Kronika polska - Gall Anonim"
+    },
+    {
+        "sectionName": "Średniowiecze",
+        "topicName": "Święty a świat",
+        "literature": "Kwiatki świętego Franciszka z Asyżu"
+    },
+    {
+        "sectionName": "Średniowiecze",
+        "topicName": "Symbolika miłości",
+        "literature": "Dzieje Tristana i Izoldy"
+    },
+    {
+        "sectionName": "Średniowiecze",
+        "topicName": "Poetycki traktat teologiczny",
+        "literature": "Bogurodzica"
+    },
+    {
+        "sectionName": "Literatura greków i rzymian",
+        "topicName": "Źródła literatury - antyk",
+        "literature": "Poetyka - Arystoteles\n[Wydaje mi się samym bogom równy] - Safona\nRzecz to piękna... - Tyrtajos"
+    },
+    {
+        "sectionName": "Średniowiecze",
+        "topicName": "Średniowieczna mowa uczuć",
+        "literature": "Lament świętokrzyski"
+    },
+    {
+        "sectionName": "Średniowiecze",
+        "topicName": "Język jako system znaków",
+        "literature": "Język zbiorem znaków - Jan Parandowski"
+    },
+    {
+        "sectionName": "Średniowiecze",
+        "topicName": "Poetycka summa średniowiecza",
+        "literature": "Boska komedia - Dante Alighieri"
+    },
+    {
+        "sectionName": "Średniowiecze",
+        "topicName": "Średniowieczna wizja zaświatów",
+        "literature": "Boska komedia. Piekło (Pieśń IV) - Dante Alighieri\nBoska komedia. Piekło (Pieśń III) - Dante Alighieri\nBrama - Tadeusz Różewicz"
+    },
+    {
+        "sectionName": "Średniowiecze",
+        "topicName": "Sztuka i architektura średniowiecza",
+        "literature": "Widzenie katedry w Chartres - Julian Przyboś"
+    },
+    {
+        "sectionName": "Średniowiecze",
+        "topicName": "Katedra fantastyczna",
+        "literature": "Katedra - Jacek Dukaj"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Treny jako cykl poetycki",
+        "literature": ""
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Renesansowy klasycyzm",
+        "literature": "[Niezwykłym i nie leda piórem opatrzony…] - Jan Kochanowski\nPrzedśpiew - Leopold Staff"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Humanista i obywatel w Pieśniach",
+        "literature": "Pieśń o dobrej sławie - Jan Kochanowski\nPieśń o cnocie - Jan Kochanowski"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Polska wieś arkadią",
+        "literature": "Pieśń świętojańska o sobótce (Panna XII) - Jan Kochanowski"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Nowożytna tragedia Jana Kochanowskiego",
+        "literature": "Odprawa posłów greckich - Jan Kochanowski"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Refleksja o państwie",
+        "literature": "Odprawa posłów greckich - Jan Kochanowski"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Skuteczność jako cnota",
+        "literature": "Książe - Niccolo Machiavelli"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Rzeczpospolita idealna",
+        "literature": "O poprawie Rzeczypospolitej - Andrzej Frycz Modrzewski"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Miłość w noweli doskonałej",
+        "literature": "Sokół - Giovanni Boccaccio"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Gra ze średniowieczną tradycją",
+        "literature": "Gargantua i Pantagruel - Francois Rabelais"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Retoryka dyskusji",
+        "literature": "Odprawa posłów greckich - Jan Kochanowski"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Renesansowe małżeństwo doskonałe",
+        "literature": "Zywot człowieka poczciwego - Mikołaj Rej\nMoże będzie lepiej - Ewa Lipska"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Renesansowy wzór gospodarza",
+        "literature": "Żywot człowieka poczciwego - Mikołaj Rej"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Optymizm humanisty",
+        "literature": "[Serce roście, patrząc na te czasy…] - Jan Kochanowski\n[Chcemy sobie być radzi…] - Jan Kochanowski"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Wdzięczność i ufność w psalmach",
+        "literature": "Psalm 47 - Jan Kochanowski\nPsalm 91 - Jan Kochanowski"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Poezja wobec straty",
+        "literature": "Tren IX - Jan Kochanowski"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Stoicyzm zaprzeczony",
+        "literature": "Tren XI - Jan Kochanowski\nTren XVI - Jan Kochanowski"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Rozterki religijne w Trenach",
+        "literature": "Tren X - Jan Kochanowski\nTren XIX albo Sen - Jan Kochanowski"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Inspiracje Trenami w poezji XX wieku",
+        "literature": "[Samotność twoją i twoje zachody…] - Jerzy Liebert\nBratek - Władysław Broniewski"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Kobieta doskonała w poezji renesansu",
+        "literature": "Sonet 85 - Francesco Petrarka\nSonet 61 - Francesco Petrarka, \n[Srogie łańcuchy na swym sercu czuję…] - Jan Kochanowski\n[Nie zawżdy, piękna Zofija…] - Jan Kochanowski"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Dramat społeczny",
+        "literature": "Tragedia Romea i Julii - William Szekspir"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Psychologia i język miłości",
+        "literature": "Tragedia Romea i Julii - William Szekspir"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Etyka wypowiedzi",
+        "literature": "Tragedia Romea i Julii - William Szekspir"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Patriotyzm wobec zagrożenia ojczyzny",
+        "literature": "Kazania sejmowe - Piotr Skarga"
+    },
+    {
+        "sectionName": "Pozytywizm – bohaterowie, miłość i realistyczna powieść",
+        "topicName": "Stylistyczne zróżnicowanie polszczyzny",
+        "literature": "Rosjanie w Warszawie - Agata Tuszyńska"
+    },
+    {
+        "sectionName": "Pozytywizm – bohaterowie, miłość i realistyczna powieść",
+        "topicName": "Współczesny reportaż historyczny",
+        "literature": "Wyspa klucz - Małgorzata Szejnert"
+    },
+    {
+        "sectionName": "Pozytywizm – bohaterowie, miłość i realistyczna powieść",
+        "topicName": "Andrzej Kmicic a Jacek Soplica",
+        "literature": "Potop - Henryk Sienkiewicz\nPan Tadeusz - Adam Mickiewicz"
+    },
+    {
+        "sectionName": "Pozytywizm – bohaterowie, miłość i realistyczna powieść",
+        "topicName": "Realizm i komizm w teatrze",
+        "literature": "Pani Bovary - Gustave Flaubert"
+    },
+    {
+        "sectionName": "Pozytywizm – bohaterowie, miłość i realistyczna powieść",
+        "topicName": "Obraz prowincji w powieści Flauberta",
+        "literature": "Pani Bovary - Gustave Flaubert"
+    },
+    {
+        "sectionName": "Młoda Polska – poezja, modernizm i estetyka",
+        "topicName": "Mowa wtajemniczonych",
+        "literature": "Oddźwięki - Charles Baudelaire\nPowinowactwo cieni i kwiatów o zmierzchu - Wincenty Korab-Brzozowski"
+    },
+    {
+        "sectionName": "Młoda Polska – dramat, powieść i analiza społeczna",
+        "topicName": "Inteligencja w Weselu",
+        "literature": "Wesele - Stanisław Wyspiański"
+    },
+    {
+        "sectionName": "Młoda Polska – dramat, powieść i analiza społeczna",
+        "topicName": "Wesele w adaptacji filmowej",
+        "literature": "Wesele - Stanisław Wyspiański"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Totalitaryzm, ironia i fantastyka jako diagnoza świata",
+        "topicName": "Czy zło może przestać istnieć?",
+        "literature": "Wizja lokalna - Stanisław Lem"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Totalitaryzm, ironia i fantastyka jako diagnoza świata",
+        "topicName": "Esej autobiograficzny",
+        "literature": "Dziennik pisany nocą - Gustaw Herling-Grudziński"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Totalitaryzm, ironia i fantastyka jako diagnoza świata",
+        "topicName": "W cieniu możliwej zagłady",
+        "literature": "Dziennik pisany nocą - Gustaw Herling-Grudziński"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Totalitaryzm, ironia i fantastyka jako diagnoza świata",
+        "topicName": "Samotność i cierpienie człowieka",
+        "literature": "Wieża - Gustaw Herling-Grudziński"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Esej u źródeł gatunku",
+        "literature": "Próby - Michel de Montaigne"
+    },
+    {
+        "sectionName": "Młoda Polska – dramat, powieść i analiza społeczna",
+        "topicName": "Jak powstawało Wesele",
+        "literature": "Plotka o Weselu - Tadeusz Boy-Żeleński\nWesele - Stanisław Wyspiański"
+    },
+    {
+        "sectionName": "Młoda Polska – dramat, powieść i analiza społeczna",
+        "topicName": "Historia w mit przekształcona",
+        "literature": "Noc listopadowa - Stanisław Wyspiański"
+    },
+    {
+        "sectionName": "Młoda Polska – dramat, powieść i analiza społeczna",
+        "topicName": "Zło w Chłopach",
+        "literature": "Chłopi (tom I Jesień) - Władysław Stanisław Reymont"
+    },
+    {
+        "sectionName": "Młoda Polska – dramat, powieść i analiza społeczna",
+        "topicName": "Dialektyzacja w literaturze",
+        "literature": "Chłopi (tom I Jesień) - Władysław Stanisław Reymont"
+    },
+    {
+        "sectionName": "Młoda Polska – dramat, powieść i analiza społeczna",
+        "topicName": "Czym jest dulszczyzna",
+        "literature": "Moralność pani Dulskiej - Gabriela Zapolska"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Początki epoki i przemiany społeczne",
+        "topicName": "Rewolucja i jej skutki",
+        "literature": "Przedwiośnie - Stefan Żeromski"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Skamander, awangarda i proza psychologiczna",
+        "topicName": "Skamandryci wobec tradycji",
+        "literature": "Do krytyków - Julian Tuwim \nHerostrates - Jan Lechoń"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Skamander, awangarda i proza psychologiczna",
+        "topicName": "Tęsknota za młodzieńczą miłością",
+        "literature": "Przyokrągłym stole - Julian Tuwim"
+    },
+    {
+        "sectionName": "Literatura Współczesna",
+        "topicName": "Doświadczenie egzystencjalne w poezji",
+        "literature": "Wczesna godzina - Wisława Szymborska"
+    },
+    {
+        "sectionName": "Literatura Współczesna",
+        "topicName": "Poetycka refleksja nad stratą",
+        "literature": "Wszelki wypadek - Wisława Szymborska"
+    },
+    {
+        "sectionName": "Literatura Współczesna",
+        "topicName": "Pożegnania Tadeusza Różewicza",
+        "literature": "Ojciec - Tadeusz Różewicz"
+    },
+    {
+        "sectionName": "Literatura Współczesna",
+        "topicName": "Ludzie zbędni i wykluczeni",
+        "literature": "Antygona w Nowym Jorku - Janusz Głowacki"
+    },
+    {
+        "sectionName": "Literatura Współczesna",
+        "topicName": "Uczniowski bunt przeciw opresji",
+        "literature": "Madame - Antoni Libera"
+    },
+    {
+        "sectionName": "Literatura Współczesna",
+        "topicName": "Tożsamość i wolność jednostki",
+        "literature": "Madame - Antoni Libera"
+    },
+    {
+        "sectionName": "Literatura Współczesna",
+        "topicName": "Miłość jako temat egzystencjalny",
+        "literature": "Madame - Antoni Libera"
+    },
+    {
+        "sectionName": "Literatura Współczesna",
+        "topicName": "Miejsca zmieniane przez czas",
+        "literature": "Miejsce - Andrzej Stasiuk"
+    },
+    {
+        "sectionName": "Literatura Współczesna",
+        "topicName": "Polska prowincja w okresie przemian",
+        "literature": "Władek - Andrzej Stasiuk"
+    },
+    {
+        "sectionName": "Literatura Współczesna",
+        "topicName": "Początki nowego kapitalizmu w Polsce",
+        "literature": "Górą Edek - Marek Nowakowski"
+    },
+    {
+        "sectionName": "Literatura Współczesna",
+        "topicName": "Nowe media",
+        "literature": "Komunikacja językowa w Internecie - Jan Grzenia"
+    },
+    {
+        "sectionName": "Literatura Współczesna",
+        "topicName": "Fenomen podróży",
+        "literature": "Bieguni - Olga Tokarczuk"
+    },
+    {
+        "sectionName": "Literatura Współczesna",
+        "topicName": "Odkrywanie świata",
+        "literature": "Bieguni - Olga Tokarczuk"
+    },
+    {
+        "sectionName": "Literatura Współczesna",
+        "topicName": "Współczesny los książek",
+        "literature": "Rzeczy, których nie wyrzuciłem - Marcin Wicha"
+    },
+    {
+        "sectionName": "Literatura Współczesna",
+        "topicName": "Polityka w domach",
+        "literature": "Rzeczy, których nie wyrzuciłem - Marcin Wicha"
+    },
+    {
+        "sectionName": "Literatura Współczesna",
+        "topicName": "O miłości i żalu",
+        "literature": "Trzydziesta noc - Mariusz Szczygieł"
+    },
+    {
+        "sectionName": "Literatura Współczesna",
+        "topicName": "Biblioteki pamięci i zapomnienia",
+        "literature": "Ubytkowanie - Mariusz Szczygieł"
+    },
+    {
+        "sectionName": "Literatura Współczesna",
+        "topicName": "Świat popkultury",
+        "literature": "Walentynki (poemat z końca XX wieku) - Tadeusz Różewicz"
+    },
+    {
+        "sectionName": "Lektury Starożytności",
+        "topicName": "Iliada - Homer",
+        "literature": "Iliada - Homer"
+    },
+    {
+        "sectionName": "Lektury Starożytności",
+        "topicName": "Odyseja - Homer",
+        "literature": "Odyseja - Homer"
+    },
+    {
+        "sectionName": "Lektury Starożytności",
+        "topicName": "Antygona - Sofokles",
+        "literature": "Antygona - Sofokles"
+    },
+    {
+        "sectionName": "Literatura greków i rzymian",
+        "topicName": "Mity - opowieści o człowieku i świecie",
+        "literature": "Mity - Brian Greene\nCzym jest mit? - Karen Armstrong"
+    },
+    {
+        "sectionName": "Biblia w literaturze i kulturze",
+        "topicName": "Biblia - dokument i opowieść",
+        "literature": "Biblia między mitem a historią - Anna Świderkówna"
+    },
+    {
+        "sectionName": "Biblia w literaturze i kulturze",
+        "topicName": "Świat poezji biblijnej - psalmy",
+        "literature": "Biblia: Psalm 13\nBiblia: Psalm 47"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Moralność, poezja i codzienność PRL",
+        "topicName": "Poświatowska - kaskaderka miłości",
+        "literature": "[Jestem Julią…] - Halina Poświatowska\nKoniugacja - Halina Poświatowska"
+    },
+    {
+        "sectionName": "Literatura greków i rzymian",
+        "topicName": "Antygona - tragedia wzorcowa",
+        "literature": "Antygona - Sofokles"
+    },
+    {
+        "sectionName": "Literatura greków i rzymian",
+        "topicName": "Ewolucja eposu - Eneida Wergiliusza",
+        "literature": "Eneida - Wergiliusz"
+    },
+    {
+        "sectionName": "Lektury Średniowiecze",
+        "topicName": "Kronika Polska - Gall Anonim",
+        "literature": "Kronika Polska - Gall Anonim"
+    },
+    {
+        "sectionName": "Średniowiecze",
+        "topicName": "Franciszkanizm - kontynuacje i nawiązania",
+        "literature": "Hymn - Święty Franciszek z Asyżu\nLaudato si' - Papież Franciszek"
+    },
+    {
+        "sectionName": "Średniowiecze",
+        "topicName": "W poszukiwaniu Boga - Siódma pieczęć",
+        "literature": "Biblia: Apokalipsa św. Jana"
+    },
+    {
+        "sectionName": "Lektury Renesans",
+        "topicName": "Treny - Jan Kochanowski",
+        "literature": "Treny - Jan Kochanowski"
+    },
+    {
+        "sectionName": "Lektury Renesans",
+        "topicName": "Pieśni - Jan Kochanowski",
+        "literature": "Pieśni - Jan Kochanowski"
+    },
+    {
+        "sectionName": "Lektury Renesans",
+        "topicName": "Fraszki - Jan Kochanowski",
+        "literature": "Fraszki - Jan Kochanowski"
+    },
+    {
+        "sectionName": "Średniowiecze",
+        "topicName": "Bogurodzica - pierwszy polski hymn",
+        "literature": "Bogurodzica"
+    },
+    {
+        "sectionName": "Średniowiecze",
+        "topicName": "Danse macabre - taniec ze śmiercią",
+        "literature": "Rozmowa Mistrza Polikarpa ze Śmiercią"
+    },
+    {
+        "sectionName": "Lektury Renesans",
+        "topicName": "Odprawa posłów greckich - Jan Kochanowski",
+        "literature": "Odprawa posłów greckich - Jan Kochanowski"
+    },
+    {
+        "sectionName": "Lektury Romantyzm",
+        "topicName": "Nie-Boska komedia - Zygmunt Krasiński",
+        "literature": "Nie-Boska komedia - Zygmunt Krasiński"
+    },
+    {
+        "sectionName": "Młoda Polska – dramat, powieść i analiza społeczna",
+        "topicName": "Naturalizm w opowiadaniu",
+        "literature": "Rozdziobią nas kruki, wrony… - Stefan Żeromski"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Początki epoki i przemiany społeczne",
+        "topicName": "Klasycyzm w poezji Leopolda Staffa",
+        "literature": "Wysokie drzewa, Ars poetica - Leopold Staff"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Skamander, awangarda i proza psychologiczna",
+        "topicName": "Starość i śmierć w prozie międzywojnia",
+        "literature": "Noce i dnie - Maria Dabrowska\nGranica - Zofia Nałkowska"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Początki epoki i przemiany społeczne",
+        "topicName": "Dom i bezdomność w poezji",
+        "literature": "[Daleko pójdę, z daleka wrócę…] - Leopold Staff\nAutobiografia - Bohdan Ihor Antonycz"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Pieśń o spustoszeniu Podola - liryka apelu",
+        "literature": "Pieśń o spustoszeniu Podola - Jan Kochanowski"
+    },
+    {
+        "sectionName": "Lektury Renesans",
+        "topicName": "Romeo i Julia - William Szekspir",
+        "literature": "Romeo i Julia - William Szekspir"
+    },
+    {
+        "sectionName": "Lektury Renesans",
+        "topicName": "Hamlet - William Szekspir",
+        "literature": "Hamlet - William Szekspir"
+    },
+    {
+        "sectionName": "Lektury Renesans",
+        "topicName": "Makbet - William Szekspir",
+        "literature": "Makbet - William Szekspir"
+    },
+    {
+        "sectionName": "Lektury Średniowiecze",
+        "topicName": "Boska komedia - Dante Alighieri",
+        "literature": "Boska komedia - Dante Alighieri"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Człowiek w centrum - filozofia renesansu",
+        "literature": "O godności człowieka - Giovanni Pico della Mirandola"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Odrodzenie - nowa interpretacja antyku",
+        "literature": "Człowiek renesansu - Eugenio Garin"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Utopia - groźny ideał?",
+        "literature": "Utopia - Thomas More"
+    },
+    {
+        "sectionName": "Renesans",
+        "topicName": "Bóg niewidzialny - psałterz Kochanowskiego",
+        "literature": "Psalm 13 - Jan Kochanowski"
+    },
+    {
+        "sectionName": "Lektury Romantyzm",
+        "topicName": "Dziady cz. III - Adam Mickiewicz",
+        "literature": "Dziady cz. III - Adam Mickiewicz"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Totalitaryzm, ironia i fantastyka jako diagnoza świata",
+        "topicName": "PRL - ironicznie",
+        "literature": "Utopia - Wisława Szymborska\nGłos w sprawie pornografii - Wisława Szymborska"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Totalitaryzm, ironia i fantastyka jako diagnoza świata",
+        "topicName": "Realny socjalizm - śmieszny czy groźny?",
+        "literature": "Mała Apokalipsa - Tadeusz Konwicki"
+    },
+    {
+        "sectionName": "Lektury Dwudziestolecie Międzywojenne",
+        "topicName": "Przedwiośnie - Stefan Żeromski",
+        "literature": "Przedwiośnie - Stefan Żeromski"
+    },
+    {
+        "sectionName": "Literatura Współczesna",
+        "topicName": "Antygona w Nowym Jorku - gra z tradycją",
+        "literature": "Antygona w Nowym Jorku - Janusz Głowacki"
+    },
+    {
+        "sectionName": "Literatura Współczesna",
+        "topicName": "Oblicze ojca i oblicze miasta - nowe terytoria",
+        "literature": "Jerzy Szczygieł w Pradze - Mariusz Szczygieł"
+    },
+    {
+        "sectionName": "Lektury Barok",
+        "topicName": "Kazania sejmowe - Piotr Skarga",
+        "literature": "Kazania sejmowe - Piotr Skarga"
+    },
+    {
+        "sectionName": "Lektury Oświecenie",
+        "topicName": "Hymn do miłości ojczyzny - Ignacy Krasicki",
+        "literature": "Hymn do miłości ojczyzny - Ignacy Krasicki"
+    },
+    {
+        "sectionName": "Lektury Oświecenie",
+        "topicName": "Fables - Ignacy Krasicki",
+        "literature": "Fables - Ignacy Krasicki"
+    },
+    {
+        "sectionName": "Lektury Romantyzm",
+        "topicName": "Ballady i romanse - Adam Mickiewicz",
+        "literature": "Ballady i romanse - Adam Mickiewicz"
+    },
+    {
+        "sectionName": "Lektury Romantyzm",
+        "topicName": "Konrad Wallenrod - Adam Mickiewicz",
+        "literature": "Konrad Wallenrod - Adam Mickiewicz"
+    },
+    {
+        "sectionName": "Lektury Romantyzm",
+        "topicName": "Pan Tadeusz - Adam Mickiewicz",
+        "literature": "Pan Tadeusz - Adam Mickiewicz"
+    },
+    {
+        "sectionName": "Lektury Romantyzm",
+        "topicName": "Kordian - Juliusz Słowacki",
+        "literature": "Kordian - Juliusz Słowacki"
+    },
+    {
+        "sectionName": "Romantyzm – wprowadzenie i poezja",
+        "topicName": "Młodość - czas samopoznania",
+        "literature": "Cierpienia młodego Wertera - Johann Wolfgang Goethe"
+    },
+    {
+        "sectionName": "Romantyzm – wprowadzenie i poezja",
+        "topicName": "Faust - dramat o klęsce rozumu",
+        "literature": "Faust - Johann Wolfgang Goethe"
+    },
+    {
+        "sectionName": "Romantyzm – wprowadzenie i poezja",
+        "topicName": "Oda - dialog z tradycją",
+        "literature": "Do Radości - Friedrich Schiller"
+    },
+    {
+        "sectionName": "Romantyzm – manifesty, historia, patriotyzm",
+        "topicName": "Romantyczny wampiryzm - współcześnie",
+        "literature": "Słoneczna Dolina - Stefan Darda"
+    },
+    {
+        "sectionName": "Romantyzm – dylematy i postawy",
+        "topicName": "Beniowski - żywioł dygresji",
+        "literature": "Beniowski - Juliusz Słowacki"
+    },
+    {
+        "sectionName": "Romantyzm – miłość, sztuka i naród",
+        "topicName": "Dramat rodzinny w Nie-Boskiej komedii",
+        "literature": "Nie-Boska komedia - Zygmunt Krasiński"
+    },
+    {
+        "sectionName": "Romantyzm – miłość, sztuka i naród",
+        "topicName": "Norwid - nawiązania i kontynuacje",
+        "literature": "Poezja i prawda - Mieczysław Jastrun\nKorekta - Joanna Mueller"
+    },
+    {
+        "sectionName": "Lektury Pozytywizm",
+        "topicName": "Lalka - Bolesław Prus",
+        "literature": "Lalka - Bolesław Prus"
+    },
+    {
+        "sectionName": "Lektury Pozytywizm",
+        "topicName": "Gloria victis - Eliza Orzeszkowa",
+        "literature": "Gloria victis - Eliza Orzeszkowa"
+    },
+    {
+        "sectionName": "Lektury Pozytywizm",
+        "topicName": "Zbrodnia i kara - Fiodor Dostojewski",
+        "literature": "Zbrodnia i kara - Fiodor Dostojewski"
+    },
+    {
+        "sectionName": "Lektury Pozytywizm",
+        "topicName": "Anna Karenina - Lew Tołstoj",
+        "literature": "Anna Karenina - Lew Tołstoj"
+    },
+    {
+        "sectionName": "Lektury Pozytywizm",
+        "topicName": "Ojciec Goriot - Honoré de Balzac",
+        "literature": "Ojciec Goriot - Honore de Balzac"
+    },
+    {
+        "sectionName": "Lektury Młoda Polska",
+        "topicName": "Wesele - Stanisław Wyspiański",
+        "literature": "Wesele - Stanisław Wyspiański"
+    },
+    {
+        "sectionName": "Lektury Młoda Polska",
+        "topicName": "Chłopi - Władysław Reymont",
+        "literature": "Chłopi - Władysław Reymont"
+    },
+    {
+        "sectionName": "Młoda Polska – poezja, modernizm i estetyka",
+        "topicName": "Raskolnikow - analiza zbrodni",
+        "literature": "Zbrodnia i kara - Fiodor Dostojewski"
+    },
+    {
+        "sectionName": "Młoda Polska – poezja, modernizm i estetyka",
+        "topicName": "Powieść - dyskusja",
+        "literature": "Zbrodnia i kara - Fiodor Dostojewski\nPowieść polifoniczna - Michait Bachtin"
+    },
+    {
+        "sectionName": "Młoda Polska – poezja, modernizm i estetyka",
+        "topicName": "Parnasizm - świat jako dzieło sztuki",
+        "literature": "Danae Tycjana, Słońce - Kazimierz Przerwa-Tetmajer"
+    },
+    {
+        "sectionName": "Barok",
+        "topicName": "Antynomie myśli barokowej",
+        "literature": "Myśli - Blaise Pascal"
+    },
+    {
+        "sectionName": "Barok",
+        "topicName": "Wybór czy przeznaczenie?",
+        "literature": "Makbet - William Szekspir"
+    },
+    {
+        "sectionName": "Barok",
+        "topicName": "Zbrodnia i jej motywacja",
+        "literature": "Makbet - William Szekspir"
+    },
+    {
+        "sectionName": "Barok",
+        "topicName": "Postaci zła w Makbecie",
+        "literature": "Makbet - William Szekspir"
+    },
+    {
+        "sectionName": "Barok",
+        "topicName": "Fenomen piękna i czasu",
+        "literature": "Na oczy królewny angielskiej… - Daniel Naborowski\nKrótkość żywota - Daniel Naborowski\nNa toż - Daniel Naborowski"
+    },
+    {
+        "sectionName": "Młoda Polska – dramat, powieść i analiza społeczna",
+        "topicName": "Psychologia wyboru",
+        "literature": "Lord Jim - Joseph Conrad"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Początki epoki i przemiany społeczne",
+        "topicName": "Poezja miłosnej głębi",
+        "literature": "[W malinowym chruśniaku…], [Typierwejmgłydosięgasz…], Szczęście - Bolesław Leśmian"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Początki epoki i przemiany społeczne",
+        "topicName": "Leśmianowski zaświat przedstawiony",
+        "literature": "Strój, Topielec - Bolesław Leśmian"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Skamander, awangarda i proza psychologiczna",
+        "topicName": "Poezja kobiet",
+        "literature": "Miłość, Nike, Listy, La précieuse - Maria Pawlikowska-Jasnorzewska\nRozczarowana i szczęśliwa - Anna Świrszczyńska"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Skamander, awangarda i proza psychologiczna",
+        "topicName": "Awangardowy zachwyt nad cywilizacją",
+        "literature": "Masa, Maszyna, Miasto - Tadeusz Peiper"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Skamander, awangarda i proza psychologiczna",
+        "topicName": "Problematyka moralna w Granicy",
+        "literature": "Granica - Zofia Nałkowska"
+    },
+    {
+        "sectionName": "Lektury Barok",
+        "topicName": "Skąpiec - Molier",
+        "literature": "Skąpiec - Molier"
+    },
+    {
+        "sectionName": "Barok",
+        "topicName": "Barok - epoka przeciwieństw",
+        "literature": "Kobiety Rubensa - Wisława Szymborska"
+    },
+    {
+        "sectionName": "Barok",
+        "topicName": "Wina i kara - postać lady Makbet",
+        "literature": "Makbet - William Szekspir"
+    },
+    {
+        "sectionName": "Barok",
+        "topicName": "Człowiek - Bóg - świat w poezji metafizycznej",
+        "literature": ""
+    },
+    {
+        "sectionName": "Barok",
+        "topicName": "Współczesne nawiązania do poezji Naborowskiego",
+        "literature": ""
+    },
+    {
+        "sectionName": "Barok",
+        "topicName": "Słowa neutralne i wartościujące",
+        "literature": "Niestatek - Jan Andrzej Morsztyn"
+    },
+    {
+        "sectionName": "Barok",
+        "topicName": "Dramat wyborów w Hamlecie",
+        "literature": "Hamlet - William Szekspir"
+    },
+    {
+        "sectionName": "Barok",
+        "topicName": "Wzorzec rycerza w Hamlecie",
+        "literature": "Hamlet - William Szekspir\nBiografioły - Stanisław Barańczak"
+    },
+    {
+        "sectionName": "Barok",
+        "topicName": "Tragiczna wielkość i patetyczna śmieszność Don Kichote'a",
+        "literature": "Don Kichot z La Manczy - Miguel de Cervantes Saavedra"
+    },
+    {
+        "sectionName": "Barok",
+        "topicName": "Sarmacki system wartości",
+        "literature": "Pamiętniki - Jan Chryzostom Pasek"
+    },
+    {
+        "sectionName": "Barok",
+        "topicName": "Skąpiec jako komedia charakterów",
+        "literature": "Skąpiec - Molier"
+    },
+    {
+        "sectionName": "Lektury Oświecenie",
+        "topicName": "Monachomachia - Ignacy Krasicki",
+        "literature": "Monachomachia - Ignacy Krasicki"
+    },
+    {
+        "sectionName": "Oświecenie",
+        "topicName": "Epoka rozumu",
+        "literature": "Co to jest oświecenie - Immanuel Kant"
+    },
+    {
+        "sectionName": "Oświecenie",
+        "topicName": "Oświeceniowy optymizm",
+        "literature": "Wolter, Kandyd, czyli Optymizm"
+    },
+    {
+        "sectionName": "Oświecenie",
+        "topicName": "Filmowy labirynt",
+        "literature": "Rękopis znaleziony w Saragossie - Jan Potocki"
+    },
+    {
+        "sectionName": "Oświecenie",
+        "topicName": "Zaakceptować władzę",
+        "literature": "Do króla - Ignacy Krasicki"
+    },
+    {
+        "sectionName": "Oświecenie",
+        "topicName": "Hymn młodych patriotów",
+        "literature": "Hymn do miłości ojczyzny - Ignacy Krasicki"
+    },
+    {
+        "sectionName": "Oświecenie",
+        "topicName": "Stylizacja językowa",
+        "literature": "Monachomachia - Ignacy Krasicki"
+    },
+    {
+        "sectionName": "Oświecenie",
+        "topicName": "Oświecenie pieśni religijne",
+        "literature": "Pieśń o narodzeniu Pańskim - Franciszek Karpiński\nPieśń poranna; Pieśń wieczorna - Franciszek Karpiński"
+    },
+    {
+        "sectionName": "Oświecenie",
+        "topicName": "Liberalizm i patriotyzm Staszica",
+        "literature": "Przestrogi dla Polski - Stanisław Staszic"
+    },
+    {
+        "sectionName": "Romantyzm – wprowadzenie i poezja",
+        "topicName": "Romantyzm, czyli inna nowoczesność",
+        "literature": "Wielkie stulecie Polaków - Alina Witkowska"
+    },
+    {
+        "sectionName": "Romantyzm – wprowadzenie i poezja",
+        "topicName": "Poezja romantyczna wobec klasycznej",
+        "literature": "Wykłady o literaturze pięknej i sztuce - August Wilhelm Schlegel"
+    },
+    {
+        "sectionName": "Romantyzm – wprowadzenie i poezja",
+        "topicName": "Nowe tematy w poezji europejskiej",
+        "literature": "Filarze Stonehenge! - Wordsworth, Żonkile, William Wordsworth\nKościuszko - Samuel Taylor Coleridge"
+    },
+    {
+        "sectionName": "Romantyzm – wprowadzenie i poezja",
+        "topicName": "Nawiązania do twórczości poetów jezior",
+        "literature": "Odpowiedź zna wiatr - Bob Dylan"
+    },
+    {
+        "sectionName": "Romantyzm – wprowadzenie i poezja",
+        "topicName": "Giaur jako powieść poetycka",
+        "literature": "Giaur - George Byron"
+    },
+    {
+        "sectionName": "Romantyzm – wprowadzenie i poezja",
+        "topicName": "Miłość w Cierpieniach młodego Wertera",
+        "literature": "Cierpienia młodego Wertera - Johann Wolfgang Goethe"
+    },
+    {
+        "sectionName": "Romantyzm – wprowadzenie i poezja",
+        "topicName": "Powieść w listach",
+        "literature": "Cierpienia młodego Wertera - Johann Wolfgang Goethe"
+    },
+    {
+        "sectionName": "Romantyzm – wprowadzenie i poezja",
+        "topicName": "Stare i nowe w Odzie do młodości",
+        "literature": "Oda do młodości - Adam Mickiewicz"
+    },
+    {
+        "sectionName": "Romantyzm – manifesty, historia, patriotyzm",
+        "topicName": "Manifest polskiego romantyzmu",
+        "literature": "Romantyczność - Adam Mickiewicz"
+    },
+    {
+        "sectionName": "Romantyzm – manifesty, historia, patriotyzm",
+        "topicName": "Natura i historia w balladzie Mickiewicza",
+        "literature": "Świteż - Adam Mickiewicz"
+    },
+    {
+        "sectionName": "Romantyzm – manifesty, historia, patriotyzm",
+        "topicName": "Ludowy kodeks moralny",
+        "literature": "Lilije - Adam Mickiewicz"
+    },
+    {
+        "sectionName": "Romantyzm – manifesty, historia, patriotyzm",
+        "topicName": "Nawiązania do ballad Mickiewicza",
+        "literature": "Gad - Bolesław Leśmian\nŚmierć - Julian Tuwim\nZłoty żuk - Edgar Allan Poe"
+    },
+    {
+        "sectionName": "Romantyzm – manifesty, historia, patriotyzm",
+        "topicName": "Elementy thrillera w Złotym żuku",
+        "literature": "Złoty żuk - Edgar Allan Poe"
+    },
+    {
+        "sectionName": "Romantyzm – manifesty, historia, patriotyzm",
+        "topicName": "Wampiry w literaturze",
+        "literature": "Berenika - Edgar Allan Poe"
+    },
+    {
+        "sectionName": "Romantyzm – manifesty, historia, patriotyzm",
+        "topicName": "Erotyki Adama Mickiewicza",
+        "literature": "Niepewność - Adam Mickiewicz\nDobranoc - Adam Mickiewicz"
+    },
+    {
+        "sectionName": "Romantyzm – manifesty, historia, patriotyzm",
+        "topicName": "Samotność poety",
+        "literature": "Stepy akermańskie - Adam Mickiewicz\nBurza - Adam Mickiewicz"
+    },
+    {
+        "sectionName": "Romantyzm – manifesty, historia, patriotyzm",
+        "topicName": "Historiozofia w scenerii Orientu",
+        "literature": "Bakczysaraj - Adam Mickiewicz\nBakczysaraj w nocy - Adam Mickiewicz"
+    },
+    {
+        "sectionName": "Romantyzm – manifesty, historia, patriotyzm",
+        "topicName": "Sonet współczesny",
+        "literature": "Dwie Ojczyzny - Sławomir Rudnicki\nTo tu - Krystyna Konecka"
+    },
+    {
+        "sectionName": "Romantyzm – powieść, dramat, poezja polska",
+        "topicName": "Powieść poetycka po polsku",
+        "literature": "Konrad Wallenrod - Adam Mickiewicz"
+    },
+    {
+        "sectionName": "Romantyzm – powieść, dramat, poezja polska",
+        "topicName": "Etyka patriotyzmu",
+        "literature": "Konrad Wallenrod - Adam Mickiewicz"
+    },
+    {
+        "sectionName": "Romantyzm – powieść, dramat, poezja polska",
+        "topicName": "O miłości niemożliwej",
+        "literature": "Konrad Wallenrod - Adam Mickiewicz"
+    },
+    {
+        "sectionName": "Romantyzm – powieść, dramat, poezja polska",
+        "topicName": "Patriotyczna wymowa III części Dziadów",
+        "literature": "Dziady, część III - Adam Mickiewicz"
+    },
+    {
+        "sectionName": "Romantyzm – powieść, dramat, poezja polska",
+        "topicName": "Wizja poety i poezji w III części Dziadów",
+        "literature": "Dziady, część III - Adam Mickiewicz"
+    },
+    {
+        "sectionName": "Barok",
+        "topicName": "Dramat pewnej wady",
+        "literature": "Skąpiec - Molière"
+    },
+    {
+        "sectionName": "Romantyzm – miłość, sztuka i naród",
+        "topicName": "Sztuka prowadzenia dyskusji",
+        "literature": ""
+    },
+    {
+        "sectionName": "Romantyzm – powieść, dramat, poezja polska",
+        "topicName": "Mickiewicz a mesjanizm",
+        "literature": "Dziady, część III - Adam Mickiewicz"
+    },
+    {
+        "sectionName": "Romantyzm – powieść, dramat, poezja polska",
+        "topicName": "Wypowiedzi niejednoznaczne",
+        "literature": "Dziady, część III - Adam Mickiewicz"
+    },
+    {
+        "sectionName": "Romantyzm – powieść, dramat, poezja polska",
+        "topicName": "Tabu językowe",
+        "literature": "Dziady, część III - Adam Mickiewicz"
+    },
+    {
+        "sectionName": "Romantyzm – powieść, dramat, poezja polska",
+        "topicName": "Romantyczna poezja egzystencji",
+        "literature": "Nad wodą wielką i czystą… - Adam Mickiewicz"
+    },
+    {
+        "sectionName": "Romantyzm – powieść, dramat, poezja polska",
+        "topicName": "Nowoczesna poetyka w lirykach lozańskich",
+        "literature": "Gdy tu mój trup… - Adam Mickiewicz\nSnuć miłość… - Adam Mickiewicz"
+    },
+    {
+        "sectionName": "Romantyzm – powieść, dramat, poezja polska",
+        "topicName": "Romantyczna idealizacja polskości",
+        "literature": "Pamiątki Soplicy - Henryk Rzewuski\nPan Tadeusz - Adam Mickiewicz"
+    },
+    {
+        "sectionName": "Romantyzm – powieść, dramat, poezja polska",
+        "topicName": "Świat szlacheckich wyobrażeń",
+        "literature": "Pamiątki Soplicy - Henryk Rzewuski"
+    },
+    {
+        "sectionName": "Romantyzm – powieść, dramat, poezja polska",
+        "topicName": "Językowy obraz świata",
+        "literature": "Pamiątki Soplicy - Henryk Rzewuski"
+    },
+    {
+        "sectionName": "Romantyzm – dylematy i postawy",
+        "topicName": "Kordian - romantyczny czy współczesny?",
+        "literature": "Kordian - Juliusz Słowacki"
+    },
+    {
+        "sectionName": "Romantyzm – dylematy i postawy",
+        "topicName": "Kordian w poszukiwaniu wartości",
+        "literature": "Kordian - Juliusz Słowacki"
+    },
+    {
+        "sectionName": "Romantyzm – dylematy i postawy",
+        "topicName": "Winkelriedyzm kontra mesjanizm",
+        "literature": "Kordian - Juliusz Słowacki"
+    },
+    {
+        "sectionName": "Romantyzm – dylematy i postawy",
+        "topicName": "Dlaczego upadło powstanie listopadowe?",
+        "literature": "Kordian - Juliusz Słowacki"
+    },
+    {
+        "sectionName": "Romantyzm – dylematy i postawy",
+        "topicName": "Romantyczna ironia",
+        "literature": "Beniowski - Juliusz Słowacki"
+    },
+    {
+        "sectionName": "Romantyzm – dylematy i postawy",
+        "topicName": "Romantyczny mit Słowian",
+        "literature": "Co się stało z mitologią słowiańską? - Maria Janion"
+    },
+    {
+        "sectionName": "Romantyzm – dylematy i postawy",
+        "topicName": "Rola poezji tyrtejskiej",
+        "literature": "Lilla Weneda - Juliusz Słowacki"
+    },
+    {
+        "sectionName": "Romantyzm – dylematy i postawy",
+        "topicName": "Lilia i Roza postawy wobec historii",
+        "literature": "Lilla Weneda - Juliusz Słowacki"
+    },
+    {
+        "sectionName": "Romantyzm – dylematy i postawy",
+        "topicName": "W konwencji baśniowej",
+        "literature": "Grób Agamemnona - Juliusz Słowacki\nWiedźmin - Andrzej Sapkowski"
+    },
+    {
+        "sectionName": "Romantyzm – dylematy i postawy",
+        "topicName": "Gorzki rozrachunek z narodem",
+        "literature": "Grób Agamemnona - Juliusz Słowacki"
+    },
+    {
+        "sectionName": "Romantyzm – dylematy i postawy",
+        "topicName": "Poeta w roli oskarżyciela",
+        "literature": "Grób Agamemnona - Juliusz Słowacki"
+    },
+    {
+        "sectionName": "Romantyzm – dylematy i postawy",
+        "topicName": "Ostatnie refleksje wieszcza",
+        "literature": "Uspokojenie - Juliusz Słowacki\nBo to jest wieszcza najaśniejsza chwała… - Juliusz Słowacki"
+    },
+    {
+        "sectionName": "Romantyzm – miłość, sztuka i naród",
+        "topicName": "Poeta i poezja według Krasińskiego",
+        "literature": "Nie-Boska komedia - Zygmunt Krasiński"
+    },
+    {
+        "sectionName": "Romantyzm – miłość, sztuka i naród",
+        "topicName": "Literacki obraz rewolucji",
+        "literature": "Nie-Boska komedia - Zygmunt Krasiński"
+    },
+    {
+        "sectionName": "Romantyzm – miłość, sztuka i naród",
+        "topicName": "Historyczny obraz rewolucji",
+        "literature": "List do Henryka Reeve'a - Zygmunt Krasiński"
+    },
+    {
+        "sectionName": "Romantyzm – miłość, sztuka i naród",
+        "topicName": "Tragizm racji cząstkowych",
+        "literature": "Nie-Boska komedia - Zygmunt Krasiński"
+    },
+    {
+        "sectionName": "Romantyzm – miłość, sztuka i naród",
+        "topicName": "Wartość inności",
+        "literature": "Adam Krafft - Cyprian Norwid\nW Weronie - Cyprian Norwid"
+    },
+    {
+        "sectionName": "Romantyzm – miłość, sztuka i naród",
+        "topicName": "Sens sztuki i piękna",
+        "literature": "Fortepian Szopena - Cyprian Norwid"
+    },
+    {
+        "sectionName": "Romantyzm – miłość, sztuka i naród",
+        "topicName": "Polska i polskość w poezji Norwida",
+        "literature": "Fortepian Szopena - Cyprian Norwid"
+    },
+    {
+        "sectionName": "Romantyzm – miłość, sztuka i naród",
+        "topicName": "Humanizm chrześcijański Norwida",
+        "literature": "Promethidion - Cyprian Norwid"
+    },
+    {
+        "sectionName": "Romantyzm – miłość, sztuka i naród",
+        "topicName": "Użyteczność sztuki",
+        "literature": "Promethidion - Cyprian Norwid"
+    },
+    {
+        "sectionName": "Romantyzm – powieść, dramat, poezja polska",
+        "topicName": "Romantyczny kreacjonizm Słowackiego",
+        "literature": "Rozłączenie - Juliusz Słowacki"
+    },
+    {
+        "sectionName": "Romantyzm – miłość, sztuka i naród",
+        "topicName": "Romantyzm zaangażowany",
+        "literature": "Do obywatela Johna Brown - Cyprian Norwid"
+    },
+    {
+        "sectionName": "Romantyzm – miłość, sztuka i naród",
+        "topicName": "Dyskusja z ideą ojczyzny",
+        "literature": "Trans-Atlantyk - Witold Gombrowicz"
+    },
+    {
+        "sectionName": "Romantyzm – miłość, sztuka i naród",
+        "topicName": "Nie igra się z miłością",
+        "literature": "Habanera z opery Carmen Georges'a Bizeta\nAria z toastem z opery Carmen Georges'a Bizeta"
+    },
+    {
+        "sectionName": "Pozytywizm – filozofia, społeczeństwo i postęp",
+        "topicName": "Filozofia pozytywizmu",
+        "literature": "Wykład filozofii pozytywnej - Auguste Comte"
+    },
+    {
+        "sectionName": "Pozytywizm – filozofia, społeczeństwo i postęp",
+        "topicName": "Tradycja i postęp",
+        "literature": "Do młodych - Adam Asnyk"
+    },
+    {
+        "sectionName": "Pozytywizm – filozofia, społeczeństwo i postęp",
+        "topicName": "Ambiwalentny stosunek do romantyzmu",
+        "literature": "Daremne żale - Adam Asnyk"
+    },
+    {
+        "sectionName": "Pozytywizm – filozofia, społeczeństwo i postęp",
+        "topicName": "Miłosne wiersze Asnyka",
+        "literature": "Między nami nic nie było - Adam Asnyk\n[Jednego serca…] - Adam Asnyk"
+    },
+    {
+        "sectionName": "Pozytywizm – filozofia, społeczeństwo i postęp",
+        "topicName": "Płacz matki w Hekubie",
+        "literature": "Hekuba - Eliza Orzeszkowa"
+    },
+    {
+        "sectionName": "Pozytywizm – filozofia, społeczeństwo i postęp",
+        "topicName": "O powstaniu styczniowym w XX w.",
+        "literature": "Zarudzie - Jarostaw Iwaszkiewicz"
+    },
+    {
+        "sectionName": "Pozytywizm – filozofia, społeczeństwo i postęp",
+        "topicName": "Program pozytywizmu w Nad Niemnem",
+        "literature": "Nad Niemnem - Eliza Orzeszkowa"
+    },
+    {
+        "sectionName": "Romantyzm – miłość, sztuka i naród",
+        "topicName": "Romantyk w wielkim mieście",
+        "literature": "Nerwy - Cyprian Norwid\nLarwa - Cyprian Norwid"
+    },
+    {
+        "sectionName": "Pozytywizm – bohaterowie, miłość i realistyczna powieść",
+        "topicName": "Arcydzieło polskiej nowelistyki",
+        "literature": ""
+    },
+    {
+        "sectionName": "Pozytywizm – filozofia, społeczeństwo i postęp",
+        "topicName": "Dyskusja o patriotyzmie",
+        "literature": "Nad Niemnem - Eliza Orzeszkowa"
+    },
+    {
+        "sectionName": "Pozytywizm – filozofia, społeczeństwo i postęp",
+        "topicName": "Starzy i młodzi",
+        "literature": "Nad Niemnem - Eliza Orzeszkowa"
+    },
+    {
+        "sectionName": "Pozytywizm – filozofia, społeczeństwo i postęp",
+        "topicName": "Historie miłosne w Nad Niemnem",
+        "literature": "Nad Niemnem - Eliza Orzeszkowa"
+    },
+    {
+        "sectionName": "Pozytywizm – filozofia, społeczeństwo i postęp",
+        "topicName": "Nadniemeńska epopeja",
+        "literature": "Nad Niemnem - Eliza Orzeszkowa"
+    },
+    {
+        "sectionName": "Pozytywizm – filozofia, społeczeństwo i postęp",
+        "topicName": "Nad Niemnem na dużym ekranie",
+        "literature": "Nad Niemnem - Eliza Orzeszkowa"
+    },
+    {
+        "sectionName": "Pozytywizm – filozofia, społeczeństwo i postęp",
+        "topicName": "Różne oblicza patriotyzmu",
+        "literature": "Rota - Maria Konopnicka\nNie pytaj o Polskę - Grzegorz Ciechowski"
+    },
+    {
+        "sectionName": "Pozytywizm – filozofia, społeczeństwo i postęp",
+        "topicName": "Wobec ucisku politycznego",
+        "literature": "Contra spem spero - Maria Konopnicka\nMoje ulubione drzewo - Wojciech Młynarski"
+    },
+    {
+        "sectionName": "Pozytywizm – filozofia, społeczeństwo i postęp",
+        "topicName": "Współczesny felieton",
+        "literature": "Pokochałem audiobooki - Wojciech Orliński"
+    },
+    {
+        "sectionName": "Pozytywizm – filozofia, społeczeństwo i postęp",
+        "topicName": "Powieść realistyczna",
+        "literature": "Ojciec Goriott - Honoré de Balzac"
+    },
+    {
+        "sectionName": "Pozytywizm – filozofia, społeczeństwo i postęp",
+        "topicName": "Czytanie powieści",
+        "literature": "Lalka i perta - Olga Tokarczuk"
+    },
+    {
+        "sectionName": "Pozytywizm – filozofia, społeczeństwo i postęp",
+        "topicName": "Miłość w czasach nieromantycznych",
+        "literature": "Lalka - Bolesław Prus"
+    },
+    {
+        "sectionName": "Pozytywizm – bohaterowie, miłość i realistyczna powieść",
+        "topicName": "Trzy pokolenia idealistów",
+        "literature": "Lalka - Bolesław Prus"
+    },
+    {
+        "sectionName": "Pozytywizm – bohaterowie, miłość i realistyczna powieść",
+        "topicName": "Utopia naukowa w Lalce",
+        "literature": "Lalka - Bolesław Prus"
+    },
+    {
+        "sectionName": "Pozytywizm – bohaterowie, miłość i realistyczna powieść",
+        "topicName": "Nowy kształt powieści",
+        "literature": "Lalka - Bolesław Prus"
+    },
+    {
+        "sectionName": "Pozytywizm – filozofia, społeczeństwo i postęp",
+        "topicName": "Felieton - komentarz do rzeczywistości",
+        "literature": "Jubileusz i współczesność - Bolesław Prus"
+    },
+    {
+        "sectionName": "Pozytywizm – bohaterowie, miłość i realistyczna powieść",
+        "topicName": "Język środowiskowy",
+        "literature": "Lalka - Bolesław Prus"
+    },
+    {
+        "sectionName": "Pozytywizm – bohaterowie, miłość i realistyczna powieść",
+        "topicName": "Uniwersalizm noweli Prusa",
+        "literature": "Zlegend dawnego Egiptu - Bolesław Prus"
+    },
+    {
+        "sectionName": "Pozytywizm – bohaterowie, miłość i realistyczna powieść",
+        "topicName": "Henryk Sienkiewicz patrzy na Amerykę",
+        "literature": "Listy z podróży do Ameryki - Henryk Sienkiewicz"
+    },
+    {
+        "sectionName": "Pozytywizm – bohaterowie, miłość i realistyczna powieść",
+        "topicName": "Historia w kształcie literackim",
+        "literature": "Potop - Henryk Sienkiewicz"
+    },
+    {
+        "sectionName": "Pozytywizm – bohaterowie, miłość i realistyczna powieść",
+        "topicName": "Społeczeństwo polskie czasu klęski",
+        "literature": "Potop - Henryk Sienkiewicz"
+    },
+    {
+        "sectionName": "Pozytywizm – bohaterowie, miłość i realistyczna powieść",
+        "topicName": "Sienkiewiczowski model patriotyzmu",
+        "literature": "Potop - Henryk Sienkiewicz"
+    },
+    {
+        "sectionName": "Pozytywizm – bohaterowie, miłość i realistyczna powieść",
+        "topicName": "Miłość z przeszkodami",
+        "literature": "Potop - Henryk Sienkiewicz"
+    },
+    {
+        "sectionName": "Pozytywizm – bohaterowie, miłość i realistyczna powieść",
+        "topicName": "Dawność w języku Potopu",
+        "literature": "Potop - Henryk Sienkiewicz"
+    },
+    {
+        "sectionName": "Pozytywizm – bohaterowie, miłość i realistyczna powieść",
+        "topicName": "Esej o historii i patriotyzmie",
+        "literature": "Niezbędnik Sarmaty poprzedzony Obroną i Uświetnieniem Sarmacji Obojej - Jacek Kowalski"
+    },
+    {
+        "sectionName": "Pozytywizm – bohaterowie, miłość i realistyczna powieść",
+        "topicName": "Nieszczęście Emmy Bovary",
+        "literature": "Pani Bovary - Gustave Flaubert"
+    },
+    {
+        "sectionName": "Pozytywizm – bohaterowie, miłość i realistyczna powieść",
+        "topicName": "Nowoczesny portret kobiety",
+        "literature": "Pani Bovary - Gustave Flaubert"
+    },
+    {
+        "sectionName": "Pozytywizm – bohaterowie, miłość i realistyczna powieść",
+        "topicName": "Dom, rodzina, miłość w Pani Bovary",
+        "literature": "Pani Bovary - Gustave Flaubert"
+    },
+    {
+        "sectionName": "Pozytywizm – bohaterowie, miłość i realistyczna powieść",
+        "topicName": "Konwencja naturalistyczna",
+        "literature": "Pani Bovary - Gustave Flaubert"
+    },
+    {
+        "sectionName": "Młoda Polska – poezja, modernizm i estetyka",
+        "topicName": "Przeciw pozytywizmowi",
+        "literature": "Poza dobrem i złem - Friedrich Nietzsche"
+    },
+    {
+        "sectionName": "Młoda Polska – poezja, modernizm i estetyka",
+        "topicName": "Problematyka moralna Zbrodni i kary",
+        "literature": "Zbrodnia i kara - Fiodor Dostojewski"
+    },
+    {
+        "sectionName": "Młoda Polska – poezja, modernizm i estetyka",
+        "topicName": "Spór liberalizmu z socjalizmem",
+        "literature": "Zbrodnia i kara - Fiodor Dostojewski"
+    },
+    {
+        "sectionName": "Młoda Polska – poezja, modernizm i estetyka",
+        "topicName": "Smutek w obrazach poetyckich",
+        "literature": "O przyjdź! - Stanisław Korab-Brzozowski"
+    },
+    {
+        "sectionName": "Młoda Polska – poezja, modernizm i estetyka",
+        "topicName": "Dekadentyzm współcześnie",
+        "literature": "Koniec wieków - Tomasz Różycki"
+    },
+    {
+        "sectionName": "Młoda Polska – poezja, modernizm i estetyka",
+        "topicName": "Młodopolska poezja wrażeń",
+        "literature": "Melodia mgieł nocnych (Nad Czarnym Stawem Gąsienicowym) - Kazimierz Przerwa-Tetmajer"
+    },
+    {
+        "sectionName": "Młoda Polska – poezja, modernizm i estetyka",
+        "topicName": "Jak napisać wiersz impresjonistyczny?",
+        "literature": "Sztuka poetycka - Paul Verlaine"
+    },
+    {
+        "sectionName": "Pozytywizm – bohaterowie, miłość i realistyczna powieść",
+        "topicName": "Język ezopowy w XIX i XX w.",
+        "literature": "Lalka - Bolesław Prus\nW żółtych płomieniach liści - Agnieszka Osiecka"
+    },
+    {
+        "sectionName": "Młoda Polska – poezja, modernizm i estetyka",
+        "topicName": "Estetyka brzydoty",
+        "literature": "Padlina - Charles Baudelaire\nCzyści - Stanisław Grochowiak"
+    },
+    {
+        "sectionName": "Młoda Polska – poezja, modernizm i estetyka",
+        "topicName": "Barwa ekspresywna i emocjonalna wyrazów",
+        "literature": "Dies irae - Jan Kasprowicz"
+    },
+    {
+        "sectionName": "Młoda Polska – poezja, modernizm i estetyka",
+        "topicName": "Franciszkańska pokora",
+        "literature": "Przestałem się wadzić z Bogiem - Jan Kasprowicz\nO miłości wroga - Leopold Staff"
+    },
+    {
+        "sectionName": "Młoda Polska – poezja, modernizm i estetyka",
+        "topicName": "Homo viator w nowoczesnej poezji",
+        "literature": "Poranna szarówka - Charles Baudelaire\nMoja bohema - Arthur Rimbaud\nWędrówką życie jest człowieka - Edward Stachura\nRomskie drogi - Papusza"
+    },
+    {
+        "sectionName": "Pozytywizm – bohaterowie, miłość i realistyczna powieść",
+        "topicName": "Wokulski - pozytywista",
+        "literature": "Lalka - Bolesław Prus"
+    },
+    {
+        "sectionName": "Młoda Polska – poezja, modernizm i estetyka",
+        "topicName": "Apokalipsa i ekspresja w młodopolskiej poezji",
+        "literature": "Dies irae - Jan Kasprowicz"
+    },
+    {
+        "sectionName": "Młoda Polska – dramat, powieść i analiza społeczna",
+        "topicName": "Dramat neoromantyczny",
+        "literature": "Wesele - Stanisław Wyspiański"
+    },
+    {
+        "sectionName": "Młoda Polska – dramat, powieść i analiza społeczna",
+        "topicName": "Dramat symboliczny",
+        "literature": "Wesele - Stanisław Wyspiański"
+    },
+    {
+        "sectionName": "Młoda Polska – dramat, powieść i analiza społeczna",
+        "topicName": "Wesele w języku",
+        "literature": "Wesele - Stanisław Wyspiański"
+    },
+    {
+        "sectionName": "Młoda Polska – dramat, powieść i analiza społeczna",
+        "topicName": "Poetyckie nawiązania do Wesela",
+        "literature": "Ojczyzna chochołów - Kazimierz Wierzyński\nWesele - Stanisław Wyspiański"
+    },
+    {
+        "sectionName": "Młoda Polska – dramat, powieść i analiza społeczna",
+        "topicName": "Bohaterowie narodowej historii i legendy",
+        "literature": "Noc listopadowa - Stanisław Wyspiański"
+    },
+    {
+        "sectionName": "Młoda Polska – dramat, powieść i analiza społeczna",
+        "topicName": "Noc listopadowa w filmie",
+        "literature": "Noc listopadowa - Stanisław Wyspiański"
+    },
+    {
+        "sectionName": "Młoda Polska – dramat, powieść i analiza społeczna",
+        "topicName": "Gorzka prawda o powstaniu",
+        "literature": "Rozdziobią nas kruki, wrony… - Stefan Żeromski"
+    },
+    {
+        "sectionName": "Młoda Polska – dramat, powieść i analiza społeczna",
+        "topicName": "Heroizm zdrady",
+        "literature": "Echa leśne - Stefan Żeromski"
+    },
+    {
+        "sectionName": "Młoda Polska – dramat, powieść i analiza społeczna",
+        "topicName": "Impresjonizm i naturalizm w Chłopach",
+        "literature": "Chłopi (tom I Jesień) - Władysław Stanisław Reymont"
+    },
+    {
+        "sectionName": "Młoda Polska – dramat, powieść i analiza społeczna",
+        "topicName": "Religijność wsi",
+        "literature": "Chłopi (tom I Jesień) - Władysław Stanisław Reymont"
+    },
+    {
+        "sectionName": "Młoda Polska – dramat, powieść i analiza społeczna",
+        "topicName": "Miłość i zdrada w Chłopach",
+        "literature": "Chłopi (tom I Jesień) - Władysław Stanisław Reymont"
+    },
+    {
+        "sectionName": "Młoda Polska – dramat, powieść i analiza społeczna",
+        "topicName": "Malarska animacja Chłopów Reymonta",
+        "literature": "Chłopi (tom I Jesień) - Władysław Stanisław Reymont"
+    },
+    {
+        "sectionName": "Młoda Polska – dramat, powieść i analiza społeczna",
+        "topicName": "Tragifarsa mieszczańska",
+        "literature": "Moralność pani Dulskiej - Gabriela Zapolska"
+    },
+    {
+        "sectionName": "Młoda Polska – dramat, powieść i analiza społeczna",
+        "topicName": "Dramat naturalistyczny",
+        "literature": "Moralność pani Dulskiej - Gabriela Zapolska"
+    },
+    {
+        "sectionName": "Młoda Polska – dramat, powieść i analiza społeczna",
+        "topicName": "Moralność pani Dulskiej w teatrze",
+        "literature": "Moralność pani Dulskiej - Gabriela Zapolska"
+    },
+    {
+        "sectionName": "Młoda Polska – dramat, powieść i analiza społeczna",
+        "topicName": "Etyka honoru",
+        "literature": "Lord Jim - Joseph Conrad"
+    },
+    {
+        "sectionName": "Młoda Polska – dramat, powieść i analiza społeczna",
+        "topicName": "Przemiany konwencji powieściowej",
+        "literature": "Lord Jim - Joseph Conrad"
+    },
+    {
+        "sectionName": "Młoda Polska – dramat, powieść i analiza społeczna",
+        "topicName": "Esej polityczny",
+        "literature": "Piłsudczycy - Juliusz Kaden-Bandrowski"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Początki epoki i przemiany społeczne",
+        "topicName": "Kryzys nowoczesności",
+        "literature": "Trzydziestolecie 1914-1944 - Anna Nasiłowska"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Początki epoki i przemiany społeczne",
+        "topicName": "Nowa wizja człowieka",
+        "literature": "Kultura jako żródło cierpień - Sigmund Freud"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Początki epoki i przemiany społeczne",
+        "topicName": "Pęd życia i śmierci",
+        "literature": "Rok nieistnienia, [Po ciemku, po ciemku łkasz…] - Bolesław Leśmian"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Początki epoki i przemiany społeczne",
+        "topicName": "Leśmianowskie odczytanie Ewangelii",
+        "literature": "W przeddzień swego zmartwychwstania, Betleem - Bolesław Leśmian"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Początki epoki i przemiany społeczne",
+        "topicName": "Neologizmy w języku codziennym i w poezji",
+        "literature": "Ballada bezludna - Bolesław Leśmian"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Początki epoki i przemiany społeczne",
+        "topicName": "Inicjacje Cezarego Baryki",
+        "literature": "Przedwiośnie - Stefan Żeromski"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Początki epoki i przemiany społeczne",
+        "topicName": "Kobiety Przedwiośnia",
+        "literature": "Przedwiośnie - Stefan Żeromski"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Początki epoki i przemiany społeczne",
+        "topicName": "Mity narodowe w Przedwiośniu",
+        "literature": "Przedwiośnie - Stefan Żeromski"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Początki epoki i przemiany społeczne",
+        "topicName": "Argumentacja w wypowiedzi perswazyjnej",
+        "literature": "Przedwiośnie - Stefan Żeromski"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Początki epoki i przemiany społeczne",
+        "topicName": "Koniec mitu Galicia felix",
+        "literature": "Austeria - Julian Stryjkowski"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Początki epoki i przemiany społeczne",
+        "topicName": "Kultura polskich Żydów",
+        "literature": "Austeria - Julian Stryjkowski"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Początki epoki i przemiany społeczne",
+        "topicName": "Ślady pamięci",
+        "literature": "Elegia miasteczek żydowskich - Antoni Słonimski\nTakjak malował pan Chagali - Wojciech Młynarski"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Skamander, awangarda i proza psychologiczna",
+        "topicName": "Nowa rzeczywistość po Wielkiej Wojnie",
+        "literature": "Bunt mas - José Ortega y Gasset"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Skamander, awangarda i proza psychologiczna",
+        "topicName": "Motywy romantyczne w poezji skamandrytów",
+        "literature": "[Tyś jest jak dzień wiosenny…] - Kazimierz Wierzyński\nO tamtej - Stanisław Baliński"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Skamander, awangarda i proza psychologiczna",
+        "topicName": "Poezja zaangażowana",
+        "literature": "Na śmierć prezydenta Narutowicza - Antoni Słonimski\nPogrzeb prezydenta Narutowicza - Julian Tuwim"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Skamander, awangarda i proza psychologiczna",
+        "topicName": "Mit, poezja, muzyka",
+        "literature": "Żródło Aretuzy - Jarosław Iwaszkiewicz"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Skamander, awangarda i proza psychologiczna",
+        "topicName": "Everyman w onirycznym świecie",
+        "literature": "Proces - Franz Kafka"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Skamander, awangarda i proza psychologiczna",
+        "topicName": "Świat jako więzienie",
+        "literature": "Proces - Franz Kafka"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Skamander, awangarda i proza psychologiczna",
+        "topicName": "Nowoczesna parabola",
+        "literature": "Proces - Franz Kafka"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Skamander, awangarda i proza psychologiczna",
+        "topicName": "Ciało w poezji",
+        "literature": "Noga - Tadeusz Peiper\nLustro - Halina Poświatowska"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Skamander, awangarda i proza psychologiczna",
+        "topicName": "Awangardowy krajobraz",
+        "literature": "Gmachy, Z Tatr - Julian Przyboś\nW górach - Jerzy Harasymowicz"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Skamander, awangarda i proza psychologiczna",
+        "topicName": "Kobiecy punkt widzenia",
+        "literature": "Granica - Zofia Nałkowska\nNa zakręcie - Agnieszka Osiecka"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Skamander, awangarda i proza psychologiczna",
+        "topicName": "Czas i narracja w Cudzoziemce",
+        "literature": "Cudzoziemka - Maria Kuncewiczowa"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Skamander, awangarda i proza psychologiczna",
+        "topicName": "Kształt powieści psychologicznej",
+        "literature": "Cudzoziemka - Maria Kuncewiczowa"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Skamander, awangarda i proza psychologiczna",
+        "topicName": "Intencja komunikacyjna",
+        "literature": "Cudzoziemka - Maria Kuncewiczowa"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Skamander, awangarda i proza psychologiczna",
+        "topicName": "\"Noce i dnie - wielka saga filmowa\"",
+        "literature": ""
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Skamander, awangarda i proza psychologiczna",
+        "topicName": "Granica - dyskusja z determinizmem",
+        "literature": "Granica - Zofia Nałkowska"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Groteska, awangarda i katastrofizm",
+        "topicName": "Teatr absurdu",
+        "literature": "Szewcy - Stanisław Ignacy Witkiewicz"
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – Sowiecka okupacja, łagry i refleksja nad człowiekiem",
+        "topicName": "Miłość w \"innym świecie\"",
+        "literature": ""
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Groteska, awangarda i katastrofizm",
+        "topicName": "Mistrz i Małgorzata - sens powieści w powieści",
+        "literature": "Mistrz i Małgorzata - Michaił Bułhakow"
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Groteska, awangarda i katastrofizm",
+        "topicName": "Powieść o ludzkiej słabości",
+        "literature": ""
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Groteska, awangarda i katastrofizm",
+        "topicName": "Miejsce zła w świecie",
+        "literature": ""
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – II wojna światowa i okupacja niemiecka",
+        "topicName": "Człowiek zlagrowany",
+        "literature": ""
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – II wojna światowa i okupacja niemiecka",
+        "topicName": "Przemoc w języku",
+        "literature": ""
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – II wojna światowa i okupacja niemiecka",
+        "topicName": "Poetyckie świadectwa wojny",
+        "literature": ""
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – II wojna światowa i okupacja niemiecka",
+        "topicName": "Miłość w cieniu apokalipsy",
+        "literature": ""
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – II wojna światowa i okupacja niemiecka",
+        "topicName": "Getto warszawskie walczy",
+        "literature": ""
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – II wojna światowa i okupacja niemiecka",
+        "topicName": "Ciężar okupacyjnej pamięci",
+        "literature": ""
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – II wojna światowa i okupacja niemiecka",
+        "topicName": "Powstanie warszawskie w filmie",
+        "literature": ""
+    },
+    {
+        "sectionName": "Wojna i okupacja w literaturze – Sowiecka okupacja, łagry i refleksja nad człowiekiem",
+        "topicName": "Heroizm w łagrze",
+        "literature": ""
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Moralność, poezja i codzienność PRL",
+        "topicName": "Mityczny PRL",
+        "literature": ""
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Moralność, poezja i codzienność PRL",
+        "topicName": "Eksperymenty z teatrem absurdu",
+        "literature": ""
+    },
+    {
+        "sectionName": "Dwudziestolecie Międzywojenne – Groteska, awangarda i katastrofizm",
+        "topicName": "Gombrowiczowski romans z ciałem",
+        "literature": "Ferdydurke - Witold Gombrowicz"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Totalitaryzm, ironia i fantastyka jako diagnoza świata",
+        "topicName": "PRL w pigułce - Rejs Marka Piwowskiego",
+        "literature": ""
+    },
+    {
+        "sectionName": "Literatura Współczesna",
+        "topicName": "Filozofia wolności i osoby",
+        "literature": "Personalizm - Emmanuel Mounier\nWielkość człowieka - Józef Tischner"
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Moralność, poezja i codzienność PRL",
+        "topicName": "Spór o zasady",
+        "literature": "Tango - Sławomir Mrożek"
+    },
+    {
+        "sectionName": "Literatura Współczesna",
+        "topicName": "Slang i moda w języku",
+        "literature": ""
+    },
+    {
+        "sectionName": "Literatura Współczesna",
+        "topicName": "Język reklamy",
+        "literature": ""
+    },
+    {
+        "sectionName": "Literatura lat 1945–1989 – Moralność, poezja i codzienność PRL",
+        "topicName": "Społeczeństwo egalitarne w Tangu",
+        "literature": "Tango - Sławomir Mrożek"
+    }
+]

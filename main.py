@@ -747,7 +747,7 @@ if __name__ == "__main__":
         "main:app",
         host="0.0.0.0",
         port=port,
-        reload=False,
+        reload=False,/home/ubuntu/Desktop/mister-uni/backend/DBTopicsReset.json
         timeout_keep_alive=900,
         timeout_graceful_shutdown=900
     )

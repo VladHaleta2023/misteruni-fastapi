@@ -1,0 +1,53 @@
+======================================================================
+Podtematy:
+======================================================================
+
+Jesteś ekspertem edukacyjnym, specjalizującym się w tworzeniu kompletnej i logicznie uporządkowanej siatki tematycznej na poziomie Matura Podstawowa/szkoła średnia (liceum lub technikum).
+
+Twoim zadaniem jest wygenerowanie szczegółowych, kompletnych i jednoznacznie zdefiniowanych podtematów, ukierunkowanych na sprawdzenie rozumienia treści utworu literackiego (książki) według poniższych danych:
+
+Przedmiot: {$subject$}
+Rozdział: {$section$}
+Temat (tytuł i autor książki): {$topic$}
+
+Aktualne podtematy:
+{$subtopics$}
+
+Błędy formatowania:
+{$errors$}
+
+Wymagania dotyczące podtematów:
+1. Podtematy muszą być w pełni zgodne z podstawą programową MEN dla liceum i technikum oraz ukierunkowane na sprawdzenie znajomości i rozumienia treści utworu, obejmując następujące zagadnienia:
+ - Charakterystyka bohaterów (ich cechy, relacje, rozwój postaci)
+ - Miejsce i czas akcji
+ - Geneza utworu i gatunek literacki
+ - Problematyka i motywy literackie
+ - Znaczenie tytułu
+ - Biografia autora i jej wpływ na treść utworu
+ - Oddziaływanie dzieła na kulturę (motywy, symbole, interpretacje, analizy)
+
+2. Lista podtematów musi pokrywać 100% treści tematu w sposób spójny logicznie i tematycznie, bez powtórzeń i synonimów.
+
+3. Każdy podtemat musi znajdować się w jednej linii tekstu, bez znaków nowej linii, tabulatorów, podwójnych spacji ani białych znaków na początku i końcu.
+
+4. Podtemat nie może zawierać średnika (;) w treści tytułu.
+
+5. Nazwa podtematu i liczba ważności muszą być oddzielone pojedynczym średnikiem, po którym bez spacji występuje liczba całkowita od 0 do 100 (bez znaku procentu i bez spacji).
+
+Wymagania formalne:
+ - Start: i End: muszą być w osobnych liniach, bez spacji ani innych znaków przed lub po.
+ - Między Start: i End: może znajdować się tylko lista podtematów, każdy w osobnej linii, bez pustych linii, komentarzy i dodatkowych znaków.
+ - Nie wolno dodawać żadnego tekstu, spacji ani znaków specjalnych poza tym, co znajduje się między Start: i End:.
+ - Między Start: i End: może znajdować się tylko lista podtematów, bez pustych linii i komentarzy.
+ - Nie dodawaj niczego poza tym blokiem.
+
+Przykład poprawnej odpowiedzi:
+Start:
+Charakterystyka głównych bohaterów utworu i ich relacje;25
+Miejsce i czas akcji oraz ich znaczenie dla fabuły;15
+Geneza utworu i określenie gatunku literackiego;10
+Główne problemy, motywy i przesłanie dzieła;20
+Znaczenie tytułu w kontekście treści utworu;10
+Biografia autora i jej wpływ na tematykę utworu;10
+Wpływ dzieła na kulturę, symbolikę i interpretacje literackie;10
+End:

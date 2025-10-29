@@ -26,10 +26,10 @@ Błędy formatowania:
 {$errors$}
 
 Wymagania dotyczące tekstu zadania:
-1. Format LaTeX:
-   - Wszystkie wzory inline muszą być w \( ... \) lub $ ... $.
-   - Wszystkie wzory blokowe muszą być w \[ ... \] lub $$ ... $$.
-   - Nie używaj środowisk takich jak align, equation, array, matrix, itp.
+1. Format KaTeX:
+   - Wszystkie wzory, zarówno inline, jak i block, muszą być zapisane wyłącznie w formacie $$ ... $$.
+   - Nie używaj \( ... \) ani \[ ... \], tylko $$ ... $$ dla każdego wyrażenia matematycznego.
+   - Nie używaj środowisk takich jak align, equation, array, matrix.
 2. Zasady wyboru podtematów:
    - Wybierz podtematy zgodnie z hierarchią:
      1. Podtematy z opanowaniem niższym, ale bliskim progowi {$threshold$}%.
@@ -57,6 +57,26 @@ Wymagania dotyczące tekstu zadania:
      - krótkie przykłady zastosowania każdej właściwości,
      - dodatkowe wskazówki, które ułatwią zrozumienie zagadnienia,
      - notatka powinna być wystarczająco szczegółowa, aby uczeń mógł samodzielnie przeanalizować i rozwiązać zadanie.
+
+Uwaga:
+- Start: i End: muszą być na osobnych liniach, bez spacji ani innych znaków przed lub po nich.  
+- Między Start: i End: musi znajdować się tekst zadania jako jeden nieprzerwany akapit.  
+- Nie dodawaj niczego poza tym blokiem.  
+- Między subtopicsStart: i subtopicsEnd: wypisz dokładnie wszystkie podtematy, które zostały użyte, bez pustych linii, procentów i komentarzy.
+- Między noteStart: i noteEnd: napisz notatkę lub streszczenie które powinien wiedzieć i rozumieć żeby rozwiązać zadanie
+
+Przykład poprawnej odpowiedzi:
+Start:
+Treść zadania w jednym bloku, bez nowych linii, komentarzy ani dodatkowych znaków
+End:
+subtopicsStart:
+Definicja równania kwadratowego $$ax^2 + bx + c = 0$$
+Postać ogólna równania kwadratowego $$ax^2 + bx + c = 0$$
+Rozwiązywanie równań kwadratowych metodą faktoryzacji
+subtopicsEnd:
+noteStart:
+Notatka lub streszczenie przydatne do rozwiązania tego zadania
+noteEnd:
      
 ======================================================================
 Rozwiązanie zadania:
@@ -74,10 +94,10 @@ Błędy formatowania:
 {$errors$}
 
 Wymagania dotyczące tekstu zadania:
-1. Format LaTeX:
-   - Wszystkie wzory inline muszą być w \( ... \) lub $ ... $.
-   - Wszystkie wzory blokowe muszą być w \[ ... \] lub $$ ... $$.
-   - Nie używaj środowisk takich jak align, equation, array, matrix, itp.
+1. Format KaTeX:
+   - Wszystkie wzory, zarówno inline, jak i block, muszą być zapisane wyłącznie w formacie $$ ... $$.
+   - Nie używaj \( ... \) ani \[ ... \], tylko $$ ... $$ dla każdego wyrażenia matematycznego.
+   - Nie używaj środowisk takich jak align, equation, array, matrix.
 2. Format odpowiedzi:
 Zwróć dokładnie tekst rozwiązania:
 - Bez cudzysłowów, komentarzy, nagłówków ani dodatkowych informacji oraz wstępów
@@ -127,7 +147,9 @@ Wymagania:
 3. Tylko jeden wariant poprawny zgodny w 100% z rozwiązaniem {$solution$}.
 4. Pozostałe 3 warianty błędne, ale logiczne, typowe dla ucznia.
 5. Nie używaj A), B), 1., -, numeracji ani innych znaków.
-6. LaTeX: \( ... \) lub $ ... $ inline; \[ ... \] lub $$ ... $$ blok; zakazane środowiska: align, equation, array, matrix.
+6. LaTeX: wszystkie wyrażenia matematyczne należy zapisywać wyłącznie w formacie KaTeX, czyli:
+  - dla inline i block używaj tylko $$ ... $$ (zamiast $ ... $ lub \( ... \)).
+  - nie używaj środowisk align, equation, array, matrix.
 7. Po 4 wariantach podaj tylko numer poprawnej odpowiedzi (0–3) w nowej linii, bez znaków ani spacji.
 8. Nie dodawaj komentarzy ani pustych linii.
 9. Jeśli warianty i indeks już poprawne, zwróć je bez zmian.
@@ -142,30 +164,28 @@ Uwaga:
 - Każda linia między Start: i End: może zawierać tylko pełny tekst wariantu odpowiedzi lub sam numer indeksu poprawnej odpowiedzi.
 - Żaden wariant nie może być skrótem, urwanym fragmentem lub odpowiedzią pozbawioną sensu – wszystkie muszą być logicznie spójne z treścią zadania.
 - Jeżeli aktualne warianty odpowiedzi oraz aktualny numer lub index prawidłowej odpowiedzi są już poprawne zgodnie z wymaganiami, zwróć dokładnie te same warianty odpowiedzi i ten sam numer lub index prawidłowej odpowiedzi, nie generując nowych.
-- Między option1Start: i option1End: znajduje się wyjaśnienie pierwszego wariantu
-- Między option2Start: i option2End: znajduje się wyjaśnienie drugiego wariantu
-- Między option3Start: i option3End: znajduje się wyjaśnienie trzeciego wariantu
-- Między option4Start: i option4End: znajduje się wyjaśnienie czwartego wariantu
+- Wszystkie wyrażenia matematyczne muszą być zapisane w formacie KaTeX z użyciem $$ ... $$.
+- Między option1Start: i option1End:, option2Start: i option2End:, itd. znajdują się wyjaśnienia każdego wariantu.
 
 Przykład poprawnej odpowiedzi:
 Start:
-Odejmując \(5\) od obu stron otrzymujemy \(2x=8\), a następnie dzieląc przez \(2\) otrzymujemy \(x=4\).
-Odejmując \(5\) od obu stron otrzymujemy \(2x=10\), a następnie dzieląc przez $2$ otrzymujemy $x=5$.
-Z równania \(2x+5=15\) dzielimy obie strony przez \(2\), otrzymując \(x+2{,}5=7{,}5\), a następnie odejmując \(2{,}5\) dostajemy \(x=5\).
-Przenosząc \(5\) na prawą stronę ze zmianą znaku otrzymujemy \(2x=15+5\), a po podzieleniu przez \(2\) mamy \(x=10\).
+Odejmując $$5$$ od obu stron otrzymujemy $$2x=8$$, a następnie dzieląc przez $$2$$ otrzymujemy $$x=4$$.
+Odejmując $$5$$ od obu stron otrzymujemy $$2x=10$$, a następnie dzieląc przez $$2$$ otrzymujemy $$x=5$$.
+Z równania $$2x+5=15$$ dzielimy obie strony przez $$2$$, otrzymując $$x+2{,}5=7{,}5$$, a następnie odejmując $$2{,}5$$ dostajemy $$x=5$$.
+Przenosząc $$5$$ na prawą stronę ze zmianą znaku otrzymujemy $$2x=15+5$$, a po podzieleniu przez $$2$$ mamy $$x=10$$.
 1
 End:
 option1Start:
-Rozpoczynając od odjęcia \(5\), upraszczamy do \(2x=10\), a podzielenie przez \(2\) daje właściwy wynik \(x=5\), co czyni tę odpowiedź zgodną z prawidłowym przebiegiem rozwiązania.
+Rozpoczynając od odjęcia $$5$$, upraszczamy do $$2x=10$$, a podzielenie przez $$2$$ daje właściwy wynik $$x=5$$, co czyni tę odpowiedź zgodną z prawidłowym przebiegiem rozwiązania.
 option1End:
 option2Start:
-Tutaj wystąpił błąd przy odejmowaniu — otrzymano \(2x=8\), co sugeruje, że odjęto \(7\), a nie \(5\). W efekcie końcowa wartość \(x=4\) jest błędna.
+Tutaj wystąpił błąd przy odejmowaniu — otrzymano $$2x=8$$, co sugeruje, że odjęto $$7$$, a nie $$5$$. W efekcie końcowa wartość $$x=4$$ jest błędna.
 option2End:
 option3Start:
 Rozpoczęcie od dzielenia zamiast redukcji stałej liczby prowadzi do niewłaściwego równania pośredniego i w efekcie mylącego wyniku końcowego.
 option3End:
 option4Start:
-Zastosowano nieprawidłową operację – zamiast odjąć \(5\), dodano go do \(15\), co dało zawyżony wynik po podziale, prowadząc do nieprawidłowego \(x=10\).
+Zastosowano nieprawidłową operację – zamiast odjąć $$5$$, dodano go do $$15$$, co dało zawyżony wynik po podziale, prowadząc do nieprawidłowego $$x=10$$.
 option4End:
 
 ======================================================================
@@ -266,7 +286,7 @@ Jeśli rozwiązanie ucznia nie istnieje albo nie zawiera działań związanych z
 Podtematy:
 ======================================================================
 
-Jesteś ekspertem edukacyjnym specjalizującym się w tworzeniu kompletnej i logicznie uporządkowanej siatki tematycznej na poziomie Matura Rozszerzona.
+Jesteś ekspertem edukacyjnym specjalizującym się w tworzeniu kompletnej i logicznie uporządkowanej siatki tematycznej na poziomie Matura Podstawowa/Szkoła średnia (liceum lub technikum).
 Twoim zadaniem jest wygenerowanie szczegółowych, kompletnych i jednoznacznie zdefiniowanych podtematów dla:
 
 Przedmiot: {$subject$}
@@ -280,12 +300,12 @@ Błędy formatowania:
 {$errors$}
 
 Wymagania dotyczące podtematów:
-1. Podtematy muszą być w pełni zgodne z podstawą programową MEN dla liceum i technikum, uwzględniając wszystkie zagadnienia z poziomu Matura Rozszerzona, w sposób logiczny, spójny tematycznie i kompletny, tak aby cyklicznie obejmowały 100% treści danego tematu.
+1. Podtematy muszą być w pełni zgodne z podstawą programową MEN dla liceum i technikum, uwzględniając wszystkie zagadnienia z poziomu Matura Podstawowa/Szkoła średnia (liceum lub technikum), w sposób logiczny, spójny tematycznie i kompletny, tak aby cyklicznie obejmowały 100% treści danego tematu.
 2. Lista podtematów musi pokrywać 100% zagadnień tematu w sposób spójny logicznie i tematycznie, bez powtórzeń i synonimów.
-3. Format LaTeX:
-   - Wzory inline w \( ... \) lub $ ... $,
-   - Wzory blokowe (display) w \[ ... \] lub $$ ... $$,
-   - Nie używaj środowisk takich jak align, equation, array, matrix, itp.
+3. Format KaTeX:
+   - Wszystkie wzory, zarówno inline, jak i block, muszą być zapisane wyłącznie w formacie $$ ... $$.
+   - Nie używaj \( ... \) ani \[ ... \], tylko $$ ... $$ dla każdego wyrażenia matematycznego.
+   - Nie używaj środowisk takich jak align, equation, array, matrix.
 4. Każdy podtemat powinien być pojedynczą linią tekstu, bez znaków nowej linii, tabulatorów, podwójnych spacji ani białych znaków na początku i końcu.
 5. Podtemat nie może zawierać znaku średnika ; w tekście tytułu.
 6. Nazwa podtematu i liczba ważności muszą być oddzielone bezpośrednio znakiem średnika ; bez spacji po średniku bezpośrednio następuje liczba całkowita od 0 do 100, bez znaku procentu i bez spacji.
@@ -299,26 +319,7 @@ Uwaga:
 
 Przykład poprawnej odpowiedzi:
 Start:
-Definicja równania kwadratowego \(ax^2 + bx + c = 0\);30
-Postać ogólna równania kwadratowego $ax^2 + bx + c = 0$;25
+Definicja równania kwadratowego $$ax^2 + bx + c = 0$$;30
+Postać ogólna równania kwadratowego $$ax^2 + bx + c = 0$$;25
 Rozwiązywanie równań kwadratowych metodą faktoryzacji;45
 End:
-Uwaga:
-- Start: i End: muszą być na osobnych liniach, bez spacji ani innych znaków przed lub po nich.  
-- Między Start: i End: musi znajdować się tekst zadania jako jeden nieprzerwany akapit.  
-- Nie dodawaj niczego poza tym blokiem.  
-- Między subtopicsStart: i subtopicsEnd: wypisz dokładnie wszystkie podtematy, które zostały użyte, bez pustych linii, procentów i komentarzy.
-- Między noteStart: i noteEnd: napisz notatkę lub streszczenie które powinien wiedzieć i rozumieć żeby rozwiązać zadanie
-
-Przykład poprawnej odpowiedzi:
-Start:
-Treść zadania w jednym bloku, bez nowych linii, komentarzy ani dodatkowych znaków
-End:
-subtopicsStart:
-Definicja równania kwadratowego \(ax^2 + bx + c = 0\)
-Postać ogólna równania kwadratowego $ax^2 + bx + c = 0$
-Rozwiązywanie równań kwadratowych metodą faktoryzacji
-subtopicsEnd:
-noteStart:
-Notatka lub streszczenie przydatne do rozwiązania tego zadania
-noteEnd:
