@@ -2,7 +2,10 @@ fastapi
 uvicorn[standard]
 python-dotenv
 pydantic
+spacy
 gTTS
 boto3
 httpx
 openai
+numpy
+thinc
