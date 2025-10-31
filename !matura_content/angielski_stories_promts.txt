@@ -1,6 +1,6 @@
 Przedmiot Typ: Language
 Lexical Typ: Stories
-Grammar Typ: Grammar
+Grammar Typ: (Grammar)
 
 ======================================================================
 Tekst zadania:

@@ -26,32 +26,33 @@ Błędy formatowania:
 {$errors$}
 
 Wymagania dotyczące tekstu zadania:
-1. Format LaTeX:
-   - Wszystkie wzory inline muszą być w \( ... \) lub $ ... $.
-   - Wszystkie wzory blokowe muszą być w \[ ... \] lub $$ ... $$.
-   - Nie używaj środowisk takich jak align, equation, array, matrix, itp.
-2. Zasady wyboru podtematów:
+
+1. Zasady wyboru podtematów:
    - Wybierz podtematy zgodnie z hierarchią:
      1. Podtematy z opanowaniem niższym, ale bliskim progowi {$threshold$}%.
      2. Jeśli brak takich – wybierz te z 0% opanowaniem.
      3. Jeśli nadal brak – wybierz te minimalnie powyżej progu {$threshold$}%.
      4. Jeśli nadal brak – wybierz inne z najniższym poziomem opanowania.
    - Maksymalnie wybieraj możliwą liczbę podtematów spełniających powyższe kryteria, tak aby treść zadania obejmowała jak największy zakres materiału z wybranych podtematów.
-3. Treść zadania:
-   - Nie może zawierać odpowiedzi, rozwiązań, wariantów, komentarzy, podpowiedzi, tagów ani placeholderów.  
-   - Nie dziel się na podpunkty ani nie używaj list – musi to być jedno spójne polecenie.  
-   - Stosuj różnorodne konstrukcje zdaniowe, unikaj powtarzających się schematów.  
-   - Treść zadania musi być jednym spójnym zdaniem lub blokiem zdań, bez list i numeracji.  
-   - Treść zadania musi być pytaniem zamkniętym, bez wariantów odpowiedzi w treści.  
-4. Cel:
+
+2. Treść zadania:
+   - Nie może zawierać odpowiedzi, rozwiązań, wariantów, komentarzy, podpowiedzi, tagów ani placeholderów.
+   - Nie dziel się na podpunkty ani nie używaj list – musi to być jedno spójne polecenie.
+   - Stosuj różnorodne konstrukcje zdaniowe, unikaj powtarzających się schematów.
+   - Treść zadania musi być jednym spójnym zdaniem lub blokiem zdań, bez list i numeracji.
+   - Treść zadania musi być pytaniem zamkniętym, bez wariantów odpowiedzi w treści.
+
+3. Cel:
    - Wygeneruj jedno zadanie, które spełnia poziom trudności {$difficulty$}% i opiera się na najlepiej dobranych podtematach z listy
    {$subtopics$}
-5. Podtematy w bloku subtopics:
+
+4. Podtematy w bloku subtopics:
    - W osobnym bloku po treści zadania wypisz tylko te podtematy z listy
    {$subtopics$}
-   które zostały faktycznie użyte w treści zadania, bez procentów, zer, pustych linii ani innych znaków.  
+   które zostały faktycznie użyte w treści zadania, bez procentów, zer, pustych linii ani innych znaków.
    - Nie dopisuj żadnych podtematów, które nie wystąpiły w treści zadania.
-6. Notatka / streszczenie:
+
+5. Notatka / streszczenie:
    - W osobnym bloku noteStart: i noteEnd: napisz szczegółowy, praktyczny kontekst do zadania, który zawiera:
      - definicje pojęć i własności potrzebnych do rozwiązania,
      - krótkie przykłady zastosowania każdej właściwości,
@@ -59,19 +60,21 @@ Wymagania dotyczące tekstu zadania:
      - notatka powinna być wystarczająco szczegółowa, aby uczeń mógł samodzielnie przeanalizować i rozwiązać zadanie.
 
 Uwaga:
-- Start: i End: muszą być na osobnych liniach, bez spacji ani innych znaków przed lub po nich.  
-- Między Start: i End: musi znajdować się tekst zadania jako jeden nieprzerwany akapit.  
-- Nie dodawaj niczego poza tym blokiem.  
+- Start: i End: muszą być na osobnych liniach, bez spacji ani innych znaków przed lub po nich.
+- Między Start: i End: musi znajdować się tekst zadania jako jeden nieprzerwany akapit.
+- Nie dodawaj niczego poza tym blokiem.
 - Między subtopicsStart: i subtopicsEnd: wypisz dokładnie wszystkie podtematy, które zostały użyte, bez pustych linii, procentów i komentarzy.
-- Między noteStart: i noteEnd: napisz notatkę lub streszczenie które powinien wiedzieć i rozumieć żeby rozwiązać zadanie
+- Między noteStart: i noteEnd: napisz notatkę lub streszczenie które powinien wiedzieć i rozumieć żeby rozwiązać zadanie.
+- Treść zadania (między Start: i End:) napisz w języku angielskim.
+- Notatkę (między noteStart: i noteEnd:) napisz w języku polskim.
 
 Przykład poprawnej odpowiedzi:
 Start:
 Treść zadania w jednym bloku, bez nowych linii, komentarzy ani dodatkowych znaków
 End:
 subtopicsStart:
-Definicja równania kwadratowego \(ax^2 + bx + c = 0\)
-Postać ogólna równania kwadratowego $ax^2 + bx + c = 0$
+Definicja równania kwadratowego
+Postać ogólna równania kwadratowego
 Rozwiązywanie równań kwadratowych metodą faktoryzacji
 subtopicsEnd:
 noteStart:
@@ -94,14 +97,12 @@ Błędy formatowania:
 {$errors$}
 
 Wymagania dotyczące tekstu zadania:
-1. Format LaTeX:
-   - Wszystkie wzory inline muszą być w \( ... \) lub $ ... $.
-   - Wszystkie wzory blokowe muszą być w \[ ... \] lub $$ ... $$.
-   - Nie używaj środowisk takich jak align, equation, array, matrix, itp.
-2. Format odpowiedzi:
+
+1. Format odpowiedzi:
 Zwróć dokładnie tekst rozwiązania:
 - Bez cudzysłowów, komentarzy, nagłówków ani dodatkowych informacji oraz wstępów
-3. Cel:
+
+2. Cel:
 Wygenerowanie rozwiązania zadania, które:
 - Spełnia prawidłowości dokładności według tekstu zadania:
 {$text$}
@@ -112,8 +113,8 @@ Uwaga:
 - Nie wolno dodawać żadnego tekstu, spacji ani znaków specjalnych poza tym, co znajduje się między Start: i End:.
 - Między Start: i End: musi być tylko rozwiązanie zadania, bez pustych linii i komentarzy.
 - Nie dodawaj niczego poza tym blokiem.
-- Tekst nie może zawierać cudzysłowów, dodatkowych nawiasów ani symboli spoza wzorów LaTeX.
 - Rozwiązanie zadania powinno być przedstawione jako tekst ciągły, bez podziału na linie. Cała zawartość rozwiązania zadania powinna być podana jako jeden nieprzerwany akapit.
+- Rozwiązanie zadania (między Start: i End:) napisz w języku polskim.
 
 Przykład poprawnej odpowiedzi:
 Start:
@@ -142,16 +143,24 @@ Błędy formatowania:
 {$errors$}
 
 Wymagania:
+
 1. Każdy wariant to jedna linia, max 200 znaków, bez nowych linii i dodatkowych spacji.
+
 2. Wszystkie warianty unikalne; żaden nie powtarza innego ani rozwiązania.
+
 3. Tylko jeden wariant poprawny zgodny w 100% z rozwiązaniem {$solution$}.
+
 4. Pozostałe 3 warianty błędne, ale logiczne, typowe dla ucznia.
+
 5. Nie używaj A), B), 1., -, numeracji ani innych znaków.
-6. LaTeX: \( ... \) lub $ ... $ inline; \[ ... \] lub $$ ... $$ blok; zakazane środowiska: align, equation, array, matrix.
-7. Po 4 wariantach podaj tylko numer poprawnej odpowiedzi (0–3) w nowej linii, bez znaków ani spacji.
-8. Nie dodawaj komentarzy ani pustych linii.
-9. Jeśli warianty i indeks już poprawne, zwróć je bez zmian.
-10. Do każdego wariantu dodaj wyjaśnienie tych wariantów dlaczego dany wariant jest błędny lub poprawny
+
+6. Po 4 wariantach podaj tylko numer poprawnej odpowiedzi (0–3) w nowej linii, bez znaków ani spacji.
+
+7. Nie dodawaj komentarzy ani pustych linii.
+
+8. Jeśli warianty i indeks już poprawne, zwróć je bez zmian.
+
+9. Do każdego wariantu dodaj wyjaśnienie tych wariantów dlaczego dany wariant jest błędny lub poprawny
 
 Uwaga:
 - Między Start: i End: znajdują się dokładnie 4 linie z wariantami odpowiedzi oraz jedna linia z numerem poprawnej odpowiedzi (0–3).
@@ -166,26 +175,31 @@ Uwaga:
 - Między option2Start: i option2End: znajduje się wyjaśnienie drugiego wariantu
 - Między option3Start: i option3End: znajduje się wyjaśnienie trzeciego wariantu
 - Między option4Start: i option4End: znajduje się wyjaśnienie czwartego wariantu
+- Między option1Start: i option1End: napisz w języku polskim
+- Między option2Start: i option2End: napisz w języku polskim
+- Między option3Start: i option3End: napisz w języku polskim
+- Między option4Start: i option4End: napisz w języku polskim
+- Między Start: i End: napisz w języku angielskim
 
 Przykład poprawnej odpowiedzi:
 Start:
-Odejmując \(5\) od obu stron otrzymujemy \(2x=8\), a następnie dzieląc przez \(2\) otrzymujemy \(x=4\).
-Odejmując \(5\) od obu stron otrzymujemy \(2x=10\), a następnie dzieląc przez $2$ otrzymujemy $x=5$.
-Z równania \(2x+5=15\) dzielimy obie strony przez \(2\), otrzymując \(x+2{,}5=7{,}5\), a następnie odejmując \(2{,}5\) dostajemy \(x=5\).
-Przenosząc \(5\) na prawą stronę ze zmianą znaku otrzymujemy \(2x=15+5\), a po podzieleniu przez \(2\) mamy \(x=10\).
+Odejmując 5 od obu stron otrzymujemy 2x=8, a następnie dzieląc przez 2 otrzymujemy x=4.
+Odejmując 5 od obu stron otrzymujemy 2x=10, a następnie dzieląc przez 2 otrzymujemy x=5.
+Z równania 2x+5=15 dzielimy obie strony przez 2, otrzymując x+2.5=7.5, a następnie odejmując 2.5 dostajemy x=5.
+Przenosząc 5 na prawą stronę ze zmianą znaku otrzymujemy 2x=15+5, a po podzieleniu przez 2 mamy x=10.
 1
 End:
 option1Start:
-Rozpoczynając od odjęcia \(5\), upraszczamy do \(2x=10\), a podzielenie przez \(2\) daje właściwy wynik \(x=5\), co czyni tę odpowiedź zgodną z prawidłowym przebiegiem rozwiązania.
+Rozpoczynając od odjęcia 5, upraszczamy do 2x=10, a podzielenie przez 2 daje właściwy wynik x=5, co czyni tę odpowiedź zgodną z prawidłowym przebiegiem rozwiązania.
 option1End:
 option2Start:
-Tutaj wystąpił błąd przy odejmowaniu — otrzymano \(2x=8\), co sugeruje, że odjęto \(7\), a nie \(5\). W efekcie końcowa wartość \(x=4\) jest błędna.
+Tutaj wystąpił błąd przy odejmowaniu — otrzymano 2x=8, co sugeruje, że odjęto 7, a nie 5. W efekcie końcowa wartość x=4 jest błędna.
 option2End:
 option3Start:
 Rozpoczęcie od dzielenia zamiast redukcji stałej liczby prowadzi do niewłaściwego równania pośredniego i w efekcie mylącego wyniku końcowego.
 option3End:
 option4Start:
-Zastosowano nieprawidłową operację – zamiast odjąć \(5\), dodano go do \(15\), co dało zawyżony wynik po podziale, prowadząc do nieprawidłowego \(x=10\).
+Zastosowano nieprawidłową operację – zamiast odjąć 5, dodano go do 15, co dało zawyżony wynik po podziale, prowadząc do nieprawidłowego x=10
 option4End:
 
 ======================================================================
@@ -304,14 +318,18 @@ Błędy formatowania:
 
 Wymagania dotyczące listy pytań:
 1. Każde pytanie powinno dotyczyć wyłącznie treści tekstu opowiadania i weryfikować zrozumienie jego szczegółów, wydarzeń i kontekstu.
+
 2. Każde pytanie powinno być pojedynczą linią tekstu, bez znaków nowej linii, tabulatorów, podwójnych spacji ani białych znaków na początku i końcu.
+
 3. Nie twórz odpowiedzi ani opcji ABCD/1234, podawaj wyłącznie treść pytań.
+
 4. Zachowaj sens i kolejność wydarzeń z tekstu.
 
 Uwaga:
 - Start: i End: muszą być na osobnych liniach, bez spacji ani innych znaków przed lub po nich.
 - Między Start: i End: może znajdować się tylko lista pytań, każdy na osobnej linii, bez pustych linii, komentarzy i dodatkowych znaków.
-- Nie wolno dodawać żadnego tekstu, spacji ani znaków specjalnych poza tym, co znajduje się między Start: i End:.
+- Nie wolno dodawać żadnego tekstu, spacji ani znaków specjalnych poza tym, co znajduje się między Start: i End:
+- Między Start: i End: napisz w języku angielskim
 
 Przykład poprawnej odpowiedzi:
 Start:
@@ -347,14 +365,20 @@ Nie oznaczaj jako błędne żadnych wyrażeń, które są poprawne gramatycznie 
 Jeśli tłumaczenie jest nielogiczne, niezrozumiałe lub nieadekwatne względem tekstu źródłowego, również uznaj je za błędne.
 
 Wypisz wynik w formacie:
-1. Najpierw bloki Start: i End:, potem wordsStart: i wordsEnd:  
-2. Pomiędzy Start: i End: podaj krótkie wyjaśnienie błędów w tłumaczeniu wyrażeń.  
-3. W wordsStart: i wordsEnd: umieść tylko te wyrażenia, które są faktycznie błędnie przetłumaczone. Każde na osobnej linii, bez spacji ani innych znaków przed lub po. Nie dodawaj pustych linii ani własnych komentarzy.  
+
+1. Najpierw bloki Start: i End:, potem wordsStart: i wordsEnd:
+
+2. Pomiędzy Start: i End: podaj krótkie wyjaśnienie błędów w tłumaczeniu wyrażeń.
+
+3. W wordsStart: i wordsEnd: umieść tylko te wyrażenia, które są faktycznie błędnie przetłumaczone. Każde na osobnej linii, bez spacji ani innych znaków przed lub po. Nie dodawaj pustych linii ani własnych komentarzy.
+
 4. Wewnątrz bloku wordsStart: i wordsEnd: powinny znaleźć się tylko wyrażenia wymienione w liście {$words$}.
+
+5. W wyjaśnieniu podaj przyczynę błędu (np. niepoprawny czas, dosłowne tłumaczenie idiomu, brak zgodności kontekstu).
 
 Przykład odpowiedzi:
 Start:
-Wyjaśnienie błędów w tłumaczeniu w umiarkowanym stopniu
+Wyjaśnienie błędów w tłumaczeniu w umiarkowanym stopniu w języku polskim
 End:
 wordsStart:
 Hello my friend
@@ -362,3 +386,44 @@ Bye
 Go home
 wordsEnd:
 
+======================================================================
+Podtematy:
+======================================================================
+
+Jesteś ekspertem edukacyjnym specjalizującym się w tworzeniu kompletnej i logicznie uporządkowanej siatki tematycznej na poziomie Matura Podstawowa i Matura Rozszerzona (szkoła średnia – liceum lub technikum).
+Twoim zadaniem jest wygenerowanie szczegółowych, kompletnych i jednoznacznie zdefiniowanych podtematów dla:
+
+Przedmiot: {$subject$}
+Rozdział: {$section$}
+Temat: {$topic$}
+
+Aktualne podtematy to:
+{$subtopics$}
+
+Błędy formatowania:
+{$errors$}
+
+Wymagania dotyczące podtematów:
+1. Podtematy muszą być w pełni zgodne z podstawą programową MEN dla liceum i technikum, obejmując całość treści z poziomu Matura Podstawowa oraz Matura Rozszerzona, w sposób logiczny, spójny tematycznie i kompletny, tak aby łącznie pokrywały 100% zagadnień danego tematu (od podstawowych do rozszerzonych).
+
+2. Lista podtematów musi pokrywać 100% zagadnień tematu w sposób spójny logicznie i tematycznie, bez powtórzeń i synonimów.
+
+3. Każdy podtemat powinien być pojedynczą linią tekstu, bez znaków nowej linii, tabulatorów, podwójnych spacji ani białych znaków na początku i końcu.
+
+4. Podtemat nie może zawierać znaku średnika ; w tekście tytułu.
+
+5. Nazwa podtematu i liczba ważności muszą być oddzielone bezpośrednio znakiem średnika ; bez spacji po średniku bezpośrednio następuje liczba całkowita od 0 do 100, bez znaku procentu i bez spacji.
+
+Uwaga:
+- Start: i End: muszą być na osobnych liniach, bez spacji ani innych znaków przed lub po nich.
+- Między Start: i End: może znajdować się tylko lista podtematów, każdy na osobnej linii, bez pustych linii, komentarzy i dodatkowych znaków.
+- Nie wolno dodawać żadnego tekstu, spacji ani znaków specjalnych poza tym, co znajduje się między Start: i End:.
+- Między Start: i End: musi być tylko lista podtematów, bez pustych linii i komentarzy.
+- Nie dodawaj niczego poza tym blokiem.
+
+Przykład poprawnej odpowiedzi:
+Start:
+Definicja równania kwadratowego;30
+Postać ogólna równania kwadratowego;25
+Rozwiązywanie równań kwadratowych metodą faktoryzacji;45
+End:

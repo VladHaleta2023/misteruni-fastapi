@@ -21,6 +21,7 @@
 2.8 Wzory skróconego mnożenia
 2.9 Zastosowanie przekształceń algebraicznych
 2.10 Wartość bezwzględna
+2.11 Własności wartości bezwzględnej
 
 3. Układy równań
 3.1 Co to jest układ równań
@@ -37,7 +38,11 @@
 4.6 Przesuwanie wykresu wzdłuż osi OX
 4.7 Przekształcanie wykresu przez symetrię względem osi OX
 4.8 Przekształcanie wykresu przez symetrię względem osi OY
-4.9 Proporcjonalność odwrotna
+4.9 Wektory w układzie współrzędnych
+4.10 Przesuwanie wykresu o wektor
+4.11 Przekształcenie wykresu przez symetrię względem osi układu współrzędnych
+4.12 Inne przekształcenia wykresu
+4.13 Proporcjonalność odwrotna
 
 5. Funkcja liniowa
 5.1 Wykres funkcji liniowej
@@ -46,7 +51,9 @@
 5.4 Współczynnik kierunkowy prostej
 5.5 Warunek prostopadłości prostych
 5.6 Interpretacja geometryczna układu równań liniowych
-5.7 Funkcja liniowa - zastosowania
+5.7 Układy nierówności liniowych
+5.8 Równania i nierówności liniowe z parametrami
+5.9 Funkcja liniowa - zastosowania
 
 6. Planimetria – trójkąty i wielokąty
 6.1 Miary kątów w trójkącie
@@ -57,42 +64,53 @@
 6.6 Pola wielokątów podobnych
 6.7 Twierdzenie o dwusiecznej kąta w trójkącie
 
-7. Wstęp do funkcji kwadratowej
+7. Funkcja kwadratowa
 7.1 Wykres funkcji $$f(x) = ax^2$$
 7.2 Przesunięcie wykresu funkcji $$f(x) = ax^2$$ wzdłuż osi OX i OY
 7.3 Postać kanoniczna i postać ogólna funkcji kwadratowej
+7.4 Równania kwadratowe
+7.5 Postać iloczynowa funkcji kwadratowej
+7.6 Nierówności kwadratowe
 
-8. Funkcja kwadratowa
-8.1 Wykres funkcji kwadratowej
-8.2 Postać kanoniczna funkcji kwadratowej
-8.3 Równania kwadratowe
-8.4 Postać iloczynowa funkcji kwadratowej
-8.5 Nierówności kwadratowe
-8.6 Równania sprowadzalne do równań kwadratowych
-8.7 Układy równań
-8.8 Funkcja kwadratowa - zastosowania
+8. Zastosowania funkcji kwadratowej
+8.1 Równania sprowadzalne do równań kwadratowych
+8.2 Szkicowanie wykresu funkcji kwadratowej
+8.3 Układy równań
+8.4 Wzory Viete'a
+8.5 Równania i nierówności kwadratowe z parametrem
+8.6 Funkcja kwadratowa - zastosowania
 
 9. Wielomiany
 9.1 Stopień i współczynniki wielomianu
 9.2 Dodawanie i odejmowanie wielomianów
 9.3 Mnożenie wielomianów
 9.4 Wzory skróconego mnożenia
-9.5 Rozkład wielomianu na czynniki
-9.6 Dzielenie wielomianów
-9.7 Twierdzenie Bezouta
-9.8 Pierwiastki całkowite wielomianu
-9.9 Wielomiany – zastosowania
+9.5 Trójkąt Pascala
+9.6 Rozkład wielomianu na czynniki
+9.7 Równania wielomianowe
+9.8 Dzielenie wielomianów
+9.9 Równość wielomianów
+9.10 Twierdzenie Bezouta
+9.11 Pierwiastki całkowite i pierwiastki wymierne wielomianu
+9.12 Równania wielomianowe. Wzór Cardano
+9.13 Wykres wielomianu
+9.14 Nierówności wielomianowe
+9.15 Wielomiany – zastosowania
 
 10. Funkcje wymierne
 10.1 Wykres funkcji $$f(x) = \frac{a}{x}$$
 10.2 Przesunięcie wykresu funkcji $$f(x) = \frac{a}{x}$$ wzdłuż osi OY
 10.3 Przesunięcie wykresu funkcji $$f(x) = \frac{a}{x}$$ wzdłuż osi OX
-10.4 Wyrażenia wymierne i funkcje wymierne
-10.5 Mnożenie i dzielenie wyrażeń wymiernych
-10.6 Dodawanie i odejmowanie wyrażeń wymiernych
-10.7 Równania wymierne
-10.8 Równania i nierówności z wartością bezwzględną
-10.9 Wyrażenia wymierne - zastosowania
+10.4 Funkcja homograficzna
+10.5 Hiperbola
+10.6 Przekształcenia wykresu funkcji
+10.7 Mnożenie i dzielenie wyrażeń wymiernych
+10.8 Dodawanie i odejmowanie wyrażeń wymiernych
+10.9 Równania wymierne
+10.10 Nierówności wymierne
+10.11 Dziedzina funkcji. Funkcje wymierne
+10.12 Równania i nierówności z wartością bezwzględną
+10.13 Wyrażenia wymierne - zastosowania
 
 11. Trygonometria
 11.1 Trójkąty prostokątne
@@ -108,85 +126,164 @@
 12.1 Okrąg
 12.2 Koło
 12.3 Wzajemne położenie okręgu i prostej
-12.4 Kąty w okręgu
-12.5 Okrąg opisany na trójkącie
-12.6 Okrąg wpisany w trójkąt
-12.7 Wielokąty foremne
-12.8 Twierdzenie sinusów
-12.9 Twierdzenie cosinusów
+12.4 Konstrukcja stycznej do okręgu. Konstrukcja wspólnej stycznej do dwóch okręgów rozłącznych zewnętrznie
+12.5 Kąty w okręgu
+12.6 Okrąg opisany na trójkącie
+12.7 Okrąg wpisany w trójkąt
+12.8 Czworokąty wypukłe
+12.9 Okrąg opisany na czworokącie
+12.10 Twierdzenie Ptolemeusza
+12.11 Okrąg wpisany w czworokąt
+12.12 Wielokąty foremne
+12.13 Twierdzenie sinusów
+12.14 Twierdzenie cosinusów
 
 13. Funkcja wykładnicza i funkcja logarytmiczna
 13.1 Potęga o wykładniku wymiernym
 13.2 Potęga o wykładniku rzeczywistym
 13.3 Funkcja wykładnicza
 13.4 Przekształcenia wykresu funkcji wykładniczej
-13.5 Logarytm
-13.6 Logarytm dziesiętny
-13.7 Logarytm iloczynu i logarytm ilorazu
-13.8 Logarytm potęgi
-13.9 Funkcja logarytmiczna
-13.10 Przekształcenia wykresu funkcji logarytmicznej
-13.11 Funkcje wykładnicza i logarytmiczna - zastosowania
+13.5 Własności funkcji wykładniczej
+13.6 Logarytm
+13.7 Logarytm dziesiętny
+13.8 Logarytm iloczynu i logarytm ilorazu
+13.9 Logarytm potęgi
+13.10 Własności logarytmów
+13.11 Funkcja logarytmiczna
+13.12 Przekształcenia wykresu funkcji logarytmicznej
+13.13 Zmiana podstawy logarytmu
+13.14 Funkcje wykładnicza i logarytmiczna - zastosowania
 
-14. Geometria analityczna
-14.1 Odległość między punktami w układzie współrzędnych
-14.2 Środek odcinka
-14.3 Odległość punktu od prostej
-14.4 Okrąg w układzie współrzędnych
-14.5 Wzajemne położenie dwóch okręgów
-14.6 Wzajemne położenie okręgu i prostej
-14.7 Układy równań - powtórzenie
-14.8 Punkty wspólne prostej i okręgu
-14.9 Symetria osiowa
-14.10 Symetria środkowa
+14. Funkcje trygonometryczne
+14.1 Funkcje trygognometryczne dowolnego kąta
+14.2 Kąt obrotu
+14.3 Miara łukowa kąta
+14.4 Funkcje okresowe
+14.5 Wykresy funkcji sinus i cosinus
+14.6 Funkcje parzyste i funkcje nieparzyste
+14.7 Wykresy funkcji tangens i cotangens
+14.8 Przesunięcie wykresu funkcji o wektor
+14.9 Przekształcenia wykresu funkcji
+14.10 Ruch po okręgu
+14.11 Tożsamości trygonometryczne
+14.12 Przybliżone wartości funkcji trygonometrycznych
+14.13 Funkcje trygonometryczne sumy i różnicy kątów
+14.14 Wzory redukcyjne
+14.15 Równania trygonometryczne
+14.16 Suma i różnica sinusów, suma i różnica cosinusów
+14.17 Nierówności trygonometryczne
 
-15. Ciągi
-15.1 Pojęcie ciągu
-15.2 Sposoby określania ciągu
-15.3 Ciągi monotoniczne
-15.4 Ciągi określone rekurencyjne
-15.5 Ciąg arytmetyczny
-15.6 Suma początkowych wyrazów ciągu arytmetycznego
-15.7 Ciąg geometryczny
-15.8 Suma początkowych wyrazów ciągu geometrycznego
-15.9 Ciągi arytmetyczne i ciągi geometryczne - zadania
-15.10 Procent składany
+15. Geometria analityczna
+15.1 Odległość między punktami w układzie współrzędnych
+15.2 Środek odcinka
+15.3 Odległość punktu od prostej
+15.4 Pole trójkąta w układzie współrzędnych
+15.5 Okrąg w układzie współrzędnych
+15.6 Okrąg wpisnay w trójkąt
+15.7 Wzajemne położenie dwóch okręgów
+15.8 Wzajemne położenie okręgu i prostej
+15.9 Układy równań drugiego stopnia
+15.10 Koło w układzie współrzędnych
+15.11 Działania na wektorach
+15.12 Iloczyn skalarny wektorów
+15.13 Wektory - zastosowania
+15.14 Punkty wspólne prostej i okręgu
+15.15 Symetria osiowa
+15.16 Symetria środkowa
 
-16. Statystyka
-16.1 Średnia arytmetyczna
-16.2 Mediana, skala centylowa i dominanta
-16.3 Odchylenie standardowe
-16.4 Średnia ważona
+16. Ciągi
+16.1 Pojęcie ciągu
+16.2 Sposoby określania ciągu
+16.3 Ciągi monotoniczne
+16.4 Ciągi określone rekurencyjne
+16.5 Ciąg arytmetyczny
+16.6 Suma początkowych wyrazów ciągu arytmetycznego
+16.7 Ciąg geometryczny
+16.8 Suma początkowych wyrazów ciągu geometrycznego
+16.9 Ciągi arytmetyczne i ciągi geometryczne - zadania
+16.10 Ciąg liczb całkowitych
+16.11 Procent składany
+16.12 Granica ciągu
+16.13 Ciągi rozbieżne
+16.14 Obliczanie granic ciągów
+16.15 Szereg geometryczny
 
-17. Rachunek prawdopodobieństwa
-17.1 Reguła mnożenia
-17.2 Permutacje
-17.3 Wariacje bez powtórzeń
-17.4 Wariacje z powtórzeniami
-17.5 Reguła dodawania
-17.6 Zdarzenia losowe
-17.7 Prawdopodobieństwo klasyczne
-17.8 Prawdopodobieństwo klasyczne - zadania
-17.9 Rozkład prawdopodobieństwa
-17.10 Własności prawdopodobieństwa
-17.11 Wartość oczekiwana zmiennej losowej
+17. Rachunek różniczkowy
+17.1 Granica funkcji w punkcie
+17.2 Obliczanie granic funkcji
+17.3 Granice jednostronne
+17.4 Granice niewłaściwe
+17.5 Krzywe płaskie i ich asymptoty
+17.6 Granica funkcji w nieszkończoności
+17.7 Ciągłość funkcji
+17.8 Własności funkcji ciągłych
+17.9 Pochodna funkcji w punkcie
+17.10 Funkcja pochodna
+17.11 Działania na pochodnych
+17.12 Pochodna funkcji złożonej
+17.13 Interpretacja fizyczna pochodnej
+17.14 Monotoniczność funkcji
+17.15 Ekstrema funkcji
+17.16 Wartość najmniejsza i wartość największa funkcji
+17.17 Zagadnienia optymalizacyjne
+17.18 Szkicowanie wykresu funkcji
 
-18. Graniastosłupy i ostrosłupy
-18.1 Proste i płaszczyzny w przestrzeni
-18.2 Graniastosłupy
-18.3 Odcinki w graniastosłupach
-18.4 Objętość graniastosłupa
-18.5 Ostrosłupy
-18.6 Objętość ostrosłupa
-18.7 Kąt między prostą a płaszczyzną
-18.8 Kąt dwuścienny
-18.9 Przekroje prostopadłościanów
+18. Statystyka
+18.1 Średnia arytmetyczna
+18.2 Mediana, skala centylowa i dominanta
+18.3 Odchylenie standardowe
+18.4 Średnia ważona
 
-19. Bryły obrotowe
-19.1 Walec
-19.2 Stożek
-19.3 Kula
-19.4 Bryły podobne
+19. Rachunek prawdopodobieństwa
+19.1 Reguła mnożenia
+19.2 Permutacje
+19.3 Permutacje z powtórzeniami
+19.4 Wariacje bez powtórzeń
+19.5 Wariacje z powtórzeniami
+19.6 Kombinacje
+19.7 Kombinatoryka - zadania
+19.8 Dwójkowy system liczbowy
+19.9 Reguła dodawania
+19.10 Zdarzenia losowe
+19.11 Częstość zdarzeń
+19.12 Prawdopodobieństwo klasyczne
+19.13 Prawdopodobieństwo klasyczne - zadania
+19.14 Rozkład prawdopodobieństwa
+19.15 Własności prawdopodobieństwa
+19.16 Prawdopodobieństwo warunkowe
+19.17 Zdarzenia niezależne
+19.18 Prawdopodobieństwo całkowite
+19.19 Wzór Bayesa
+19.20 Doświadczenia wieloetapowe
+19.21 Schemat Bernoulliego
+19.22 Wartość oczekiwana zmiennej losowej
+
+20. Graniastosłupy i ostrosłupy
+20.1 Proste i płaszczyzny w przestrzeni
+20.2 Graniastosłupy
+20.3 Odcinki w graniastosłupach
+20.4 Objętość graniastosłupa
+20.5 Graniastosłupy pochyłe
+20.6 Ostrosłupy
+20.7 Objętość ostrosłupa
+20.8 Twierdzenie o trzech prostych prostopadłych
+20.9 Kąt między prostą a płaszczyzną
+20.10 Kąt dwuścienny
+20.11 Przekroje prostopadłościanów
+20.12 Przekroje innych granisatosłupów
+20.13 Przekroje ostrosłupów
+
+21. Bryły obrotowe
+21.1 Walec
+21.2 Stożek
+21.3 Linie geodezyjne
+21.4 Kula
+21.5 Bryły podobne
+21.6 Zasada Cavalieriego
+21.7 Bryły opisane na kuli
+21.8 Bryły wpisane w kulę
+21.9 Inne bryły wpisane i opisane
+21.10 Zagadnienia optymalizacyjne
 
 20. Przykłady dowodów w matematyce
 20.1 Dowody w algebrze
