@@ -2,7 +2,6 @@ from fastapi import FastAPI, UploadFile, File, HTTPException, Form, Body, Reques
 from pydantic import BaseModel
 from typing import Optional, List, Any, Dict
 from dotenv import load_dotenv
-import spacy
 import os
 import re
 from fastapi.responses import FileResponse
