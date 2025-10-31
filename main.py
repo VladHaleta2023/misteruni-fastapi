@@ -236,7 +236,6 @@ class WordsGenerator(BaseModel):
 async def root():
     return {"message": f"Serwer działa na porcie {port}"}
 
-
 @app.post("/admin/full-plan-generate")
 def full_plan_generate(data: PromptRequest):
     try:
@@ -245,9 +244,48 @@ def full_plan_generate(data: PromptRequest):
     except RuntimeError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-def split_text_into_sentences(text: str, language: str = 'ru') -> list[str]:
-    sentences = re.split(r'(?<=[.!?。！？])\s+', text)
-    return [s.strip() for s in sentences if s.strip()]
+COMMON_ABBREVIATIONS = {
+    "pl": [
+        "np.", "itp.", "tj.", "dr.", "mgr.", "prof.", "ul.", "al.", "św.",
+        "r.", "god.", "p.", "nr.", "ok.", "m.in.", "cdn.", "tzn."
+    ],
+    "en": [
+        "mr.", "mrs.", "ms.", "dr.", "prof.", "inc.", "ltd.", "jr.", "sr.",
+        "st.", "vs.", "u.s.", "u.k.", "e.g.", "i.e.", "etc.", "fig."
+    ],
+}
+
+def split_text_into_sentences(text: str, language: str = "en") -> list[str]:
+    if not text or not isinstance(text, str):
+        return []
+
+    abbreviations = COMMON_ABBREVIATIONS.get(language.lower(), [])
+    abbrev_pattern = re.compile(
+        r"\b(" + "|".join([re.escape(a) for a in abbreviations]) + r")",
+        re.IGNORECASE
+    )
+
+    text_protected = abbrev_pattern.sub(lambda m: m.group(1).replace(".", "§"), text)
+
+    text_protected = re.sub(r"(\d)\.(\d)", r"\1§\2", text_protected)
+
+    parts = re.split(
+        r"(?<=[.!?…])\s+(?=[\"“”'«»„\(]*[A-ZА-ЯŁŚŹŻĆŃ])",
+        text_protected
+    )
+
+    sentences = []
+    for p in parts:
+        s = p.strip().replace("§", ".")
+        if s:
+            if sentences and (
+                len(s) < 3 or (s and s[0].islower())
+            ):
+                sentences[-1] += " " + s
+            else:
+                sentences.append(s)
+
+    return sentences
 
 @app.post("/admin/split-into-sentences", response_model=SplitIntoSentencesResponse)
 def split_into_sentences(data: SplitIntoSentencesRequest):
@@ -255,7 +293,6 @@ def split_into_sentences(data: SplitIntoSentencesRequest):
         return SplitIntoSentencesResponse(sentences=split_text_into_sentences(data.text, data.language))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Błąd serwera: {str(e)}")
-
 
 @app.post("/admin/tts")
 def generate_tts(data: TTSRequest):
