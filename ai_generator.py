@@ -169,6 +169,10 @@ def parse_questions_response(old_questions: list, response: str, errors: list) -
         if len(unique_lines) < len(lines):
             errors.append("Usunięto powtarzające się pytania.")
 
+        if len(unique_lines) > 5:
+            errors.append(f"Liczba pytań ({len(unique_lines)}) przekracza maksimum 10, nadmiarowe pytania zostaną usunięte.")
+            unique_lines = unique_lines[:5]
+
         return unique_lines
     except Exception as e:
         errors.append(f"Błąd nieoczekiwany podczas parsowania pytań: {str(e)}")
@@ -233,23 +237,59 @@ def parse_note_response(old_note: str, response: str, errors: list) -> str:
             errors.append("Błąd parsowania: brak etykiety noteEnd:")
             return old_note
         if end_match.start() <= start_match.end():
-            errors.append("Błąd parsowania: etykieta End: znajduje się przed Start:")
+            errors.append("Błąd parsowania: etykieta noteEnd: znajduje się przed noteStart:")
             return old_note
 
         final_text = response[start_match.end(): end_match.start()].strip()
 
         if not final_text:
-            errors.append("Błąd: tekst zadania jest pusty")
+            errors.append("Błąd: notatka zadania jest pusta")
             return old_note
 
         if not validate_latex(final_text, errors):
-            errors.append(f"Błąd LaTeX w tekście zadania: '{final_text}'")
+            errors.append(f"Błąd LaTeX w notatce zadania: '{final_text}'")
             return old_note
         return final_text
-
     except Exception as e:
         errors.append(f"Błąd nieoczekiwany podczas parsowania: {str(e)}")
         return old_note
+
+def parse_frequency_response(old_frequency: int, response: str, errors: list) -> int:
+    try:
+        response = response.replace('\r\n', '\n').strip()
+
+        start_match = re.search(r'frequencyStart\s*:', response, re.IGNORECASE)
+        end_match = re.search(r'frequencyEnd\s*:', response, re.IGNORECASE)
+
+        if not start_match:
+            errors.append("Błąd parsowania: brak etykiety frequencyStart:")
+            return old_frequency
+        if not end_match:
+            errors.append("Błąd parsowania: brak etykiety frequencyEnd:")
+            return old_frequency
+        if end_match.start() <= start_match.end():
+            errors.append("Błąd parsowania: etykieta frequencyEnd: znajduje się przed frequencyStart:")
+            return old_frequency
+
+        freq_text = response[start_match.end(): end_match.start()].strip()
+
+        if not freq_text:
+            errors.append("Błąd: blok częstotliwości jest pusty")
+            return old_frequency
+
+        if not re.fullmatch(r'\d{1,3}', freq_text):
+            errors.append(f"Błąd: niepoprawny format liczby w frequency: '{freq_text}'")
+            return old_frequency
+
+        freq_value = int(freq_text)
+        if not (0 <= freq_value <= 100):
+            errors.append(f"Błąd: liczba frequency {freq_value} poza zakresem 0–100")
+            return old_frequency
+
+        return freq_value
+    except Exception as e:
+        errors.append(f"Błąd nieoczekiwany podczas parsowania frequency: {str(e)}")
+        return old_frequency
 
 def parse_explanation_response(old_explanation: str, response: str, errors: list) -> str:
     try:
@@ -612,337 +652,3 @@ def parse_output_words_response(old_words: list, words: list, response: str, err
     except Exception as e:
         errors.append(f"Błąd nieoczekiwany podczas parsowania wyrazów: {str(e)}")
         return old_words
-
-subtopics_prompt = """Jesteś ekspertem edukacyjnym specjalizującym się w tworzeniu kompletnej i logicznie uporządkowanej siatki tematycznej na poziomie Matura Rozszerzona.
-Twoim zadaniem jest wygenerowanie szczegółowych, kompletnych i jednoznacznie zdefiniowanych podtematów dla:
-
-Przedmiot: {$subject$}
-Rozdział: {$section$}
-Temat: {$topic$}
-
-Aktualne podtematy to:
-{$subtopics$}
-
-Błędy formatowania:
-{$errors$}
-
-Wymagania dotyczące podtematów:
-1. Podtematy muszą być w pełni zgodne z podstawą programową MEN dla liceum i technikum, uwzględniając wszystkie zagadnienia z poziomu Matura Rozszerzona, w sposób logiczny, spójny tematycznie i kompletny, tak aby cyklicznie obejmowały 100% treści danego tematu.
-2. Lista podtematów musi pokrywać 100% zagadnień tematu w sposób spójny logicznie i tematycznie, bez powtórzeń i synonimów.
-3. Format LaTeX:
-   - Wzory inline w \( ... \) lub $ ... $,
-   - Wzory blokowe (display) w \[ ... \] lub $$ ... $$,
-   - Nie używaj środowisk takich jak align, equation, array, matrix, itp.
-4. Każdy podtemat powinien być pojedynczą linią tekstu, bez znaków nowej linii, tabulatorów, podwójnych spacji ani białych znaków na początku i końcu.
-5. Podtemat nie może zawierać znaku średnika ; w tekście tytułu.
-6. Nazwa podtematu i liczba ważności muszą być oddzielone bezpośrednio znakiem średnika ; bez spacji po średniku bezpośrednio następuje liczba całkowita od 0 do 100, bez znaku procentu i bez spacji.
-
-Uwaga:
-- Start: i End: muszą być na osobnych liniach, bez spacji ani innych znaków przed lub po nich.
-- Między Start: i End: może znajdować się tylko lista podtematów, każdy na osobnej linii, bez pustych linii, komentarzy i dodatkowych znaków.
-- Nie wolno dodawać żadnego tekstu, spacji ani znaków specjalnych poza tym, co znajduje się między Start: i End:.
-- Między Start: i End: musi być tylko lista podtematów, bez pustych linii i komentarzy.
-- Nie dodawaj niczego poza tym blokiem.
-
-Przykład poprawnej odpowiedzi:
-Start:
-Definicja równania kwadratowego \(ax^2 + bx + c = 0\);30
-Postać ogólna równania kwadratowego $ax^2 + bx + c = 0$;25
-Rozwiązywanie równań kwadratowych metodą faktoryzacji;45
-End:
-"""
-
-task_prompt = """Jesteś nauczycielem przedmiotu {$subject$} w szkole średniej (liceum lub technikum). Twoim zadaniem jest wygenerowanie dokładnie jednego, poprawnie sformułowanego, zamkniętego zadania, które spełnia wszystkie poniższe wymagania dla:
-
-Przedmiot: {$subject$}
-Rozdział: {$section$}
-Temat: {$topic$}
-Poziom trudności: {$difficulty$}%
-Próg: {$threshold$}%
-Historia zadań:
-{$tasks$}
-
-Podtematy i poziom ich opanowania rozdzielone separatorem ; są:
-{$subtopics$}
-
-Aktualny tekst zadania:
-{$text$}
-
-Aktualne podtematy, które były ujęte w treści zadania:
-{$outputSubtopics$}
-
-Błędy formatowania:
-{$errors$}
-
-Wymagania dotyczące tekstu zadania:
-1. Format LaTeX:
-   - Wszystkie wzory inline muszą być w \( ... \) lub $ ... $.
-   - Wszystkie wzory blokowe muszą być w \[ ... \] lub $$ ... $$.
-   - Nie używaj środowisk takich jak align, equation, array, matrix, itp.
-2. Zasady wyboru podtematów:
-   - Wybierz podtematy zgodnie z hierarchią:
-     1. Podtematy z opanowaniem niższym, ale bliskim progowi {$threshold$}%.
-     2. Jeśli brak takich – wybierz te z 0% opanowaniem.
-     3. Jeśli nadal brak – wybierz te minimalnie powyżej progu {$threshold$}%.
-     4. Jeśli nadal brak – wybierz inne z najniższym poziomem opanowania.
-   - Maksymalnie wybieraj możliwą liczbę podtematów spełniających powyższe kryteria, tak aby treść zadania obejmowała jak największy zakres materiału z wybranych podtematów.
-3. Treść zadania:
-   - Nie może zawierać odpowiedzi, rozwiązań, wariantów, komentarzy, podpowiedzi, tagów ani placeholderów.  
-   - Nie dziel się na podpunkty ani nie używaj list – musi to być jedno spójne polecenie.
-   - Nie powtarzaj żadnych konstrukcji z listy zadań
-   {$tasks$}  
-   - Stosuj różnorodne konstrukcje zdaniowe, unikaj powtarzających się schematów.  
-   - Treść zadania musi być jednym spójnym zdaniem lub blokiem zdań, bez list i numeracji.  
-   - Treść zadania musi być pytaniem zamkniętym, bez wariantów odpowiedzi w treści.  
-4. Cel:
-   - Wygeneruj jedno zadanie, które spełnia poziom trudności {$difficulty$}% i opiera się na najlepiej dobranych podtematach z listy
-   {$subtopics$}  
-   - Zadanie musi być unikalne względem historii zadań
-   {$tasks$}
-5. Podtematy w bloku subtopics:
-   - W osobnym bloku po treści zadania wypisz tylko te podtematy z listy
-   {$subtopics$}
-   które zostały faktycznie użyte w treści zadania, bez procentów, zer, pustych linii ani innych znaków.  
-   - Nie dopisuj żadnych podtematów, które nie wystąpiły w treści zadania.
-
-Uwaga:
-- Start: i End: muszą być na osobnych liniach, bez spacji ani innych znaków przed lub po nich.  
-- Między Start: i End: musi znajdować się tekst zadania jako jeden nieprzerwany akapit.  
-- Nie dodawaj niczego poza tym blokiem.  
-- Między subtopicsStart: i subtopicsEnd: wypisz dokładnie wszystkie podtematy, które zostały użyte, bez pustych linii, procentów i komentarzy.
-
-Przykład poprawnej odpowiedzi:
-Start:
-Treść zadania w jednym bloku, bez nowych linii, komentarzy ani dodatkowych znaków
-End:
-subtopicsStart:
-Definicja równania kwadratowego \(ax^2 + bx + c = 0\)
-Postać ogólna równania kwadratowego $ax^2 + bx + c = 0$
-Rozwiązywanie równań kwadratowych metodą faktoryzacji
-subtopicsEnd:
-"""
-
-solution_prompt = """Jesteś nauczycielem przedmiotu {$subject$} w szkole średniej (liceum lub technikum). Twoim zadaniem jest wygenerowanie dokładnie jednego, poprawnie sformułowanego, rozwiązania, które spełnia wszystkie poniższe wymagania dla:
-
-Aktualny tekst zadania:
-{$text$}
-
-Aktualne rozwiązanie zadania:
-{$solution$}
-
-Błędy formatowania:
-{$errors$}
-
-Wymagania dotyczące tekstu zadania:
-1. Format LaTeX:
-   - Wszystkie wzory inline muszą być w \( ... \) lub $ ... $.
-   - Wszystkie wzory blokowe muszą być w \[ ... \] lub $$ ... $$.
-   - Nie używaj środowisk takich jak align, equation, array, matrix, itp.
-2. Format odpowiedzi:
-Zwróć dokładnie tekst rozwiązania:
-- Bez cudzysłowów, komentarzy, nagłówków ani dodatkowych informacji oraz wstępów
-3. Cel:
-Wygenerowanie rozwiązania zadania, które:
-- Spełnia prawidłowości dokładności według tekstu zadania:
-{$text$}
-
-Uwaga:
-- Start: i End: muszą być na osobnych liniach, bez spacji ani innych znaków przed lub po nich.
-- Między Start: i End: musi znajdować się rozwiązanie zadania.
-- Nie wolno dodawać żadnego tekstu, spacji ani znaków specjalnych poza tym, co znajduje się między Start: i End:.
-- Między Start: i End: musi być tylko rozwiązanie zadania, bez pustych linii i komentarzy.
-- Nie dodawaj niczego poza tym blokiem.
-- Tekst nie może zawierać cudzysłowów, dodatkowych nawiasów ani symboli spoza wzorów LaTeX.
-- Rozwiązanie zadania powinno być przedstawione jako tekst ciągły, bez podziału na linie. Cała zawartość rozwiązania zadania powinna być podana jako jeden nieprzerwany akapit.
-
-Przykład poprawnej odpowiedzi:
-Start:
-Rozwiązanie zadania w jednym bloku, bez nowych linii, komentarzy ani dodatkowych znaków
-End:
-"""
-
-options_prompt = """Jesteś ekspertem edukacyjnym w tworzeniu wariantów odpowiedzi do zadań szkolnych (liceum/technikum). Wygeneruj dokładnie 4 warianty odpowiedzi.
-
-Treść zadania:
-{$text$}
-
-Rozwiązanie zadania:
-{$solution$}
-
-Aktualne warianty:
-{$options$}
-
-Aktualny Indeks poprawnej odpowiedzi (0–3):
-{$correctOptionIndex$}
-
-Błędy formatowania:
-{$errors$}
-
-Wymagania:
-1. Każdy wariant to **jedna linia**, max 200 znaków, bez nowych linii i dodatkowych spacji.
-2. Wszystkie warianty unikalne; żaden nie powtarza innego ani rozwiązania.
-3. Tylko jeden wariant poprawny zgodny w 100% z rozwiązaniem {$solution$}.
-4. Pozostałe 3 warianty błędne, ale logiczne, typowe dla ucznia.
-5. Nie używaj A), B), 1., -, numeracji ani innych znaków.
-6. LaTeX: \( ... \) lub $ ... $ inline; \[ ... \] lub $$ ... $$ blok; zakazane środowiska: align, equation, array, matrix.
-7. Po 4 wariantach podaj **tylko numer poprawnej odpowiedzi (0–3)** w nowej linii, bez znaków ani spacji.
-8. Nie dodawaj komentarzy ani pustych linii.
-9. Jeśli warianty i indeks już poprawne, zwróć je bez zmian.
-
-Uwaga:
-- Między Start: i End: znajdują się dokładnie 4 linie z wariantami odpowiedzi oraz jedna linia z numerem poprawnej odpowiedzi (0–3).
-- Między Start: i End: musi znajdować się 4 warianty odpowiedzi a potem numer lub index prawidłowej odpowiedz (0, 1, 2 lub 3), każdy wariant oraz numer lub index prawidłowej odpowiedzi na osobnej linii, bez pustych linii.
-- Nie wolno dodawać żadnego tekstu, spacji ani znaków specjalnych poza tym, co znajduje się między Start: i End:
-- Warianty odpowiedzi nie mogą zawierać pustych linii pomiędzy sobą.
-- Każdy wariant musi być unikalny, nie powtarzaj żadnego błędu ani parafrazy. Nie dziel odpowiedzi na kilka zdań – wszystko w jednej logicznej linii.
-- Każda linia między Start: i End: może zawierać tylko pełny tekst wariantu odpowiedzi lub sam numer indeksu poprawnej odpowiedzi.
-- Żaden wariant nie może być skrótem, urwanym fragmentem lub odpowiedzią pozbawioną sensu – wszystkie muszą być logicznie spójne z treścią zadania.
-- Jeżeli aktualne warianty odpowiedzi oraz aktualny numer lub index prawidłowej odpowiedzi są już poprawne zgodnie z wymaganiami, zwróć dokładnie te same warianty odpowiedzi i ten sam numer lub index prawidłowej odpowiedzi, nie generując nowych.
-
-Przykład poprawnej odpowiedzi:
-Start:
-Odejmując \(5\) od obu stron otrzymujemy \(2x=8\), a następnie dzieląc przez \(2\) otrzymujemy \(x=4\).
-Odejmując \(5\) od obu stron otrzymujemy \(2x=10\), a następnie dzieląc przez $2$ otrzymujemy $x=5$.
-Z równania \(2x+5=15\) dzielimy obie strony przez \(2\), otrzymując \(x+2{,}5=7{,}5\), a następnie odejmując \(2{,}5\) dostajemy \(x=5\).
-Przenosząc \(5\) na prawą stronę ze zmianą znaku otrzymujemy \(2x=15+5\), a po podzieleniu przez \(2\) mamy \(x=10\).
-1
-End:
-"""
-
-closedSubtopics_prompt = """Jesteś ekspertem edukacji średniej (liceum lub technikum).
-Twoim zadaniem jest ocenienie błędów według rozwiązaniu ucznia zadania: {$text$} z wariantami odpowiedzi
-{$options$},
-gdzie prawidłowy indeks odpowiedzi (0, 1, 2 lub 3) to {$correctOptionIndex$},
-dla przedmiotu {$subject$}, rozdziału {$section$}, tematu {$topic$}, o poziomie trudności {$difficulty$}%.
-
-Poprawnym rozwiązaniem zadania jest {$solution$}.
-
-Określ, które podtematy
-{$subtopics$}
-jako {$currentsubtopics$} były uwzględnione w treści zadania {$text$}
-Uwzględniaj wyłącznie te podtematy, które mają wyraźne odniesienie w treści zadania. Inne podtematy pomijaj całkowicie.
-
-Najważniejsza jest ocena wyjaśnienia ucznia {$userSolution$}. 
-Jeżeli {$userOptionIndex$} != {$correctOptionIndex$}, ustaw minimalny procent błędu 50% dla wszystkich podtematów z {$currentsubtopics$} obecnych w treści zadania, nawet jeśli wyjaśnienie ucznia {$userSolution$} jest częściowo poprawne.
-Jeżeli {$userOptionIndex$} == {$correctOptionIndex$}, ale {$userSolution$} nie odnosi się do żadnych podtematów z {$currentsubtopics$}, ustaw procent błędu 100% dla wszystkich tych podtematów.
-
-Weź wybrany przez ucznia numer odpowiedzi (0, 1, 2 lub 3) — {$userOptionIndex$} oraz jego wyjaśnienia {$userSolution$},
-aby określić błędy rozwiązania w procentach dla każdego podtematu z {$currentsubtopics$},
-które bezpośrednio występują w treści zadania {$text$}.
-
-Porównaj wynik z poprzednią oceną błędów:
-{$outputSubtopics$}
-
-Błędy danych do korekcji formatowania:
-{$errors$}
-
-Wymagania dotyczące formatu prezentowanych danych:
-1. Dla każdej podtematy z {$currentsubtopics$}: 
-- 0% jeśli rozwiązanie poprawnie obejmuje podtemat, 
-- minimalny 50% jeśli wariant odpowiedzi jest błędny, 
-- 100% jeśli podtemat nie został uwzględniony w wyjaśnieniu ucznia.
-2. Procent błędu dla podtematów powinien wskazywać, jak bardzo uczeń popełnił błąd — im większa pomyłka, tym wyższy procent. Jeśli podtemat został rozwiązany poprawnie, nie dodawaj go do listy.
-3. Uwzględnij, czy wyjaśnienie ucznia {$userSolution$} logicznie prowadzi do poprawnego wyniku, oraz oceń błędy na podstawie argumentacji, a nie tylko wybranego wariantu odpowiedzi {$userOptionIndex$}.
-4. Jeżeli wyjaśnienie jest poprawne i w pełni odpowiada podtematom, nie zwiększaj procentu błędu do maksimum tylko z powodu błędnie wybranego wariantu odpowiedzi.
-5. Procent błędu powinien odzwierciedlać wyłącznie logiczne niedociągnięcia w wyjaśnieniu, a nie sam fakt niepoprawnego wyboru odpowiedzi.
-6. Ocena procentowa dotyczy wyłącznie podtematów występujących w treści zadania. Podtematy niewystępujące w treści zadania nie są uwzględniane w ocenie ani w liście wynikowej. 
-7. Format LaTeX:
-   - Wszystkie wzory inline muszą być w \( ... \) lub $ ... $.
-   - Wszystkie wzory blokowe muszą być w \[ ... \] lub $$ ... $$.
-   - Nie używaj środowisk takich jak align, equation, array, matrix, itp.
-8. Podtematy i procent błędów rozdzielone separatorem ; powinny występować w liście podtematów
-{$subtopics$}
-oraz nie wolno dodawać żadnych nowych podtematów, nawet jeśli pojawiają się w treści rozwiązania ucznia. Należy używać tylko według listy podtematów.
-Uwzględniaj tylko te podtematy, które występują dokładnie w treści zadania {$text$}. Jeśli podtemat nie występuje w treści zadania, nie dodawaj go do listy wcale.
-9. Podtemat nie może zawierać znaku średnika ; w tekście tytułu.
-10. Nazwa podtematu i procent błędów muszą być oddzielone bezpośrednio znakiem średnika ; bez spacji po średniku bezpośrednio następuje liczba całkowita od 0 do 100, bez znaku procentu i bez spacji.
-11. Procent opanowania podtematów musi prawidłowo wskazywać na procent błędów danego podtematu.
-
-Uwaga:
-- Start: i End: muszą być na osobnych liniach, bez spacji ani innych znaków przed lub po nich.
-- Między Start: i End: może znajdować się tylko lista podtematów, każdy na osobnej linii, bez pustych linii, komentarzy i dodatkowych znaków.
-- Nie wolno dodawać żadnego tekstu, spacji ani znaków specjalnych poza tym, co znajduje się między Start: i End:.
-- Między Start: i End: musi być tylko lista podtematów, bez pustych linii i komentarzy.
-- Nie dodawaj niczego poza tym blokiem.
-
-Przykład poprawnej odpowiedzi:
-Start:
-Definicja równania kwadratowego \(ax^2 + bx + c = 0\);30
-Postać ogólna równania kwadratowego $ax^2 + bx + c = 0$;25
-Rozwiązywanie równań kwadratowych metodą faktoryzacji;45
-End:
-"""
-
-text_language_prompt = """Jesteś nauczycielem przedmiotu {$subject$} w szkole średniej (liceum lub technikum). Napisz krótkie opowiadanie w języku angielskim, które ma dokładnie 2 akapity. W tekście użyj jak najwięcej elementów gramatyki z listy podtematów, które mają najwyższy procent opnowania oraz pełne tłumaczenie w języku polskim.
-
-Przedmiot: {$subject$}
-Rozdział: {$section$}
-Temat: {$topic$}
-Poziom trudności: {$difficulty$}%
-
-- W tekście opowiadania obowiązkowo użyj elementów gramatyki z listy podtematów, które podano poniżej. Priorytetowo zastosuj te, które mają najwyższy procent opanowania. Procenty są podane po średniku.
-Podtematy gramatyki i poziom ich opanowania rozdzielone separatorem ; są:
-{$subtopics$}
-
-Aktualny tekst opowiadania w języku angielskim:
-{$text$}
-
-Aktualne tłumaczenie tekstu opowiadania w języku polskim:
-{$translate$}
-
-Błędy formatowania:
-{$errors$}
-
-Uwaga:
-- Start: i End: muszą być na osobnych liniach, bez spacji ani innych znaków przed lub po nich.  
-- Między Start: i End: musi znajdować się tekst opowiadania w języku angielskim jako dwa akapity napisane ciągłym tekstem w jednej linii, bez znaków nowej linii, pustych wierszy czy jakichkolwiek separatorów.
-- Nie dodawaj niczego poza tym blokiem.  
-- Między translateStart: i translateEnd: wypisz pełne tłumaczenie w języku polskim w tej samej strukturze: dwa akapity napisane ciągłym tekstem w jednej linii, bez znaków nowej linii, pustych wierszy czy separatorów.
-- Nie dodawaj ani pojaśnień, pustych linii, komentarzy
-- Nie powtarzaj informacji o przedmiocie, rozdziale, temacie ani błędach w odpowiedzi.
-- Tekst w blokach Start, End, translateStart i translateEnd musi być całkowicie w jednej linii, bez nowej linii, pustych wierszy, separatorów lub innych dodatkowych znaków. 
-- Nie używaj znaków końca linii w środku tekstu; cały tekst powinien być ciągły.
-
-Przykład poprawnej odpowiedzi:
-Start:
-Yesterday I woke up early because I wanted to go to the park. The sun was shining, and the birds were singing. While I was walking down the street, I saw my friend Anna. She was riding her bike and waving at me. We talked for a few minutes about what we did last weekend. I told her I visited my grandparents, and she said she was studying for an exam all Saturday. Suddenly, it started raining, so we ran to the nearest café and had some coffee together.
-End:
-translateStart:
-Wczoraj obudziłem się wcześnie, ponieważ chciałem pójść do parku. Słońce świeciło, a ptaki śpiewały. Kiedy szedłem ulicą, zobaczyłem moją przyjaciółkę Annę. Jechała na rowerze i machała do mnie. Rozmawialiśmy przez kilka minut o tym, co robiliśmy w zeszły weekend. Powiedziałem jej, że odwiedziłem dziadków, a ona powiedziała, że uczyła się do egzaminu przez całą sobotę. Nagle zaczęło padać, więc pobiegliśmy do najbliższej kawiarni i wypiliśmy razem kawę.
-translateEnd:
-"""
-
-text_subtasks_prompt = """Jesteś nauczycielem przedmiotu {$subject$} w szkole średniej (liceum lub technikum). Twoim zadaniem jest wygenerowanie listę pytań sprawdzających zrozumienie tekstu opowiadania w języku angielskim, które znajdują się w polu {$text$}.
-
-Przedmiot: {$subject$}
-Rozdział: {$section$}
-Temat: {$topic$}
-Poziom trudności: {$difficulty$}%
-
-Tekst opowiadania w języku angielskim:
-{$text$}
-
-Aktualna lista pytań:
-{$questions$}
-
-Błędy formatowania:
-{$errors$}
-
-Wymagania dotyczące listy pytań:
-1. Każde pytanie powinno dotyczyć wyłącznie treści tekstu opowiadania i weryfikować zrozumienie jego szczegółów, wydarzeń i kontekstu.
-2. Każde pytanie powinno być pojedynczą linią tekstu, bez znaków nowej linii, tabulatorów, podwójnych spacji ani białych znaków na początku i końcu.
-3. Nie twórz odpowiedzi ani opcji ABCD/1234, podawaj wyłącznie treść pytań.
-4. Zachowaj sens i kolejność wydarzeń z tekstu.
-
-Uwaga:
-- Start: i End: muszą być na osobnych liniach, bez spacji ani innych znaków przed lub po nich.
-- Między Start: i End: może znajdować się tylko lista pytań, każdy na osobnej linii, bez pustych linii, komentarzy i dodatkowych znaków.
-- Nie wolno dodawać żadnego tekstu, spacji ani znaków specjalnych poza tym, co znajduje się między Start: i End:.
-
-Przykład poprawnej odpowiedzi:
-Start:
-What did the main character do first in the morning?
-Who did they meet while walking in the park?
-What activity did they do together after meeting?
-End:
-"""

@@ -93,7 +93,7 @@ async def request_ai(prompt: str, data: Dict[str, Any], request: Request) -> Opt
                     stream=False,
                 )
             ),
-            timeout=90
+            timeout=900
         )
 
         content = resp.choices[0].message.content.strip()
@@ -101,7 +101,7 @@ async def request_ai(prompt: str, data: Dict[str, Any], request: Request) -> Opt
         return content
 
     except asyncio.TimeoutError:
-        logger.error("⏳ Model deepseek-chat timed out after 90 seconds.")
+        logger.error("⏳ Model deepseek-chat timed out after 900 seconds (15 minutes).")
         return None
     except Exception as e:
         logger.error(f"❌ Model deepseek-chat failed with error: {e}")
@@ -138,7 +138,21 @@ class SubtopicsGenerator(BaseModel):
     subject: str
     section: str
     topic: str
+    literature: str
     subtopics: List[List]
+    attempt: int
+    prompt: str
+    errors: List[str]
+
+class TopicExpansionGenerator(BaseModel):
+    changed: str
+    subject: str
+    section: str
+    topic: str
+    literature: str
+    note: str
+    frequency: int
+    subtopics: List[str]
     attempt: int
     prompt: str
     errors: List[str]
@@ -148,6 +162,7 @@ class TaskGenerator(BaseModel):
     subject: str
     section: str
     topic: str
+    mode: str
     literature: str
     subtopics: List[List]
     outputSubtopics: List[str]
@@ -165,7 +180,7 @@ class InteractiveTaskGenerator(BaseModel):
     section: str
     topic: str
     subtopics: List[List]
-    difficulty: int
+    difficulty: str
     text: str
     translate: str
     attempt: int
@@ -224,7 +239,6 @@ class ProblemsGenerator(BaseModel):
 
 class WordsGenerator(BaseModel):
     changed: str
-    text: str
     words: List[List]
     outputWords: List[str]
     outputText: str
@@ -333,13 +347,7 @@ async def subtopics_generate(data: SubtopicsGenerator, request: Request):
         new_data['subtopics'] = parse_subtopics_response(old_data['subtopics'], response, old_data['errors'])
         new_data['errors'] = old_data['errors']
 
-        logger.info(previous_errors)
-        logger.info(new_data['errors'])
-
         if sorted(new_data['subtopics']) == sorted(old_data['subtopics']) and sorted(previous_errors) == sorted(new_data['errors']):
-            new_data['changed'] = "false"
-
-        if len(new_data['subtopics']) != 0:
             new_data['changed'] = "false"
 
         new_data['attempt'] = new_data['attempt'] + 1
@@ -350,6 +358,49 @@ async def subtopics_generate(data: SubtopicsGenerator, request: Request):
         old_data['changed'] = 'true'
         old_data['attempt'] += 1
         return SubtopicsGenerator(**old_data)
+
+@app.post("/admin/topic-expansion-generate")
+async def topic_expansion_generate(data: TopicExpansionGenerator, request: Request):
+    old_data = copy.deepcopy(data.dict())
+
+    try:
+        from ai_generator import (
+            parse_note_response,
+            parse_frequency_response
+        )
+
+        if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
+            return TopicExpansionGenerator(**old_data)
+
+        response = await request_ai(old_data['prompt'], old_data, request)
+
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
+        new_data = copy.deepcopy(old_data)
+        previous_errors = copy.deepcopy(old_data['errors'])
+        new_data['frequency'] = parse_frequency_response(old_data['frequency'], response, old_data['errors'])
+        new_data['note'] = parse_note_response(old_data['note'], response, old_data['errors'])
+        new_data['errors'] = old_data['errors']
+
+        logger.info(previous_errors)
+        logger.info(new_data['errors'])
+
+        if new_data['note'] == old_data['note'] and new_data['frequency'] == old_data['frequency'] and sorted(previous_errors) == sorted(new_data['errors']):
+            new_data['changed'] = "false"
+
+        if new_data['note'] != "" and new_data['frequency'] != 0:
+            new_data['changed'] = "false"
+            return TopicExpansionGenerator(**new_data)
+
+        new_data['attempt'] = new_data['attempt'] + 1
+
+        return TopicExpansionGenerator(**new_data)
+    except RuntimeError as e:
+        old_data['errors'].append(str(e))
+        old_data['changed'] = 'true'
+        old_data['attempt'] += 1
+        return TopicExpansionGenerator(**old_data)
 
 @app.post("/admin/task-generate")
 async def task_generate(data: TaskGenerator, request: Request):
@@ -368,6 +419,8 @@ async def task_generate(data: TaskGenerator, request: Request):
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
 
+        logger.info(old_data['literature'])
+
         response = await request_ai(old_data['prompt'], old_data, request)
 
         if await request.is_disconnected():
@@ -381,12 +434,8 @@ async def task_generate(data: TaskGenerator, request: Request):
                                                                        response, old_data['errors'])
         new_data['errors'] = old_data['errors']
 
-        if new_data['text'] == old_data['text'] and new_data['note'] == old_data['note'] and sorted(new_data['outputSubtopics']) == sorted(old_data['outputSubtopics']) and sorted(previous_errors) == sorted(new_data['errors']):
+        if new_data['text'] == old_data['text'] and sorted(new_data['outputSubtopics']) == sorted(old_data['outputSubtopics']) and sorted(previous_errors) == sorted(new_data['errors']):
             new_data['changed'] = "false"
-
-        if new_data['text'] != "" and new_data['note'] != "" and len(new_data['outputSubtopics']) != 0:
-            new_data['changed'] = "false"
-            return TaskGenerator(**new_data)
 
         new_data['attempt'] = new_data['attempt'] + 1
 
@@ -512,9 +561,9 @@ async def questions_task_generate(data: QuestionsTaskGenerator, request: Request
         if sorted(new_data['questions']) == sorted(old_data['questions']) and sorted(previous_errors) == sorted(new_data['errors']):
             new_data['changed'] = "false"
 
-        if len(new_data['questions']) != 0:
-            new_data['changed'] = "false"
-            return QuestionsTaskGenerator(**new_data)
+        #if len(new_data['questions']) != 0:
+        #    new_data['changed'] = "false"
+        #    return QuestionsTaskGenerator(**new_data)
 
         new_data['attempt'] = new_data['attempt'] + 1
 
