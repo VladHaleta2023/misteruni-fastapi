@@ -201,10 +201,6 @@ def parse_task_response(old_text: str, response: str, errors: list) -> str:
             errors.append("Błąd: tekst zadania jest pusty")
             return old_text
 
-        if any(c in final_text for c in ['\n', '\r']):
-            errors.append("Błąd: tekst zadania zawiera nowe linie ('\\n'), niezgodne z wymaganiami")
-            return old_text
-
         if not validate_latex(final_text, errors):
             errors.append(f"Błąd LaTeX w tekście zadania: '{final_text}'")
             return old_text
@@ -218,7 +214,6 @@ def parse_task_response(old_text: str, response: str, errors: list) -> str:
         final_text = remove_answer_variants(final_text)
 
         return final_text
-
     except Exception as e:
         errors.append(f"Błąd nieoczekiwany podczas parsowania: {str(e)}")
         return old_text
@@ -430,10 +425,6 @@ def parse_solution_response(old_solution: str, response: str, errors: list) -> s
             errors.append("Błąd: rozwiązanie zadania jest puste")
             return old_solution
 
-        if '\n' in final_solution:
-            errors.append("Błąd: rozwiązanie zadania zawiera nowe linie ('\\n'), niezgodne z wymaganiami")
-            return old_solution
-
         if not validate_latex(final_solution, errors):
             errors.append(f"Błąd LaTeX w rozwiązaniu zadania: '{final_solution}'")
             return old_solution
@@ -447,7 +438,6 @@ def parse_solution_response(old_solution: str, response: str, errors: list) -> s
 def parse_options_response(old_data: dict, response: str, errors: list) -> dict:
     final_data = {
         "options": old_data.get("options", []),
-        "correctOptionIndex": old_data.get("correctOptionIndex", 0),
         "explanations": []
     }
 
@@ -474,31 +464,22 @@ def parse_options_response(old_data: dict, response: str, errors: list) -> dict:
         if len(unique_lines) < len(lines):
             errors.append("Usunięto powtarzające się warianty.")
 
-        if len(unique_lines) < 2:
-            errors.append(f"Za mało linii: {len(unique_lines)}, powinno być co najmniej 2 (min. 1 wariant + 1 numer).")
+        if len(unique_lines) < 4:
+            errors.append(f"Za mało linii: {len(unique_lines)}, powinno być co najmniej 4 warianty")
             return final_data
 
-        options_lines = unique_lines[:-1]
-        score_line = unique_lines[-1]
-
         final_data['options'] = []
-        for line in options_lines:
+        for line in unique_lines:
             if validate_latex(line, errors):
                 final_data['options'].append(line)
             else:
                 errors.append(f"Błąd LaTeX wariantu: '{line}'")
 
-        if len(final_data['options']) != 4:
-            errors.append(f"Niepoprawna liczba wariantów ({len(final_data['options'])}), oczekiwano 4.")
-
-        try:
-            score = int(score_line)
-            if 0 <= score < len(final_data['options']):
-                final_data['correctOptionIndex'] = score
-            else:
-                errors.append(f"Numer prawidłowej odpowiedzi poza zakresem 0-{len(final_data['options'])-1}: '{score_line}'")
-        except ValueError:
-            errors.append(f"Numer lub index prawidłowej odpowiedzi nie jest liczbą całkowitą: '{score_line}'")
+        if final_data['options']:
+            first_len = len(final_data['options'][0])
+            other_lens = [len(opt) for opt in final_data['options'][1:]]
+            if any(first_len > l for l in other_lens):
+                errors.append("Pierwszy prawidłowy wariant jest dłuższy niż pozostałe warianty, co może wskazywać na problem.")
 
         explanations = []
         for i in range(1, 5):
@@ -542,6 +523,7 @@ def parse_output_subtopics_response(old_subtopics: list, new_subtopics: list, su
 
     return filtered_subtopics
 
+
 def parse_task_output_subtopics_response(old_subtopics: list, subtopics: list, response: str, errors: list) -> list:
     try:
         start_idx = response.find("subtopicsStart:")
@@ -552,9 +534,6 @@ def parse_task_output_subtopics_response(old_subtopics: list, subtopics: list, r
         if end_idx == -1:
             errors.append("Błąd parsowania: brak etykiety subtopicsEnd:")
             return old_subtopics
-        if end_idx <= start_idx:
-            errors.append("Błąd parsowania: etykieta subtopicsEnd: znajduje się przed subtopicsStart:")
-            return old_subtopics
 
         content = response[start_idx + len("subtopicsStart:"): end_idx].strip()
         if not content:
@@ -562,49 +541,41 @@ def parse_task_output_subtopics_response(old_subtopics: list, subtopics: list, r
             return old_subtopics
 
         lines = [line.strip() for line in content.splitlines() if line.strip()]
-        lines = remove_empty_lines(lines)
-        filtered_lines = []
+        extracted_names = []
 
         for line in lines:
-            clean_line = line.split(";")[0].strip()
-            filtered_lines.append(clean_line)
+            parts = line.split(";")
+            name = parts[0].strip()
 
-        lines = filtered_lines
-        unique_lines = list(dict.fromkeys(lines))
-        if len(unique_lines) < len(lines):
-            errors.append("Usunięto powtarzające się podtematy.")
+            if name:
+                extracted_names.append(name)
 
+        if not extracted_names:
+            errors.append("Brak podtematów do przetworzenia.")
+            return old_subtopics
+
+        unique_names = []
+        seen = set()
+        for name in extracted_names:
+            if name not in seen:
+                seen.add(name)
+                unique_names.append(name)
+
+        subtopics_names = [s[0] if isinstance(s, (list, tuple)) else s.split(";")[0].strip() for s in subtopics]
         final_subtopics = []
-        has_error = False
 
-        for line in unique_lines:
-            if line != line.strip():
-                errors.append(f"Nazwa podtematu zawiera białe znaki na początku lub końcu: '{line}'")
-                has_error = True
+        for name in unique_names:
+            # DODANA WALIDACJA LaTeX
+            if not validate_latex(name, errors):
+                errors.append(f"Błąd LaTeX w podtemacie: '{name}'")
                 continue
-            if not validate_latex(line, errors):
-                errors.append(f"Błąd LaTeX w podtemacie: '{line}'")
-                has_error = True
-                continue
-            final_subtopics.append(line)
 
-        if has_error and not final_subtopics:
-            errors.append("Wszystkie podtematy zostały odrzucone ze względu na błędy formatowania.")
-            return old_subtopics
-
-        filtered_subtopics = []
-        subtopics_names = [s[0] for s in subtopics]
-
-        for name in final_subtopics:
-            if name not in subtopics_names:
-                errors.append(f"Podtemat '{name}' nie znajduje się w liście subtopics.")
+            if name in subtopics_names:
+                final_subtopics.append(name)
             else:
-                filtered_subtopics.append(name)
+                errors.append(f"Podtemat '{name}' nie znajduje się w liście subtopics.")
 
-        if not filtered_subtopics:
-            return old_subtopics
-
-        return filtered_subtopics
+        return final_subtopics if final_subtopics else old_subtopics
 
     except Exception as e:
         errors.append(f"Błąd nieoczekiwany podczas parsowania podtematów: {str(e)}")

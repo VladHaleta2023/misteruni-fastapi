@@ -17,6 +17,8 @@ import sys
 import asyncio
 import random
 from openai import OpenAI
+from difflib import SequenceMatcher
+from collections import Counter
 
 logger = logging.getLogger("app_logger")
 logging.basicConfig(
@@ -59,7 +61,59 @@ ALLOWED_EXTENSIONS = {
 
 MAX_AUDIO_DURATION = 900
 
-MAX_ATTEMPTS = 2
+MAX_ATTEMPTS = 1
+
+def calculate_word_similarity(student_answer, correct_answer):
+    student_words = set(re.findall(r'\w+', student_answer.lower()))
+    correct_words = set(re.findall(r'\w+', correct_answer.lower()))
+
+    if not correct_words:
+        return 0
+
+    common_words = student_words.intersection(correct_words)
+    similarity = len(common_words) / len(correct_words)
+
+    return similarity
+
+def calculate_sequence_similarity(student_answer, correct_answer):
+    return SequenceMatcher(None, student_answer.lower(), correct_answer.lower()).ratio()
+
+def extract_key_phrases(text, phrase_length=3):
+    words = re.findall(r'\w+', text.lower())
+    phrases = []
+
+    # Создаем фразы из последовательных слов
+    for i in range(len(words) - phrase_length + 1):
+        phrase = " ".join(words[i:i + phrase_length])
+        phrases.append(phrase)
+
+    return phrases
+
+def check_key_phrases(student_answer, correct_answer, min_phrase_length=3):
+    student_lower = student_answer.lower()
+    correct_phrases = extract_key_phrases(correct_answer, min_phrase_length)
+
+    matches = 0
+    for phrase in correct_phrases:
+        if phrase in student_lower:
+            matches += 1
+
+    return matches
+
+def is_copy_combined(student_answer, correct_answer,
+                     word_threshold=0.7,
+                     sequence_threshold=0.75,
+                     key_phrases_threshold=2):
+    if not student_answer or not correct_answer:
+        return False
+
+    word_similarity = calculate_word_similarity(student_answer, correct_answer)
+    seq_similarity = calculate_sequence_similarity(student_answer, correct_answer)
+    key_phrases_match = check_key_phrases(student_answer, correct_answer)
+
+    return (word_similarity >= word_threshold and
+            seq_similarity >= sequence_threshold and
+            key_phrases_match >= key_phrases_threshold)
 
 def fill_placeholders(prompt: str, data: Dict[str, Any]) -> str:
     def replacer(match: re.Match) -> str:
@@ -67,7 +121,7 @@ def fill_placeholders(prompt: str, data: Dict[str, Any]) -> str:
         value = data.get(key, "")
         if isinstance(value, list):
             if not value:
-                return f"{key}Start:\n{key}End:"
+                return f"{key}Start:\n{value}\n{key}End:"
             lines = []
             for item in value:
                 if isinstance(item, list):
@@ -82,6 +136,7 @@ def fill_placeholders(prompt: str, data: Dict[str, Any]) -> str:
 async def request_ai(prompt: str, data: Dict[str, Any], request: Request) -> Optional[str]:
     prompt_filled = fill_placeholders(prompt, data)
     logger.info("Model deepseek-chat started processing request...")
+    logger.info(prompt_filled)
 
     try:
         resp = await asyncio.wait_for(
@@ -98,6 +153,7 @@ async def request_ai(prompt: str, data: Dict[str, Any], request: Request) -> Opt
 
         content = resp.choices[0].message.content.strip()
         logger.info("✅ Model deepseek-chat returned a valid result.")
+        logger.info(content)
         return content
 
     except asyncio.TimeoutError:
@@ -166,7 +222,6 @@ class TaskGenerator(BaseModel):
     literature: str
     subtopics: List[List]
     outputSubtopics: List[str]
-    difficulty: int
     threshold: int
     text: str
     note: str
@@ -179,7 +234,6 @@ class InteractiveTaskGenerator(BaseModel):
     subject: str
     section: str
     topic: str
-    subtopics: List[List]
     difficulty: str
     text: str
     translate: str
@@ -192,7 +246,6 @@ class QuestionsTaskGenerator(BaseModel):
     subject: str
     section: str
     topic: str
-    difficulty: int
     text: str
     questions: List[str]
     attempt: int
@@ -206,6 +259,7 @@ class SolutionGenerator(BaseModel):
     attempt: int
     prompt: str
     errors: List[str]
+    subtopics: List[str]
 
 class OptionsGenerator(BaseModel):
     changed: str
@@ -213,10 +267,12 @@ class OptionsGenerator(BaseModel):
     solution: str
     options: List[str]
     explanations: List[str]
-    correctOptionIndex: int
     attempt: int
     prompt: str
     errors: List[str]
+    subtopics: List[str]
+    random1: int
+    random2: int
 
 class ProblemsGenerator(BaseModel):
     changed: str
@@ -225,14 +281,12 @@ class ProblemsGenerator(BaseModel):
     solution: str
     options: List[str]
     subtopics: List[str]
-    correctOptionIndex: int
+    correctOption: str
     outputSubtopics: List[list]
-    difficulty: int
     subject: str
     section: str
     topic: str
     userSolution: str
-    userOptionIndex: int
     attempt: int
     prompt: str
     errors: List[str]
@@ -637,19 +691,16 @@ async def options_generate(data: OptionsGenerator, request: Request):
 
         new_data = copy.deepcopy(old_data)
         previous_errors = copy.deepcopy(old_data['errors'])
+
         result = parse_options_response(old_data, response, old_data['errors'])
 
         new_data['options'] = result['options']
-        new_data['correctOptionIndex'] = result['correctOptionIndex']
         new_data['explanations'] = result['explanations']
-        new_data['errors'] = old_data['errors']
 
-        if new_data['correctOptionIndex'] == old_data['correctOptionIndex'] and sorted(new_data['explanations']) == sorted(new_data['explanations']) and sorted(new_data['options']) == sorted(old_data['options']) and sorted(previous_errors) == sorted(new_data['errors']):
+        if (sorted(new_data['explanations']) == sorted(old_data['explanations']) and
+                sorted(new_data['options']) == sorted(old_data['options']) and
+                sorted(previous_errors) == sorted(new_data['errors'])):
             new_data['changed'] = "false"
-
-        if len(new_data['options']) == 4 and len(new_data['explanations']) == 4:
-            new_data['changed'] = "false"
-            return OptionsGenerator(**new_data)
 
         new_data['attempt'] = new_data['attempt'] + 1
 
@@ -677,22 +728,36 @@ async def problems_generate(data: ProblemsGenerator, request: Request):
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
 
-        response = await request_ai(old_data['prompt'], old_data, request)
+        if is_copy_combined(old_data['userSolution'], old_data['correctOption']):
+            new_data = copy.deepcopy(old_data)
 
-        logger.info(f"Response: {response}")
+            output_subtopics = []
+            for subtopic in old_data['subtopics']:
+                output_subtopics.append([subtopic, 85])
+
+            new_data['outputSubtopics'] = output_subtopics
+            new_data['explanation'] = "Odpowiedź została uznana za kopię poprawnego rozwiązania; zgodnie z zasadami oceniania przyznano karę −85%."
+            new_data['changed'] = "false"
+
+            return ProblemsGenerator(**new_data)
+
+        response = await request_ai(old_data['prompt'], old_data, request)
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
 
         new_data = copy.deepcopy(old_data)
         previous_errors = copy.deepcopy(old_data['errors'])
-        result = parse_subtopics_response(old_data['outputSubtopics'], response, old_data['errors'], "Procent opanowania")
-        result = parse_output_subtopics_response(old_data['outputSubtopics'], result, old_data['subtopics'], old_data['errors'])
+        result = parse_subtopics_response(old_data['outputSubtopics'], response, old_data['errors'],
+                                          "Procent opanowania")
+        result = parse_output_subtopics_response(old_data['outputSubtopics'], result, old_data['subtopics'],
+                                                 old_data['errors'])
         new_data['outputSubtopics'] = result
         new_data['explanation'] = parse_explanation_response(old_data['explanation'], response, old_data['errors'])
         new_data['errors'] = old_data['errors']
 
-        if new_data['explanation'] == old_data['explanation'] and sorted(new_data['outputSubtopics']) == sorted(old_data['outputSubtopics']) and sorted(previous_errors) == sorted(new_data['errors']):
+        if new_data['explanation'] == old_data['explanation'] and sorted(new_data['outputSubtopics']) == sorted(
+                old_data['outputSubtopics']) and sorted(previous_errors) == sorted(new_data['errors']):
             new_data['changed'] = "false"
 
         if len(new_data['outputSubtopics']) != 0 and new_data['explanation'] != "":
