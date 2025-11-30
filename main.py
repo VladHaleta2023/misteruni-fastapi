@@ -235,6 +235,7 @@ class InteractiveTaskGenerator(BaseModel):
     section: str
     topic: str
     difficulty: str
+    subtopics: List[List]
     text: str
     translate: str
     attempt: int
