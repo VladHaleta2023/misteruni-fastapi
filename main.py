@@ -12,6 +12,7 @@ import urllib.parse
 from io import BytesIO
 import copy
 import json
+import aiohttp
 import logging
 import sys
 import asyncio
@@ -38,7 +39,10 @@ load_dotenv()
 port = int(os.getenv("PORT", 4200))
 api_key = os.environ.get("DEEPSEEK_API_KEY")
 
-client = OpenAI(api_key=api_key, base_url="https://api.deepseek.com")
+client = OpenAI(
+    api_key=api_key,
+    base_url="https://api.deepseek.com",
+)
 
 app = FastAPI()
 
@@ -61,7 +65,7 @@ ALLOWED_EXTENSIONS = {
 
 MAX_AUDIO_DURATION = 900
 
-MAX_ATTEMPTS = 1
+MAX_ATTEMPTS = 2
 
 def calculate_word_similarity(student_answer, correct_answer):
     student_words = set(re.findall(r'\w+', student_answer.lower()))
@@ -82,7 +86,6 @@ def extract_key_phrases(text, phrase_length=3):
     words = re.findall(r'\w+', text.lower())
     phrases = []
 
-    # Создаем фразы из последовательных слов
     for i in range(len(words) - phrase_length + 1):
         phrase = " ".join(words[i:i + phrase_length])
         phrases.append(phrase)
@@ -133,41 +136,177 @@ def fill_placeholders(prompt: str, data: Dict[str, Any]) -> str:
     pattern = r"\{\$(\w+)\$\}"
     return re.sub(pattern, replacer, prompt)
 
-async def request_ai(prompt: str, data: Dict[str, Any], request: Request) -> Optional[str]:
+"""
+async def request_ai(
+        prompt: str,
+        data: Dict[str, Any],
+        request: Request,
+        max_retries: int = 2
+) -> Optional[str]:
     prompt_filled = fill_placeholders(prompt, data)
-    logger.info("Model deepseek-chat started processing request...")
+
+    for attempt in range(max_retries + 1):
+        try:
+            response = await asyncio.wait_for(
+                asyncio.to_thread(
+                    lambda: client.chat.completions.create(
+                        model="deepseek-chat",
+                        messages=[{"role": "user", "content": prompt_filled}],
+                        temperature=0,
+                        stream=True,
+                    )
+                ),
+                timeout=900
+            )
+
+            chunks = []
+            current_segment = ""
+
+            for chunk in response:
+                if chunk.choices and chunk.choices[0].delta.content:
+                    text = chunk.choices[0].delta.content
+                    chunks.append(text)
+                    current_segment += text
+
+                    if len(current_segment) > 80 and ('\n' in current_segment or '. ' in current_segment[-20:]):
+                        logger.info(current_segment.strip())
+                        current_segment = ""
+
+            if current_segment.strip():
+                logger.info(current_segment.strip())
+
+            content = "".join(chunks).strip()
+
+            if content:
+                return content
+
+            if attempt < max_retries:
+                await asyncio.sleep(2 ** attempt)
+
+        except Exception as e:
+            logger.error(f"Error: {e}")
+            if attempt < max_retries:
+                await asyncio.sleep(2 ** attempt)
+
+    return None
+"""
+
+
+async def request_ai(
+        prompt: str,
+        data: Dict[str, Any],
+        request: Request,
+        max_retries: int = 1,
+        stream: bool = False
+) -> Optional[str]:
+    prompt_filled = fill_placeholders(prompt, data)
+
     logger.info(prompt_filled)
 
-    try:
-        resp = await asyncio.wait_for(
-            asyncio.to_thread(
-                lambda: client.chat.completions.create(
-                    model="deepseek-chat",
-                    messages=[{"role": "user", "content": prompt_filled}],
-                    temperature=0,
-                    stream=False,
+    for attempt in range(max_retries + 1):
+        logger.info(f"[Attempt {attempt + 1}]")
+
+        try:
+            if stream:
+                response = await asyncio.wait_for(
+                    asyncio.to_thread(
+                        lambda: client.chat.completions.create(
+                            model="deepseek-chat",
+                            messages=[{"role": "user", "content": prompt_filled}],
+                            temperature=0,
+                            stream=True,
+                        )
+                    ),
+                    timeout=900
                 )
-            ),
-            timeout=900
-        )
 
-        content = resp.choices[0].message.content.strip()
-        logger.info("✅ Model deepseek-chat returned a valid result.")
-        logger.info(content)
-        return content
+                chunks = []
+                current_segment = ""
+                chunk_count = 0
 
-    except asyncio.TimeoutError:
-        logger.error("⏳ Model deepseek-chat timed out after 900 seconds (15 minutes).")
-        return None
-    except Exception as e:
-        logger.error(f"❌ Model deepseek-chat failed with error: {e}")
-        return None
+                for chunk in response:
+                    chunk_count += 1
+
+                    try:
+                        if (chunk and chunk.choices and chunk.choices[0].delta.content):
+                            text = chunk.choices[0].delta.content
+                            if text:
+                                chunks.append(text)
+                                current_segment += text
+
+                                if len(current_segment) > 80 and (
+                                        '\n' in current_segment or '. ' in current_segment[-20:]):
+                                    logger.info(current_segment.strip())
+                                    current_segment = ""
+                    except AttributeError:
+                        continue
+
+                if current_segment.strip():
+                    logger.info(current_segment.strip())
+
+                content = "".join(chunks).strip()
+            else:
+                response = await asyncio.wait_for(
+                    asyncio.to_thread(
+                        lambda: client.chat.completions.create(
+                            model="deepseek-chat",
+                            messages=[{"role": "user", "content": prompt_filled}],
+                            temperature=0,
+                            stream=False,
+                        )
+                    ),
+                    timeout=900
+                )
+
+                if response.choices and response.choices[0].message.content:
+                    content = response.choices[0].message.content.strip()
+                else:
+                    content = ""
+
+                if content:
+                    logger.info(f"Response: {content}")
+
+            if content:
+                if len(content) < 10:
+                    if attempt < max_retries:
+                        wait_time = 2 ** attempt
+                        await asyncio.sleep(wait_time)
+                    continue
+
+                if not content or content.isspace():
+                    if attempt < max_retries:
+                        wait_time = 2 ** attempt
+                        await asyncio.sleep(wait_time)
+                    continue
+
+                if content.endswith(('...', '--', '[', '{', '(')):
+                    if attempt < max_retries:
+                        wait_time = 2 ** attempt
+                        await asyncio.sleep(wait_time)
+                    continue
+
+                return content
+
+            if attempt < max_retries:
+                wait_time = 2 ** attempt
+                await asyncio.sleep(wait_time)
+
+        except Exception as e:
+            logger.error(f"Error: {e}")
+            if attempt < max_retries:
+                wait_time = 2 ** attempt
+                await asyncio.sleep(wait_time)
+
+    logger.error(f"All {max_retries + 1} attempts failed")
+    return None
+
+class PromptImageRequest(BaseModel):
+    prompt: str
+    data: Optional[dict] = {}
+    image_base64: Optional[str] = None
 
 class PromptRequest(BaseModel):
     prompt: str
-
-class ImagePromptRequest(BaseModel):
-    image_url: str
 
 class SplitIntoSentencesRequest(BaseModel):
     text: str
@@ -200,6 +339,16 @@ class SubtopicsGenerator(BaseModel):
     prompt: str
     errors: List[str]
 
+class SubtopicsStatusGenerator(BaseModel):
+    changed: str
+    subject: str
+    section: str
+    topic: str
+    subtopics: List[List]
+    attempt: int
+    prompt: str
+    errors: List[str]
+
 class TopicExpansionGenerator(BaseModel):
     changed: str
     subject: str
@@ -207,8 +356,20 @@ class TopicExpansionGenerator(BaseModel):
     topic: str
     literature: str
     note: str
+    subtopics: List[str]
+    attempt: int
+    prompt: str
+    errors: List[str]
+
+class FrequencyGenerator(BaseModel):
+    changed: str
+    subject: str
+    section: str
+    topic: str
+    literature: str
     frequency: int
     subtopics: List[str]
+    outputSubtopics: List[List]
     attempt: int
     prompt: str
     errors: List[str]
@@ -218,13 +379,11 @@ class TaskGenerator(BaseModel):
     subject: str
     section: str
     topic: str
-    mode: str
     literature: str
     subtopics: List[List]
     outputSubtopics: List[str]
     threshold: int
     text: str
-    note: str
     attempt: int
     prompt: str
     errors: List[str]
@@ -236,19 +395,10 @@ class InteractiveTaskGenerator(BaseModel):
     topic: str
     difficulty: str
     subtopics: List[List]
+    words: List[str]
+    outputWords: List[str]
     text: str
     translate: str
-    attempt: int
-    prompt: str
-    errors: List[str]
-
-class QuestionsTaskGenerator(BaseModel):
-    changed: str
-    subject: str
-    section: str
-    topic: str
-    text: str
-    questions: List[str]
     attempt: int
     prompt: str
     errors: List[str]
@@ -267,6 +417,7 @@ class OptionsGenerator(BaseModel):
     text: str
     solution: str
     options: List[str]
+    correctOptionIndex: int
     explanations: List[str]
     attempt: int
     prompt: str
@@ -274,6 +425,7 @@ class OptionsGenerator(BaseModel):
     subtopics: List[str]
     random1: int
     random2: int
+    randomOption: int
 
 class ProblemsGenerator(BaseModel):
     changed: str
@@ -288,11 +440,33 @@ class ProblemsGenerator(BaseModel):
     section: str
     topic: str
     userSolution: str
+    options: List[str]
+    correctOption: str
+    userOption: str
     attempt: int
     prompt: str
     errors: List[str]
 
-class WordsGenerator(BaseModel):
+class ChatGenerator(BaseModel):
+    changed: str
+    text: str
+    solution: str
+    subject: str
+    section: str
+    topic: str
+    userSolution: str
+    options: List[str]
+    correctOption: str
+    userOption: str
+    chat: str
+    chatFinished: bool
+    subtopics: List[str]
+    mode: str
+    attempt: int
+    prompt: str
+    errors: List[str]
+
+class VocabluaryGenerator(BaseModel):
     changed: str
     words: List[List]
     outputWords: List[str]
@@ -300,6 +474,21 @@ class WordsGenerator(BaseModel):
     attempt: int
     prompt: str
     errors: List[str]
+
+class WordsGenerator(BaseModel):
+    changed: str
+    subject: str
+    section: str
+    topic: str
+    difficulty: str
+    words: List[List]
+    attempt: int
+    prompt: str
+    errors: List[str]
+
+class PromptImageRequest(BaseModel):
+    prompt: str
+    data: Optional[dict] = {}
 
 @app.get("/")
 async def root():
@@ -392,7 +581,7 @@ async def subtopics_generate(data: SubtopicsGenerator, request: Request):
         if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
             return SubtopicsGenerator(**old_data)
 
-        response = await request_ai(old_data['prompt'], old_data, request)
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -401,11 +590,10 @@ async def subtopics_generate(data: SubtopicsGenerator, request: Request):
         previous_errors = copy.deepcopy(old_data['errors'])
         new_data['subtopics'] = parse_subtopics_response(old_data['subtopics'], response, old_data['errors'])
         new_data['errors'] = old_data['errors']
-
-        if sorted(new_data['subtopics']) == sorted(old_data['subtopics']) and sorted(previous_errors) == sorted(new_data['errors']):
-            new_data['changed'] = "false"
-
         new_data['attempt'] = new_data['attempt'] + 1
+
+        if sorted(previous_errors) == sorted(new_data['errors']):
+            new_data['changed'] = "false"
 
         return SubtopicsGenerator(**new_data)
     except RuntimeError as e:
@@ -414,41 +602,68 @@ async def subtopics_generate(data: SubtopicsGenerator, request: Request):
         old_data['attempt'] += 1
         return SubtopicsGenerator(**old_data)
 
-@app.post("/admin/topic-expansion-generate")
-async def topic_expansion_generate(data: TopicExpansionGenerator, request: Request):
+@app.post("/admin/subtopics-status-generate")
+async def subtopics_status_generate(data: SubtopicsStatusGenerator, request: Request):
     old_data = copy.deepcopy(data.dict())
 
     try:
         from ai_generator import (
-            parse_note_response,
-            parse_frequency_response
+            parse_subtopics_status_response
         )
 
         if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
-            return TopicExpansionGenerator(**old_data)
+            return SubtopicsStatusGenerator(**old_data)
 
-        response = await request_ai(old_data['prompt'], old_data, request)
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
 
         new_data = copy.deepcopy(old_data)
         previous_errors = copy.deepcopy(old_data['errors'])
-        new_data['frequency'] = parse_frequency_response(old_data['frequency'], response, old_data['errors'])
+        new_data['subtopics'] = parse_subtopics_status_response(old_data['subtopics'], response, old_data['errors'])
+        new_data['errors'] = old_data['errors']
+
+        new_data['attempt'] = new_data['attempt'] + 1
+
+        if sorted(previous_errors) == sorted(new_data['errors']):
+            new_data['changed'] = "false"
+
+        return SubtopicsStatusGenerator(**new_data)
+    except RuntimeError as e:
+        old_data['errors'].append(str(e))
+        old_data['changed'] = 'true'
+        old_data['attempt'] += 1
+        return SubtopicsStatusGenerator(**old_data)
+
+@app.post("/admin/topic-expansion-generate")
+async def topic_expansion_generate(data: TopicExpansionGenerator, request: Request):
+    old_data = copy.deepcopy(data.dict())
+
+    try:
+        from ai_generator import (
+            parse_note_response
+        )
+
+        if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
+            return TopicExpansionGenerator(**old_data)
+
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
+        new_data = copy.deepcopy(old_data)
+        previous_errors = copy.deepcopy(old_data['errors'])
         new_data['note'] = parse_note_response(old_data['note'], response, old_data['errors'])
         new_data['errors'] = old_data['errors']
 
         logger.info(previous_errors)
         logger.info(new_data['errors'])
-
-        if new_data['note'] == old_data['note'] and new_data['frequency'] == old_data['frequency'] and sorted(previous_errors) == sorted(new_data['errors']):
-            new_data['changed'] = "false"
-
-        if new_data['note'] != "" and new_data['frequency'] != 0:
-            new_data['changed'] = "false"
-            return TopicExpansionGenerator(**new_data)
-
         new_data['attempt'] = new_data['attempt'] + 1
+
+        if new_data['note'] != "" and sorted(previous_errors) == sorted(new_data['errors']):
+            new_data['changed'] = "false"
 
         return TopicExpansionGenerator(**new_data)
     except RuntimeError as e:
@@ -457,6 +672,50 @@ async def topic_expansion_generate(data: TopicExpansionGenerator, request: Reque
         old_data['attempt'] += 1
         return TopicExpansionGenerator(**old_data)
 
+@app.post("/admin/frequency-generate")
+async def frequency_generate(data: FrequencyGenerator, request: Request):
+    old_data = copy.deepcopy(data.dict())
+
+    try:
+        from ai_generator import (
+            parse_frequency_response,
+            parse_subtopics_response
+        )
+
+        if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
+            return FrequencyGenerator(**old_data)
+
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
+        new_data = copy.deepcopy(old_data)
+        previous_errors = copy.deepcopy(old_data['errors'])
+        new_data['frequency'] = parse_frequency_response(old_data['frequency'], response, old_data['errors'])
+        new_data['outputSubtopics'] = parse_subtopics_response(
+            old_data['outputSubtopics'],
+            response,
+            old_data['errors'],
+            "Numer Porządkowy",
+            "subtopicsStart:",
+            "subtopicsEnd:")
+        new_data['errors'] = old_data['errors']
+
+        logger.info(previous_errors)
+        logger.info(new_data['errors'])
+        new_data['attempt'] = new_data['attempt'] + 1
+
+        if new_data['frequency'] != 0 and sorted(previous_errors) == sorted(new_data['errors']):
+            new_data['changed'] = "false"
+
+        return FrequencyGenerator(**new_data)
+    except RuntimeError as e:
+        old_data['errors'].append(str(e))
+        old_data['changed'] = 'true'
+        old_data['attempt'] += 1
+        return FrequencyGenerator(**old_data)
+
 @app.post("/admin/task-generate")
 async def task_generate(data: TaskGenerator, request: Request):
     old_data = copy.deepcopy(data.dict())
@@ -464,8 +723,7 @@ async def task_generate(data: TaskGenerator, request: Request):
     try:
         from ai_generator import (
             parse_task_response,
-            parse_note_response,
-            parse_task_output_subtopics_response
+            parse_output_subtopics_response
         )
 
         if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
@@ -476,7 +734,7 @@ async def task_generate(data: TaskGenerator, request: Request):
 
         logger.info(old_data['literature'])
 
-        response = await request_ai(old_data['prompt'], old_data, request)
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -484,15 +742,13 @@ async def task_generate(data: TaskGenerator, request: Request):
         new_data = copy.deepcopy(old_data)
         previous_errors = copy.deepcopy(old_data['errors'])
         new_data['text'] = parse_task_response(old_data['text'], response, old_data['errors'])
-        new_data['note'] = parse_note_response(old_data['note'], response, old_data['errors'])
-        new_data['outputSubtopics'] = parse_task_output_subtopics_response(old_data['outputSubtopics'], old_data['subtopics'],
+        new_data['outputSubtopics'] = parse_output_subtopics_response(old_data['outputSubtopics'], old_data['subtopics'],
                                                                        response, old_data['errors'])
         new_data['errors'] = old_data['errors']
-
-        if new_data['text'] == old_data['text'] and sorted(new_data['outputSubtopics']) == sorted(old_data['outputSubtopics']) and sorted(previous_errors) == sorted(new_data['errors']):
-            new_data['changed'] = "false"
-
         new_data['attempt'] = new_data['attempt'] + 1
+
+        if new_data['text'] != "" and sorted(previous_errors) == sorted(new_data['errors']):
+            new_data['changed'] = "false"
 
         return TaskGenerator(**new_data)
     except RuntimeError as e:
@@ -501,8 +757,8 @@ async def task_generate(data: TaskGenerator, request: Request):
         old_data['attempt'] += 1
         return TaskGenerator(**old_data)
 
-@app.post("/admin/words-generate")
-async def words_generate(data: WordsGenerator, request: Request):
+@app.post("/admin/vocabluary-generate")
+async def vocabluary_generate(data: VocabluaryGenerator, request: Request):
     old_data = copy.deepcopy(data.dict())
 
     try:
@@ -512,12 +768,12 @@ async def words_generate(data: WordsGenerator, request: Request):
         )
 
         if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
-            return WordsGenerator(**old_data)
+            return VocabluaryGenerator(**old_data)
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
 
-        response = await request_ai(old_data['prompt'], old_data, request)
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -528,22 +784,17 @@ async def words_generate(data: WordsGenerator, request: Request):
         new_data['outputWords'] = parse_output_words_response(old_data['outputWords'], old_data['words'],
                                                                        response, old_data['errors'])
         new_data['errors'] = old_data['errors']
-
-        if new_data['outputText'] == old_data['outputText'] and sorted(new_data['outputWords']) == sorted(old_data['outputWords']) and sorted(previous_errors) == sorted(new_data['errors']):
-            new_data['changed'] = "false"
-
-        if new_data['outputText'] != "":
-            new_data['changed'] = "false"
-            return WordsGenerator(**new_data)
-
         new_data['attempt'] = new_data['attempt'] + 1
 
-        return WordsGenerator(**new_data)
+        if new_data['outputText'] != "" and sorted(previous_errors) == sorted(new_data['errors']):
+            new_data['changed'] = "false"
+
+        return VocabluaryGenerator(**new_data)
     except RuntimeError as e:
         old_data['errors'].append(str(e))
         old_data['changed'] = 'true'
         old_data['attempt'] += 1
-        return WordsGenerator(**old_data)
+        return VocabluaryGenerator(**old_data)
 
 @app.post("/admin/interactive-task-generate")
 async def interactive_task_generate(data: InteractiveTaskGenerator, request: Request):
@@ -552,7 +803,8 @@ async def interactive_task_generate(data: InteractiveTaskGenerator, request: Req
     try:
         from ai_generator import (
             parse_interactive_task_text_response,
-            parse_interactive_task_translate_response
+            parse_interactive_task_translate_response,
+            parse_output_words_response
         )
 
         if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
@@ -561,7 +813,7 @@ async def interactive_task_generate(data: InteractiveTaskGenerator, request: Req
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
 
-        response = await request_ai(old_data['prompt'], old_data, request)
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -570,16 +822,12 @@ async def interactive_task_generate(data: InteractiveTaskGenerator, request: Req
         previous_errors = copy.deepcopy(old_data['errors'])
         new_data['text'] = parse_interactive_task_text_response(old_data['text'], response, old_data['errors'])
         new_data['translate'] = parse_interactive_task_translate_response(old_data['translate'], response, old_data['errors'])
+        new_data['outputWords'] = parse_output_words_response(old_data['outputWords'], old_data['words'], response, old_data['errors'], False)
         new_data['errors'] = old_data['errors']
-
-        if new_data['text'] == old_data['text'] and new_data['translate'] == old_data['translate'] and sorted(previous_errors) == sorted(new_data['errors']):
-            new_data['changed'] = "false"
-
-        if new_data['text'] != "" and new_data['translate'] != "":
-            new_data['changed'] = "false"
-            return InteractiveTaskGenerator(**new_data)
-
         new_data['attempt'] = new_data['attempt'] + 1
+
+        if new_data['text'] != "" and new_data['translate'] != "" and sorted(previous_errors) == sorted(new_data['errors']):
+            new_data['changed'] = "false"
 
         return InteractiveTaskGenerator(**new_data)
     except RuntimeError as e:
@@ -587,47 +835,6 @@ async def interactive_task_generate(data: InteractiveTaskGenerator, request: Req
         old_data['changed'] = 'true'
         old_data['attempt'] += 1
         return InteractiveTaskGenerator(**old_data)
-
-@app.post("/admin/questions-task-generate")
-async def questions_task_generate(data: QuestionsTaskGenerator, request: Request):
-    old_data = copy.deepcopy(data.dict())
-
-    try:
-        from ai_generator import (
-            parse_questions_response
-        )
-
-        if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
-            return QuestionsTaskGenerator(**old_data)
-
-        if await request.is_disconnected():
-            raise HTTPException(status_code=499, detail="Client disconnected")
-
-        response = await request_ai(old_data['prompt'], old_data, request)
-
-        if await request.is_disconnected():
-            raise HTTPException(status_code=499, detail="Client disconnected")
-
-        new_data = copy.deepcopy(old_data)
-        previous_errors = copy.deepcopy(old_data['errors'])
-        new_data['questions'] = parse_questions_response(old_data['questions'], response, old_data['errors'])
-        new_data['errors'] = old_data['errors']
-
-        if sorted(new_data['questions']) == sorted(old_data['questions']) and sorted(previous_errors) == sorted(new_data['errors']):
-            new_data['changed'] = "false"
-
-        #if len(new_data['questions']) != 0:
-        #    new_data['changed'] = "false"
-        #    return QuestionsTaskGenerator(**new_data)
-
-        new_data['attempt'] = new_data['attempt'] + 1
-
-        return QuestionsTaskGenerator(**new_data)
-    except RuntimeError as e:
-        old_data['errors'].append(str(e))
-        old_data['changed'] = 'true'
-        old_data['attempt'] += 1
-        return QuestionsTaskGenerator(**old_data)
 
 @app.post("/admin/solution-generate")
 async def solution_generate(data: SolutionGenerator, request: Request):
@@ -644,7 +851,7 @@ async def solution_generate(data: SolutionGenerator, request: Request):
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
 
-        response = await request_ai(old_data['prompt'], old_data, request)
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -653,15 +860,10 @@ async def solution_generate(data: SolutionGenerator, request: Request):
         previous_errors = copy.deepcopy(old_data['errors'])
         new_data['solution'] = parse_solution_response(old_data['solution'], response, old_data['errors'])
         new_data['errors'] = old_data['errors']
-
-        if new_data['solution'] == old_data['solution'] and sorted(previous_errors) == sorted(new_data['errors']):
-            new_data['changed'] = "false"
-
-        if new_data['solution'] != "":
-            new_data['changed'] = "false"
-            return SolutionGenerator(**new_data)
-
         new_data['attempt'] = new_data['attempt'] + 1
+
+        if new_data['solution'] != "" and sorted(previous_errors) == sorted(new_data['errors']):
+            new_data['changed'] = "false"
 
         return SolutionGenerator(**new_data)
     except RuntimeError as e:
@@ -676,7 +878,8 @@ async def options_generate(data: OptionsGenerator, request: Request):
 
     try:
         from ai_generator import (
-            parse_options_response
+            parse_options_response,
+            parse_correct_option_index
         )
 
         if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
@@ -685,25 +888,26 @@ async def options_generate(data: OptionsGenerator, request: Request):
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
 
-        response = await request_ai(old_data['prompt'], old_data, request)
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
 
         new_data = copy.deepcopy(old_data)
-        previous_errors = copy.deepcopy(old_data['errors'])
+
+        errors_before_parsing = copy.deepcopy(old_data['errors'])
 
         result = parse_options_response(old_data, response, old_data['errors'])
 
         new_data['options'] = result['options']
         new_data['explanations'] = result['explanations']
-
-        if (sorted(new_data['explanations']) == sorted(old_data['explanations']) and
-                sorted(new_data['options']) == sorted(old_data['options']) and
-                sorted(previous_errors) == sorted(new_data['errors'])):
-            new_data['changed'] = "false"
-
+        resultCorrectIndex = parse_correct_option_index(old_data['correctOptionIndex'], response,
+                                                        new_data['options'], old_data['errors'])
+        new_data['correctOptionIndex'] = resultCorrectIndex
         new_data['attempt'] = new_data['attempt'] + 1
+
+        if sorted(previous_errors) == sorted(new_data['errors']):
+            new_data['changed'] = "false"
 
         return OptionsGenerator(**new_data)
     except RuntimeError as e:
@@ -719,7 +923,7 @@ async def problems_generate(data: ProblemsGenerator, request: Request):
     try:
         from ai_generator import (
             parse_subtopics_response,
-            parse_output_subtopics_response,
+            parse_output_subtopics_response_filtered,
             parse_explanation_response
         )
 
@@ -729,20 +933,7 @@ async def problems_generate(data: ProblemsGenerator, request: Request):
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
 
-        if is_copy_combined(old_data['userSolution'], old_data['correctOption']):
-            new_data = copy.deepcopy(old_data)
-
-            output_subtopics = []
-            for subtopic in old_data['subtopics']:
-                output_subtopics.append([subtopic, 85])
-
-            new_data['outputSubtopics'] = output_subtopics
-            new_data['explanation'] = "Odpowiedź została uznana za kopię poprawnego rozwiązania; zgodnie z zasadami oceniania przyznano karę −85%."
-            new_data['changed'] = "false"
-
-            return ProblemsGenerator(**new_data)
-
-        response = await request_ai(old_data['prompt'], old_data, request)
+        response = await request_ai(old_data['prompt'], old_data, request, stream=True)
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -751,21 +942,23 @@ async def problems_generate(data: ProblemsGenerator, request: Request):
         previous_errors = copy.deepcopy(old_data['errors'])
         result = parse_subtopics_response(old_data['outputSubtopics'], response, old_data['errors'],
                                           "Procent opanowania")
-        result = parse_output_subtopics_response(old_data['outputSubtopics'], result, old_data['subtopics'],
+        result = parse_output_subtopics_response_filtered(old_data['outputSubtopics'], result, old_data['subtopics'],
                                                  old_data['errors'])
         new_data['outputSubtopics'] = result
-        new_data['explanation'] = parse_explanation_response(old_data['explanation'], response, old_data['errors'])
+        new_data['explanation'] = parse_explanation_response(
+            old_data['explanation'],
+            response,
+            old_data['errors'],
+            new_data['outputSubtopics'],
+            new_data['correctOption'],
+            new_data['userOption'],
+            new_data['topic']
+        )
         new_data['errors'] = old_data['errors']
-
-        if new_data['explanation'] == old_data['explanation'] and sorted(new_data['outputSubtopics']) == sorted(
-                old_data['outputSubtopics']) and sorted(previous_errors) == sorted(new_data['errors']):
-            new_data['changed'] = "false"
-
-        if len(new_data['outputSubtopics']) != 0 and new_data['explanation'] != "":
-            new_data['changed'] = "false"
-            return ProblemsGenerator(**new_data)
-
         new_data['attempt'] = new_data['attempt'] + 1
+
+        if len(new_data['outputSubtopics']) != 0 and new_data['explanation'] != "" and sorted(previous_errors) == sorted(new_data['errors']):
+            new_data['changed'] = "false"
 
         return ProblemsGenerator(**new_data)
     except RuntimeError as e:
@@ -773,6 +966,76 @@ async def problems_generate(data: ProblemsGenerator, request: Request):
         old_data['changed'] = 'true'
         old_data['attempt'] += 1
         return ProblemsGenerator(**old_data)
+
+@app.post("/admin/chat-generate")
+async def chat_generate(data: ChatGenerator, request: Request):
+    old_data = copy.deepcopy(data.dict())
+
+    try:
+        from ai_generator import (
+            parse_chat_response,
+            get_last_user_solution
+        )
+
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
+        new_data = copy.deepcopy(old_data)
+        previous_errors = copy.deepcopy(old_data['errors'])
+
+        new_data['chat'] = parse_chat_response(old_data['chat'], response, old_data['errors'])
+        new_data['userSolution'] = get_last_user_solution(new_data['chat'], old_data['userSolution'])
+
+        new_data['errors'] = old_data['errors']
+        new_data['attempt'] = new_data['attempt'] + 1
+
+        if new_data['chat'] != "" and new_data['userSolution'] != "" and sorted(previous_errors) == sorted(new_data['errors']):
+            new_data['changed'] = "false"
+
+        return ChatGenerator(**new_data)
+    except RuntimeError as e:
+        old_data['errors'].append(str(e))
+        old_data['changed'] = 'true'
+        old_data['attempt'] += 1
+        return ChatGenerator(**old_data)
+
+@app.post("/admin/words-generate")
+async def words_generate(data: WordsGenerator, request: Request):
+    old_data = copy.deepcopy(data.dict())
+
+    try:
+        from ai_generator import (
+            parse_words_response
+        )
+
+        if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
+            return WordsGenerator(**old_data)
+
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
+        new_data = copy.deepcopy(old_data)
+        previous_errors = copy.deepcopy(old_data['errors'])
+        new_data['words'] = parse_words_response(old_data['words'], response, old_data['errors'])
+        new_data['errors'] = old_data['errors']
+        new_data['attempt'] = new_data['attempt'] + 1
+
+        if sorted(new_data['words']) == sorted(old_data['words']) and sorted(previous_errors) == sorted(new_data['errors']):
+            new_data['changed'] = "false"
+
+        return WordsGenerator(**new_data)
+    except RuntimeError as e:
+        old_data['errors'].append(str(e))
+        old_data['changed'] = 'true'
+        old_data['attempt'] += 1
+        return WordsGenerator(**old_data)
 
 if __name__ == "__main__":
     import uvicorn
