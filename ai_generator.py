@@ -341,17 +341,17 @@ def parse_chat_response(old_chat: str, response: str, errors: list) -> str:
     try:
         response = response.replace('\r\n', '\n').strip()
 
-        start_match = re.search(r'chatStart\s*:', response, re.IGNORECASE)
-        end_match = re.search(r'chatEnd\s*:', response, re.IGNORECASE)
+        start_match = re.search(r'<chat>', response, re.IGNORECASE)
+        end_match = re.search(r'</chat>', response, re.IGNORECASE)
 
         if not start_match:
-            errors.append("Błąd parsowania: brak etykiety chatStart:")
+            errors.append("Błąd parsowania: brak etykiety <chat>")
             return old_chat
         if not end_match:
-            errors.append("Błąd parsowania: brak etykiety chatEnd:")
+            errors.append("Błąd parsowania: brak etykiety </chat>")
             return old_chat
         if end_match.start() <= start_match.end():
-            errors.append("Błąd parsowania: etykieta chatEnd: znajduje się przed chatStart:")
+            errors.append("Błąd parsowania: etykieta </chat> znajduje się przed <chat>")
             return old_chat
 
         final_chat = response[start_match.end(): end_match.start()].strip()
@@ -364,6 +364,34 @@ def parse_chat_response(old_chat: str, response: str, errors: list) -> str:
     except Exception as e:
         errors.append(f"Błąd nieoczekiwany podczas parsowania: {str(e)}")
         return old_chat
+
+def parse_literature_response(old_note: str, response: str, errors: list) -> str:
+    try:
+        response = response.replace('\r\n', '\n').strip()
+
+        start_match = re.search(r'<literature>', response, re.IGNORECASE)
+        end_match = re.search(r'</literature>', response, re.IGNORECASE)
+
+        if not start_match:
+            errors.append("Błąd parsowania: brak etykiety <literature>")
+            return old_note
+        if not end_match:
+            errors.append("Błąd parsowania: brak etykiety </literature>")
+            return old_note
+        if end_match.start() <= start_match.end():
+            errors.append("Błąd parsowania: etykieta </literature> znajduje się przed <literature>")
+            return old_note
+
+        final_chat = response[start_match.end(): end_match.start()].strip()
+
+        if not final_chat:
+            errors.append("Błąd: tekst literatury jest pusty")
+            return old_note
+
+        return final_chat
+    except Exception as e:
+        errors.append(f"Błąd nieoczekiwany podczas parsowania: {str(e)}")
+        return old_note
 
 def get_last_user_solution(chat_text: str, current_user_solution: str) -> str:
     matches = re.findall(r'\[AI_USER_SOLUTION\](.*?)(?=\n\[|$)', chat_text, re.DOTALL)
@@ -674,7 +702,6 @@ def parse_solution_response(old_solution: str, response: str, errors: list) -> s
         errors.append(f"Błąd nieoczekiwany podczas parsowania: {str(e)}")
         return old_solution
 
-
 def parse_correct_option_index(old_index: int, response: str, options: list, errors: list) -> int:
     try:
         start_idx = response.find("correctOptionStart:")
@@ -863,7 +890,6 @@ def parse_output_subtopics_response(old_subtopics: list, subtopics: list, respon
         final_subtopics = []
 
         for name in unique_names:
-            # DODANA WALIDACJA LaTeX
             if not validate_latex(name, errors):
                 errors.append(f"Błąd LaTeX w podtemacie: '{name}'")
                 continue
@@ -887,43 +913,37 @@ def parse_output_words_response(
     words_are_tuples: bool = True
 ) -> list:
     try:
-        start_idx = response.find("wordsStart:")
-        end_idx = response.find("wordsEnd:", start_idx)
+        start_idx = response.find("<words>")
+        end_idx = response.find("</words>", start_idx)
         if start_idx == -1:
-            errors.append("Błąd parsowania: brak etykiety wordsStart:")
+            errors.append("Błąd parsowania: brak etykiety <words>")
             return old_words
         if end_idx == -1:
-            errors.append("Błąd parsowania: brak etykiety wordsEnd:")
+            errors.append("Błąd parsowania: brak etykiety </words>")
             return old_words
         if end_idx <= start_idx:
-            errors.append("Błąd parsowania: etykieta wordsEnd: znajduje się przed wordsStart:")
+            errors.append("Błąd parsowania: etykieta </words> znajduje się przed <words>")
             return old_words
 
-        content = response[start_idx + len("wordsStart:"): end_idx].strip()
+        content = response[start_idx + len("<words>"): end_idx].strip()
         if not content:
-            errors.append("Błąd parsowania: brak wyrazów pomiędzy wordsStart: a wordsEnd:")
+            errors.append("Błąd parsowania: brak wyrazów pomiędzy <words> a </words>")
             return old_words
 
         lines = [line.strip() for line in content.splitlines() if line.strip()]
         lines = extract_wrong_words(lines)
         lines = remove_empty_lines(lines)
         unique_lines = list(dict.fromkeys(lines))
-        if len(unique_lines) < len(lines):
-            errors.append("Usunięto powtarzające się wyrazy.")
 
         filtered_words = []
 
         for name in unique_lines:
-            name = name.lower()
+            name_lower = name.lower()
             if words_are_tuples:
-                if not any(name == w[0].lower() for w in words):
-                    errors.append(f"Wyraz '{name}' nie znajduje się w liście words.")
-                else:
+                if any(name_lower == w[0].lower() for w in words):
                     filtered_words.append(name)
             else:
-                if not any(name == w.lower() for w in words):
-                    errors.append(f"Wyraz '{name}' nie znajduje się w liście words.")
-                else:
+                if any(name_lower == w.lower() for w in words):
                     filtered_words.append(name)
 
         if not filtered_words:

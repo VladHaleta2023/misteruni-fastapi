@@ -159,7 +159,6 @@ async def request_ai(
                             messages=[{"role": "user", "content": prompt_filled}],
                             temperature=0,
                             stream=True,
-                            max_tokens=8000
                         )
                     ),
                     timeout=900
@@ -198,7 +197,6 @@ async def request_ai(
                             messages=[{"role": "user", "content": prompt_filled}],
                             temperature=0,
                             stream=False,
-                            max_tokens=8000
                         )
                     ),
                     timeout=900
@@ -412,14 +410,6 @@ class ChatGenerator(BaseModel):
     prompt: str
     errors: List[str]
 
-class LiteratureGenerator(BaseModel):
-    changed: str
-    name: str
-    note: str
-    attempt: int
-    prompt: str
-    errors: List[str]
-
 class VocabluaryGenerator(BaseModel):
     changed: str
     words: List[List]
@@ -434,7 +424,6 @@ class WordsGenerator(BaseModel):
     subject: str
     section: str
     topic: str
-    type: str
     difficulty: str
     words: List[List]
     attempt: int
@@ -886,7 +875,7 @@ async def problems_generate(data: ProblemsGenerator, request: Request):
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+        response = await request_ai(old_data['prompt'], old_data, request, stream=True)
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -957,17 +946,17 @@ async def chat_generate(data: ChatGenerator, request: Request):
         old_data['attempt'] += 1
         return ChatGenerator(**old_data)
 
-@app.post("/admin/literature-generate")
-async def literature_generate(data: LiteratureGenerator, request: Request):
+@app.post("/admin/words-generate")
+async def words_generate(data: WordsGenerator, request: Request):
     old_data = copy.deepcopy(data.dict())
 
     try:
         from ai_generator import (
-            parse_literature_response
+            parse_words_response
         )
 
-        if await request.is_disconnected():
-            raise HTTPException(status_code=499, detail="Client disconnected")
+        if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
+            return WordsGenerator(**old_data)
 
         response = await request_ai(old_data['prompt'], old_data, request, stream=False)
 
@@ -976,226 +965,15 @@ async def literature_generate(data: LiteratureGenerator, request: Request):
 
         new_data = copy.deepcopy(old_data)
         previous_errors = copy.deepcopy(old_data['errors'])
-
-        new_data['note'] = parse_literature_response(old_data['note'], response, old_data['errors'])
-
+        new_data['words'] = parse_words_response(old_data['words'], response, old_data['errors'])
         new_data['errors'] = old_data['errors']
         new_data['attempt'] = new_data['attempt'] + 1
 
-        if new_data['note'] != "" and sorted(previous_errors) == sorted(new_data['errors']):
+        if len(new_data['words']) != 0 and sorted(previous_errors) == sorted(new_data['errors']):
             new_data['changed'] = "false"
 
-        return LiteratureGenerator(**new_data)
-    except RuntimeError as e:
-        old_data['errors'].append(str(e))
-        old_data['changed'] = 'true'
-        old_data['attempt'] += 1
-        return LiteratureGenerator(**old_data)
-
-
-def filter_by_frequency(word_list, min_freq=20):
-    return [item for item in word_list if item[1] > min_freq]
-
-
-def normalize_frequencies(word_list):
-    if not word_list:
-        return word_list
-
-    max_freq = max(freq for _, freq in word_list)
-    if max_freq == 0:
-        return word_list
-
-    return [[word, int(freq * 100 / max_freq)] for word, freq in word_list]
-
-
-def normalize_frequencies_across_runs(all_runs):
-    for run in all_runs:
-        if not run:
-            continue
-        max_freq = max(freq for _, freq in run)
-        if max_freq > 0:
-            for i, (word, freq) in enumerate(run):
-                run[i][1] = int(freq * 100 / max_freq)
-    return all_runs
-
-
-def get_core_threshold(difficulty):
-    return 1.0
-
-
-def process_generations(lists, difficulty="B2"):
-    from collections import Counter
-    import statistics
-    import math
-
-    word_counter = Counter()
-    word_frequencies = {}
-
-    generation_sets = []
-    generation_sizes = []
-
-    for word_list in lists:
-        current_set = set()
-        generation_sizes.append(len(word_list))
-
-        for item in word_list:
-            if isinstance(item, list) and len(item) == 2:
-                word, freq = item
-                word_counter[word] += 1
-                word_frequencies.setdefault(word, []).append(freq)
-                current_set.add(word)
-
-        generation_sets.append(current_set)
-
-    total_generations = len(lists)
-    min_required = total_generations
-
-    core_words = []
-    core_words_set = set()
-
-    for word, count in word_counter.items():
-        if count >= min_required:
-            avg_freq = int(statistics.mean(word_frequencies[word]))
-            core_words.append([word, avg_freq])
-            core_words_set.add(word)
-
-    core_words.sort(key=lambda x: x[1], reverse=True)
-
-    unique_words_by_gen = []
-    for gen_set in generation_sets:
-        unique = gen_set - core_words_set
-        unique_words_by_gen.append(unique)
-
-    all_unique_words_dict = {}
-
-    for i, unique_set in enumerate(unique_words_by_gen):
-        for word in unique_set:
-            if word in word_frequencies:
-                avg_freq = int(statistics.mean(word_frequencies[word]))
-                all_unique_words_dict[word] = avg_freq
-
-    all_unique_words_list = [[word, freq] for word, freq in all_unique_words_dict.items()]
-    all_unique_words_list.sort(key=lambda x: x[1], reverse=True)
-
-    exam_cutoff = 30
-    critical_words = set()
-    filtered_unique = [
-        item for item in all_unique_words_list
-        if item[1] >= exam_cutoff or item[0] in critical_words
-    ]
-
-    if not filtered_unique and all_unique_words_list:
-        filtered_unique = all_unique_words_list[:10]
-
-    all_unique_words_list = filtered_unique
-
-    total_unique_count = 0
-
-    for i, gen_set in enumerate(generation_sets):
-        core_in_this_gen = gen_set.intersection(core_words_set)
-        unique_count = len(gen_set) - len(core_in_this_gen)
-        total_unique_count += max(0, unique_count)
-
-    avg_unique_to_add = total_unique_count // total_generations
-
-    top_unique_to_add = all_unique_words_list[:avg_unique_to_add]
-
-    final_list = core_words + top_unique_to_add
-    final_list.sort(key=lambda x: x[1], reverse=True)
-
-    return final_list
-
-def process_generations_deterministic(lists, difficulty="B2", core_required_runs=None):
-    from collections import Counter
-    import statistics
-
-    difficulty_based_limit = {
-        "A2": 60,
-        "B1": 35,
-        "B2": 20,
-        "B2+": 15
-    }
-
-    if core_required_runs is None:
-        core_required_runs = len(lists)
-
-    word_counter = Counter()
-    word_frequencies = {}
-    generation_sets = []
-
-    for word_list in lists:
-        current_set = set()
-        for item in word_list:
-            if isinstance(item, list) and len(item) == 2:
-                word, freq = item
-                word_counter[word] += 1
-                word_frequencies.setdefault(word, []).append(freq)
-                current_set.add(word)
-        generation_sets.append(current_set)
-
-    core_words = []
-    core_words_set = set()
-    for word, count in word_counter.items():
-        if count >= core_required_runs:
-            avg_freq = int(statistics.mean(word_frequencies[word]))
-            core_words.append([word, avg_freq])
-            core_words_set.add(word)
-
-    unique_words_dict = {}
-    for gen_set in generation_sets:
-        for word in gen_set - core_words_set:
-            if word in word_frequencies:
-                avg_freq = int(statistics.mean(word_frequencies[word]))
-                unique_words_dict[word] = avg_freq
-
-    all_unique_words_list = [[word, freq] for word, freq in unique_words_dict.items()]
-    all_unique_words_list.sort(key=lambda x: (-x[1], x[0]))
-
-    exam_cutoff = 30
-    filtered_unique = [item for item in all_unique_words_list if item[1] >= exam_cutoff]
-
-    final_list = core_words + filtered_unique
-    final_list.sort(key=lambda x: (-x[1], x[0]))
-
-    max_limit = difficulty_based_limit.get(difficulty, 50)
-    final_list = final_list[:max_limit]
-
-    return final_list
-
-
-@app.post("/admin/words-generate")
-async def words_generate(data: WordsGenerator, request: Request):
-    old_data = copy.deepcopy(data.dict())
-
-    target_generations = 5
-    min_frequency = 30
-    accumulated_lists = []
-
-    try:
-        from ai_generator import parse_words_response
-
-        for i in range(target_generations):
-            response = await request_ai(old_data['prompt'], old_data, request, stream=False)
-            new_words = parse_words_response([], response, old_data['errors'])
-
-            new_words = filter_by_frequency(new_words, min_freq=min_frequency)
-            new_words = normalize_frequencies(new_words)
-
-            accumulated_lists.append(new_words)
-            old_data['attempt'] = old_data['attempt'] + 1
-
-        final_list = []
-
-        if old_data['type'] != "":
-            final_list = process_generations_deterministic(accumulated_lists, difficulty=old_data['difficulty'])
-        else:
-            final_list = process_generations(accumulated_lists, difficulty=old_data['difficulty'])
-
-        new_data = copy.deepcopy(old_data)
-        new_data['words'] = final_list
-        new_data['changed'] = "false"
         return WordsGenerator(**new_data)
-    except Exception as e:
+    except RuntimeError as e:
         old_data['errors'].append(str(e))
         old_data['changed'] = 'true'
         old_data['attempt'] += 1

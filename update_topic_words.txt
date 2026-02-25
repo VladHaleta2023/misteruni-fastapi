@@ -1,0 +1,154 @@
+def process_generations(lists, core_threshold=1.0):
+    from collections import Counter
+    import statistics
+
+    word_counter = Counter()
+    word_frequencies = {}
+
+    # Хранилище для множеств слов каждой генерации
+    generation_sets = []
+    generation_sizes = []
+
+    # Собираем статистику по всем генерациям
+    for word_list in lists:
+        current_set = set()
+        generation_sizes.append(len(word_list))
+
+        for item in word_list:
+            if isinstance(item, list) and len(item) == 2:
+                word, freq = item
+                word_counter[word] += 1
+                word_frequencies.setdefault(word, []).append(freq)
+                current_set.add(word)
+
+        generation_sets.append(current_set)
+
+    total_generations = len(lists)
+    min_required = total_generations  # Нужно 100% (все генерации)
+
+    # 1. Находим слова, которые есть во ВСЕХ генерациях (core vocabulary)
+    core_words = []
+    core_words_set = set()
+
+    for word, count in word_counter.items():
+        if count >= min_required:  # слово есть во ВСЕХ генерациях
+            avg_freq = int(statistics.mean(word_frequencies[word]))
+            core_words.append([word, avg_freq])  # СПИСОК, а не кортеж
+            core_words_set.add(word)
+
+    # Сортируем core слова по частоте
+    core_words.sort(key=lambda x: x[1], reverse=True)
+
+    # 2. Находим уникальные слова (которых нет в core) для каждой генерации
+    unique_words_by_gen = []
+    for gen_set in generation_sets:
+        unique = gen_set - core_words_set
+        unique_words_by_gen.append(unique)
+
+    # 3. Собираем ВСЕ уникальные слова из ВСЕХ генераций с их частотами
+    all_unique_words_dict = {}  # слово -> средняя частота
+
+    for i, unique_set in enumerate(unique_words_by_gen):
+        for word in unique_set:
+            if word in word_frequencies:  # слово точно есть в word_frequencies
+                avg_freq = int(statistics.mean(word_frequencies[word]))
+                all_unique_words_dict[word] = avg_freq
+
+    # Преобразуем в список и сортируем по частоте (от высоких к низким)
+    all_unique_words_list = [[word, freq] for word, freq in all_unique_words_dict.items()]  # СПИСКИ, а не кортежи
+    all_unique_words_list.sort(key=lambda x: x[1], reverse=True)
+
+    # ========== НОВЫЙ КОД: ФИЛЬТРАЦИЯ ШУМОВ С ПОРОГОМ 50% ==========
+    # Убираем низкочастотные уникальные слова (частоту < 50)
+    # Это значительно уменьшит количество случайного шума
+    exam_cutoff = 50  # Порог 50% - отсекаем большую часть шума
+
+    # Критические слова, которые нужно сохранить даже с низкой частотой
+    # (можно оставить пустым или добавить специфические термины)
+    critical_words = set()  # Например: {"essential", "crucial"} если нужно
+
+    filtered_unique = [
+        item for item in all_unique_words_list
+        if item[1] >= exam_cutoff or item[0] in critical_words
+    ]  # item уже список, всё ок
+
+    # Защита от пустого списка - если всё отфильтровалось, берем топ-10
+    if not filtered_unique and all_unique_words_list:
+        filtered_unique = all_unique_words_list[:10]
+
+    # Заменяем исходный список отфильтрованным
+    all_unique_words_list = filtered_unique
+    # ========== КОНЕЦ НОВОГО КОДА ==========
+
+    # 4. Вычисляем среднее количество уникальных слов для добавления
+    total_unique_count = 0
+    core_words_count_in_gen = []
+
+    for i, gen_set in enumerate(generation_sets):
+        core_in_this_gen = gen_set.intersection(core_words_set)
+        unique_count = len(gen_set) - len(core_in_this_gen)
+        total_unique_count += max(0, unique_count)
+
+    # Среднее количество уникальных слов для добавления
+    avg_unique_to_add = total_unique_count // total_generations
+
+    # 5. Берем отфильтрованные уникальные слова, отсортированные по частоте,
+    #    но только в количестве avg_unique_to_add
+    top_unique_to_add = all_unique_words_list[:avg_unique_to_add]  # уже список списков
+
+    # 6. Объединяем core и top unique
+    final_list = core_words + top_unique_to_add  # оба - списки списков
+    final_list.sort(key=lambda x: x[1], reverse=True)
+
+    # Для отладки
+    # print(f"Всего генераций: {total_generations}")
+    # print(f"Core слов: {len(core_words)}")
+    # print(f"Уникальных слов ДО фильтрации: {len(all_unique_words_dict)}")
+    # print(f"Уникальных слов ПОСЛЕ фильтрации (порог {exam_cutoff}): {len(all_unique_words_list)}")
+    # print(f"Среднее уникальных для добавления: {avg_unique_to_add}")
+    # print(f"Добавлено уникальных: {len(top_unique_to_add)}")
+
+    return final_list
+
+
+@app.post("/admin/words-generate")
+async def words_generate(data: WordsGenerator, request: Request):
+    old_data = copy.deepcopy(data.dict())
+
+    # Количество генераций: 7
+    target_generations = 7
+    # Порог частоты при фильтрации ответа ИИ
+    min_frequency = 20
+    accumulated_lists = []
+
+    try:
+        from ai_generator import parse_words_response
+
+        # Генерируем 7 независимых списков
+        for i in range(target_generations):
+            response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+            new_words = parse_words_response([], response, old_data['errors'])
+
+            # Фильтруем по частоте (убираем слова < 20)
+            new_words = filter_by_frequency(new_words, min_freq=min_frequency)
+
+            # Нормализуем частоты для сопоставимости
+            new_words = normalize_frequencies(new_words)
+
+            new_words = [word for word in new_words if word[0] not in old_data['dbWords']]
+            accumulated_lists.append(new_words)
+            old_data['attempt'] = old_data['attempt'] + 1
+
+        # Используем порог 1.0 (100%) для core слов
+        final_list = process_generations(accumulated_lists, core_threshold=1.0)
+
+        new_data = copy.deepcopy(old_data)
+        new_data['words'] = final_list  # final_list - список списков [["word", 95], ...]
+        new_data['changed'] = "false"
+        return WordsGenerator(**new_data)
+
+    except Exception as e:
+        old_data['errors'].append(str(e))
+        old_data['changed'] = 'true'
+        old_data['attempt'] += 1
+        return WordsGenerator(**old_data)

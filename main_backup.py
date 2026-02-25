@@ -20,6 +20,8 @@ import random
 from openai import OpenAI
 from difflib import SequenceMatcher
 from collections import Counter
+from pathlib import Path
+from cache_manager import cache_manager
 
 logger = logging.getLogger("app_logger")
 logging.basicConfig(
@@ -136,19 +138,52 @@ def fill_placeholders(prompt: str, data: Dict[str, Any]) -> str:
     pattern = r"\{\$(\w+)\$\}"
     return re.sub(pattern, replacer, prompt)
 
+
 async def request_ai(
         prompt: str,
         data: Dict[str, Any],
         request: Request,
         max_retries: int = 1,
-        stream: bool = False
+        stream: bool = False,
+        use_cache: bool = True,
+        force_regen: bool = False
 ) -> Optional[str]:
+    """
+    УНИВЕРСАЛЬНАЯ функция запроса к AI с кэшированием.
+    Работает для ЛЮБЫХ эндпоинтов и ЛЮБЫХ форматов ответов.
+
+    Args:
+        prompt: Шаблон промпта
+        data: Данные для заполнения промпта
+        request: FastAPI request объект
+        max_retries: Максимальное количество повторных попыток
+        stream: Использовать ли streaming режим
+        use_cache: Использовать ли кэш
+        force_regen: Принудительная регенерация (игнорировать кэш)
+    """
+
+    # Заполняем промпт данными
     prompt_filled = fill_placeholders(prompt, data)
 
-    logger.info(prompt_filled)
+    # Определяем эндпоинт из request.url.path или data
+    # Это ключевой момент для разделения кэша
+    endpoint = request.url.path if request else data.get('endpoint', 'unknown')
+
+    # 1. ПРОВЕРКА КЭША (если разрешено и не force_regen)
+    if use_cache and not force_regen:
+        cached = cache_manager.get_cached(prompt_filled, data, endpoint)
+        if cached:
+            # НЕ ВАЛИДИРУЕМ ФОРМАТ - доверяем кэшу
+            # Разные эндпоинты имеют РАЗНЫЙ формат
+            logger.info(f"💾 Using cached response for {endpoint}")
+            return cached
+
+    # 2. ГЕНЕРАЦИЯ ЧЕРЕЗ API
+    logger.info(f"🔄 Generating new response for {endpoint}")
+    logger.info(f"Prompt preview: {prompt_filled[:200]}...")
 
     for attempt in range(max_retries + 1):
-        logger.info(f"[Attempt {attempt + 1}]")
+        logger.info(f"[Attempt {attempt + 1}/{max_retries + 1}] for {endpoint}")
 
         try:
             if stream:
@@ -159,7 +194,6 @@ async def request_ai(
                             messages=[{"role": "user", "content": prompt_filled}],
                             temperature=0,
                             stream=True,
-                            max_tokens=8000
                         )
                     ),
                     timeout=900
@@ -167,11 +201,8 @@ async def request_ai(
 
                 chunks = []
                 current_segment = ""
-                chunk_count = 0
 
                 for chunk in response:
-                    chunk_count += 1
-
                     try:
                         if (chunk and chunk.choices and chunk.choices[0].delta.content):
                             text = chunk.choices[0].delta.content
@@ -181,13 +212,13 @@ async def request_ai(
 
                                 if len(current_segment) > 80 and (
                                         '\n' in current_segment or '. ' in current_segment[-20:]):
-                                    logger.info(current_segment.strip())
+                                    logger.info(f"[{endpoint}] {current_segment.strip()}")
                                     current_segment = ""
                     except AttributeError:
                         continue
 
                 if current_segment.strip():
-                    logger.info(current_segment.strip())
+                    logger.info(f"[{endpoint}] {current_segment.strip()}")
 
                 content = "".join(chunks).strip()
             else:
@@ -198,7 +229,6 @@ async def request_ai(
                             messages=[{"role": "user", "content": prompt_filled}],
                             temperature=0,
                             stream=False,
-                            max_tokens=8000
                         )
                     ),
                     timeout=900
@@ -210,40 +240,49 @@ async def request_ai(
                     content = ""
 
                 if content:
-                    logger.info(f"Response: {content}")
+                    logger.info(f"[{endpoint}] Response received ({len(content)} chars)")
 
-            if content:
-                if len(content) < 10:
-                    if attempt < max_retries:
-                        wait_time = 2 ** attempt
-                        await asyncio.sleep(wait_time)
-                    continue
+            # МИНИМАЛЬНАЯ ВАЛИДАЦИЯ - только на пустоту и обрезанность
+            if not content:
+                logger.warning(f"[{endpoint}] Empty response")
+                if attempt < max_retries:
+                    wait_time = 2 ** attempt
+                    await asyncio.sleep(wait_time)
+                continue
 
-                if not content or content.isspace():
-                    if attempt < max_retries:
-                        wait_time = 2 ** attempt
-                        await asyncio.sleep(wait_time)
-                    continue
+            if len(content) < 10:
+                logger.warning(f"[{endpoint}] Response too short ({len(content)} chars)")
+                if attempt < max_retries:
+                    wait_time = 2 ** attempt
+                    await asyncio.sleep(wait_time)
+                continue
 
-                if content.endswith(('...', '--', '[', '{', '(')):
-                    if attempt < max_retries:
-                        wait_time = 2 ** attempt
-                        await asyncio.sleep(wait_time)
-                    continue
+            # Проверка на обрезанность (универсальная для всех форматов)
+            if content.endswith(('...', '--', '[', '{', '(')):
+                logger.warning(f"[{endpoint}] Response可能 truncated")
+                if attempt < max_retries:
+                    wait_time = 2 ** attempt
+                    await asyncio.sleep(wait_time)
+                continue
 
-                return content
+            # 3. СОХРАНЕНИЕ В КЭШ (всегда, если use_cache=True)
+            if use_cache:
+                cache_manager.save_to_cache(prompt_filled, data, endpoint, content)
 
-            if attempt < max_retries:
-                wait_time = 2 ** attempt
-                await asyncio.sleep(wait_time)
+                # Отдельно для words-generate можно сохранять как "особый случай"
+                # но это уже на уровне эндпоинта, не здесь
+                if 'words-generate' in endpoint:
+                    logger.info(f"📝 Words generate response cached for {data.get('topic', 'unknown')}")
+
+            return content
 
         except Exception as e:
-            logger.error(f"Error: {e}")
+            logger.error(f"[{endpoint}] Error on attempt {attempt + 1}: {e}")
             if attempt < max_retries:
                 wait_time = 2 ** attempt
                 await asyncio.sleep(wait_time)
 
-    logger.error(f"All {max_retries + 1} attempts failed")
+    logger.error(f"[{endpoint}] All {max_retries + 1} attempts failed")
     return None
 
 class PromptImageRequest(BaseModel):
@@ -412,14 +451,6 @@ class ChatGenerator(BaseModel):
     prompt: str
     errors: List[str]
 
-class LiteratureGenerator(BaseModel):
-    changed: str
-    name: str
-    note: str
-    attempt: int
-    prompt: str
-    errors: List[str]
-
 class VocabluaryGenerator(BaseModel):
     changed: str
     words: List[List]
@@ -434,7 +465,6 @@ class WordsGenerator(BaseModel):
     subject: str
     section: str
     topic: str
-    type: str
     difficulty: str
     words: List[List]
     attempt: int
@@ -525,18 +555,27 @@ def generate_tts(data: TTSRequest):
         raise HTTPException(status_code=500, detail=f"Błąd generacji TTS lub upload do S3: {str(e)}")
 
 @app.post("/admin/subtopics-generate")
-async def subtopics_generate(data: SubtopicsGenerator, request: Request):
+async def subtopics_generate(data: SubtopicsGenerator, request: Request, force_regen: bool = False):
     old_data = copy.deepcopy(data.dict())
+    old_data['endpoint'] = '/admin/subtopics-generate'  # ← ДОБАВИТЬ
 
     try:
-        from ai_generator import (
-            parse_subtopics_response
-        )
+        from ai_generator import parse_subtopics_response
 
-        if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
+        if (old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS) and not force_regen:
             return SubtopicsGenerator(**old_data)
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+        response = await request_ai(
+            old_data['prompt'],
+            old_data,
+            request,
+            stream=False,
+            use_cache=True,
+            force_regen=force_regen
+        )
+
+        if not response:
+            raise HTTPException(status_code=500, detail="Failed to generate response")
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -547,7 +586,7 @@ async def subtopics_generate(data: SubtopicsGenerator, request: Request):
         new_data['errors'] = old_data['errors']
         new_data['attempt'] = new_data['attempt'] + 1
 
-        if sorted(previous_errors) == sorted(new_data['errors']):
+        if len(new_data['subtopics']) != 0 and sorted(previous_errors) == sorted(new_data['errors']):
             new_data['changed'] = "false"
 
         return SubtopicsGenerator(**new_data)
@@ -558,18 +597,27 @@ async def subtopics_generate(data: SubtopicsGenerator, request: Request):
         return SubtopicsGenerator(**old_data)
 
 @app.post("/admin/subtopics-status-generate")
-async def subtopics_status_generate(data: SubtopicsStatusGenerator, request: Request):
+async def subtopics_status_generate(data: SubtopicsStatusGenerator, request: Request, force_regen: bool = False):
     old_data = copy.deepcopy(data.dict())
+    old_data['endpoint'] = '/admin/subtopics-status-generate'  # ← ДОБАВИТЬ
 
     try:
-        from ai_generator import (
-            parse_subtopics_status_response
-        )
+        from ai_generator import parse_subtopics_status_response
 
-        if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
+        if (old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS) and not force_regen:
             return SubtopicsStatusGenerator(**old_data)
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+        response = await request_ai(
+            old_data['prompt'],
+            old_data,
+            request,
+            stream=False,
+            use_cache=True,
+            force_regen=force_regen
+        )
+
+        if not response:
+            raise HTTPException(status_code=500, detail="Failed to generate response")
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -578,10 +626,9 @@ async def subtopics_status_generate(data: SubtopicsStatusGenerator, request: Req
         previous_errors = copy.deepcopy(old_data['errors'])
         new_data['subtopics'] = parse_subtopics_status_response(old_data['subtopics'], response, old_data['errors'])
         new_data['errors'] = old_data['errors']
-
         new_data['attempt'] = new_data['attempt'] + 1
 
-        if sorted(previous_errors) == sorted(new_data['errors']):
+        if len(new_data['subtopics']) != 0 and sorted(previous_errors) == sorted(new_data['errors']):
             new_data['changed'] = "false"
 
         return SubtopicsStatusGenerator(**new_data)
@@ -592,18 +639,27 @@ async def subtopics_status_generate(data: SubtopicsStatusGenerator, request: Req
         return SubtopicsStatusGenerator(**old_data)
 
 @app.post("/admin/topic-expansion-generate")
-async def topic_expansion_generate(data: TopicExpansionGenerator, request: Request):
+async def topic_expansion_generate(data: TopicExpansionGenerator, request: Request, force_regen: bool = False):
     old_data = copy.deepcopy(data.dict())
+    old_data['endpoint'] = '/admin/topic-expansion-generate'  # ← ДОБАВИТЬ
 
     try:
-        from ai_generator import (
-            parse_note_response
-        )
+        from ai_generator import parse_note_response
 
-        if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
+        if (old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS) and not force_regen:
             return TopicExpansionGenerator(**old_data)
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+        response = await request_ai(
+            old_data['prompt'],
+            old_data,
+            request,
+            stream=False,
+            use_cache=True,
+            force_regen=force_regen
+        )
+
+        if not response:
+            raise HTTPException(status_code=500, detail="Failed to generate response")
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -612,9 +668,6 @@ async def topic_expansion_generate(data: TopicExpansionGenerator, request: Reque
         previous_errors = copy.deepcopy(old_data['errors'])
         new_data['note'] = parse_note_response(old_data['note'], response, old_data['errors'])
         new_data['errors'] = old_data['errors']
-
-        logger.info(previous_errors)
-        logger.info(new_data['errors'])
         new_data['attempt'] = new_data['attempt'] + 1
 
         if new_data['note'] != "" and sorted(previous_errors) == sorted(new_data['errors']):
@@ -628,19 +681,27 @@ async def topic_expansion_generate(data: TopicExpansionGenerator, request: Reque
         return TopicExpansionGenerator(**old_data)
 
 @app.post("/admin/frequency-generate")
-async def frequency_generate(data: FrequencyGenerator, request: Request):
+async def frequency_generate(data: FrequencyGenerator, request: Request, force_regen: bool = False):
     old_data = copy.deepcopy(data.dict())
+    old_data['endpoint'] = '/admin/frequency-generate'  # ← ДОБАВИТЬ
 
     try:
-        from ai_generator import (
-            parse_frequency_response,
-            parse_subtopics_response
-        )
+        from ai_generator import parse_frequency_response, parse_subtopics_response
 
-        if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
+        if (old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS) and not force_regen:
             return FrequencyGenerator(**old_data)
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+        response = await request_ai(
+            old_data['prompt'],
+            old_data,
+            request,
+            stream=False,
+            use_cache=True,
+            force_regen=force_regen
+        )
+
+        if not response:
+            raise HTTPException(status_code=500, detail="Failed to generate response")
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -656,12 +717,9 @@ async def frequency_generate(data: FrequencyGenerator, request: Request):
             "subtopicsStart:",
             "subtopicsEnd:")
         new_data['errors'] = old_data['errors']
-
-        logger.info(previous_errors)
-        logger.info(new_data['errors'])
         new_data['attempt'] = new_data['attempt'] + 1
 
-        if new_data['frequency'] != 0 and sorted(previous_errors) == sorted(new_data['errors']):
+        if new_data['frequency'] != 0 and len(new_data['outputSubtopics']) != 0 and sorted(previous_errors) == sorted(new_data['errors']):
             new_data['changed'] = "false"
 
         return FrequencyGenerator(**new_data)
@@ -672,24 +730,29 @@ async def frequency_generate(data: FrequencyGenerator, request: Request):
         return FrequencyGenerator(**old_data)
 
 @app.post("/admin/task-generate")
-async def task_generate(data: TaskGenerator, request: Request):
+async def task_generate(data: TaskGenerator, request: Request, force_regen: bool = False):
     old_data = copy.deepcopy(data.dict())
+    old_data['endpoint'] = '/admin/task-generate'  # ← ДОБАВИТЬ
 
     try:
-        from ai_generator import (
-            parse_task_response,
-            parse_output_subtopics_response
-        )
+        from ai_generator import parse_task_response, parse_output_subtopics_response
 
-        if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
+        if (old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS) and not force_regen:
             return TaskGenerator(**old_data)
-
-        if await request.is_disconnected():
-            raise HTTPException(status_code=499, detail="Client disconnected")
 
         logger.info(old_data['literature'])
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+        response = await request_ai(
+            old_data['prompt'],
+            old_data,
+            request,
+            stream=False,
+            use_cache=True,
+            force_regen=force_regen
+        )
+
+        if not response:
+            raise HTTPException(status_code=500, detail="Failed to generate response")
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -697,12 +760,16 @@ async def task_generate(data: TaskGenerator, request: Request):
         new_data = copy.deepcopy(old_data)
         previous_errors = copy.deepcopy(old_data['errors'])
         new_data['text'] = parse_task_response(old_data['text'], response, old_data['errors'])
-        new_data['outputSubtopics'] = parse_output_subtopics_response(old_data['outputSubtopics'], old_data['subtopics'],
-                                                                       response, old_data['errors'])
+        new_data['outputSubtopics'] = parse_output_subtopics_response(
+            old_data['outputSubtopics'],
+            old_data['subtopics'],
+            response,
+            old_data['errors']
+        )
         new_data['errors'] = old_data['errors']
         new_data['attempt'] = new_data['attempt'] + 1
 
-        if new_data['text'] != "" and sorted(previous_errors) == sorted(new_data['errors']):
+        if new_data['text'] != "" and len(new_data['outputSubtopics']) and sorted(previous_errors) == sorted(new_data['errors']):
             new_data['changed'] = "false"
 
         return TaskGenerator(**new_data)
@@ -713,22 +780,27 @@ async def task_generate(data: TaskGenerator, request: Request):
         return TaskGenerator(**old_data)
 
 @app.post("/admin/vocabluary-generate")
-async def vocabluary_generate(data: VocabluaryGenerator, request: Request):
+async def vocabluary_generate(data: VocabluaryGenerator, request: Request, force_regen: bool = False):
     old_data = copy.deepcopy(data.dict())
+    old_data['endpoint'] = '/admin/vocabluary-generate'  # ← ДОБАВИТЬ
 
     try:
-        from ai_generator import (
-            parse_words_output_text_response,
-            parse_output_words_response
-        )
+        from ai_generator import parse_words_output_text_response, parse_output_words_response
 
-        if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
+        if (old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS) and not force_regen:
             return VocabluaryGenerator(**old_data)
 
-        if await request.is_disconnected():
-            raise HTTPException(status_code=499, detail="Client disconnected")
+        response = await request_ai(
+            old_data['prompt'],
+            old_data,
+            request,
+            stream=False,
+            use_cache=True,
+            force_regen=force_regen
+        )
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+        if not response:
+            raise HTTPException(status_code=500, detail="Failed to generate response")
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -736,12 +808,16 @@ async def vocabluary_generate(data: VocabluaryGenerator, request: Request):
         new_data = copy.deepcopy(old_data)
         previous_errors = copy.deepcopy(old_data['errors'])
         new_data['outputText'] = parse_words_output_text_response(old_data['outputText'], response, old_data['errors'])
-        new_data['outputWords'] = parse_output_words_response(old_data['outputWords'], old_data['words'],
-                                                                       response, old_data['errors'])
+        new_data['outputWords'] = parse_output_words_response(
+            old_data['outputWords'],
+            old_data['words'],
+            response,
+            old_data['errors']
+        )
         new_data['errors'] = old_data['errors']
         new_data['attempt'] = new_data['attempt'] + 1
 
-        if new_data['outputText'] != "" and sorted(previous_errors) == sorted(new_data['errors']):
+        if new_data['outputText'] != "" and len(new_data['outputWords']) != 0 and sorted(previous_errors) == sorted(new_data['errors']):
             new_data['changed'] = "false"
 
         return VocabluaryGenerator(**new_data)
@@ -752,8 +828,9 @@ async def vocabluary_generate(data: VocabluaryGenerator, request: Request):
         return VocabluaryGenerator(**old_data)
 
 @app.post("/admin/interactive-task-generate")
-async def interactive_task_generate(data: InteractiveTaskGenerator, request: Request):
+async def interactive_task_generate(data: InteractiveTaskGenerator, request: Request, force_regen: bool = False):
     old_data = copy.deepcopy(data.dict())
+    old_data['endpoint'] = '/admin/interactive-task-generate'  # ← ДОБАВИТЬ
 
     try:
         from ai_generator import (
@@ -762,13 +839,20 @@ async def interactive_task_generate(data: InteractiveTaskGenerator, request: Req
             parse_output_words_response
         )
 
-        if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
+        if (old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS) and not force_regen:
             return InteractiveTaskGenerator(**old_data)
 
-        if await request.is_disconnected():
-            raise HTTPException(status_code=499, detail="Client disconnected")
+        response = await request_ai(
+            old_data['prompt'],
+            old_data,
+            request,
+            stream=False,
+            use_cache=True,
+            force_regen=force_regen
+        )
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+        if not response:
+            raise HTTPException(status_code=500, detail="Failed to generate response")
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -777,11 +861,17 @@ async def interactive_task_generate(data: InteractiveTaskGenerator, request: Req
         previous_errors = copy.deepcopy(old_data['errors'])
         new_data['text'] = parse_interactive_task_text_response(old_data['text'], response, old_data['errors'])
         new_data['translate'] = parse_interactive_task_translate_response(old_data['translate'], response, old_data['errors'])
-        new_data['outputWords'] = parse_output_words_response(old_data['outputWords'], old_data['words'], response, old_data['errors'], False)
+        new_data['outputWords'] = parse_output_words_response(
+            old_data['outputWords'],
+            old_data['words'],
+            response,
+            old_data['errors'],
+            False
+        )
         new_data['errors'] = old_data['errors']
         new_data['attempt'] = new_data['attempt'] + 1
 
-        if new_data['text'] != "" and new_data['translate'] != "" and sorted(previous_errors) == sorted(new_data['errors']):
+        if new_data['text'] != "" and new_data['translate'] != "" and len(new_data['outputWords']) != 0 and sorted(previous_errors) == sorted(new_data['errors']):
             new_data['changed'] = "false"
 
         return InteractiveTaskGenerator(**new_data)
@@ -792,21 +882,27 @@ async def interactive_task_generate(data: InteractiveTaskGenerator, request: Req
         return InteractiveTaskGenerator(**old_data)
 
 @app.post("/admin/solution-generate")
-async def solution_generate(data: SolutionGenerator, request: Request):
+async def solution_generate(data: SolutionGenerator, request: Request, force_regen: bool = False):
     old_data = copy.deepcopy(data.dict())
+    old_data['endpoint'] = '/admin/solution-generate'  # ← ДОБАВИТЬ
 
     try:
-        from ai_generator import (
-            parse_solution_response
-        )
+        from ai_generator import parse_solution_response
 
-        if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
+        if (old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS) and not force_regen:
             return SolutionGenerator(**old_data)
 
-        if await request.is_disconnected():
-            raise HTTPException(status_code=499, detail="Client disconnected")
+        response = await request_ai(
+            old_data['prompt'],
+            old_data,
+            request,
+            stream=False,
+            use_cache=True,
+            force_regen=force_regen
+        )
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+        if not response:
+            raise HTTPException(status_code=500, detail="Failed to generate response")
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -828,22 +924,27 @@ async def solution_generate(data: SolutionGenerator, request: Request):
         return SolutionGenerator(**old_data)
 
 @app.post("/admin/options-generate")
-async def options_generate(data: OptionsGenerator, request: Request):
+async def options_generate(data: OptionsGenerator, request: Request, force_regen: bool = False):
     old_data = copy.deepcopy(data.dict())
+    old_data['endpoint'] = '/admin/options-generate'  # ← ДОБАВИТЬ
 
     try:
-        from ai_generator import (
-            parse_options_response,
-            parse_correct_option_index
-        )
+        from ai_generator import parse_options_response, parse_correct_option_index
 
-        if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
+        if (old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS) and not force_regen:
             return OptionsGenerator(**old_data)
 
-        if await request.is_disconnected():
-            raise HTTPException(status_code=499, detail="Client disconnected")
+        response = await request_ai(
+            old_data['prompt'],
+            old_data,
+            request,
+            stream=False,
+            use_cache=True,
+            force_regen=force_regen
+        )
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+        if not response:
+            raise HTTPException(status_code=500, detail="Failed to generate response")
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -854,12 +955,16 @@ async def options_generate(data: OptionsGenerator, request: Request):
 
         new_data['options'] = result['options']
         new_data['explanations'] = result['explanations']
-        resultCorrectIndex = parse_correct_option_index(old_data['correctOptionIndex'], response,
-                                                        new_data['options'], old_data['errors'])
+        resultCorrectIndex = parse_correct_option_index(
+            old_data['correctOptionIndex'],
+            response,
+            new_data['options'],
+            old_data['errors']
+        )
         new_data['correctOptionIndex'] = resultCorrectIndex
         new_data['attempt'] = new_data['attempt'] + 1
 
-        if sorted(previous_errors) == sorted(new_data['errors']):
+        if len(new_data['options']) != 0 and len(new_data['explanations']) != 0 and sorted(previous_errors) == sorted(new_data['errors']):
             new_data['changed'] = "false"
 
         return OptionsGenerator(**new_data)
@@ -870,8 +975,9 @@ async def options_generate(data: OptionsGenerator, request: Request):
         return OptionsGenerator(**old_data)
 
 @app.post("/admin/problems-generate")
-async def problems_generate(data: ProblemsGenerator, request: Request):
+async def problems_generate(data: ProblemsGenerator, request: Request, force_regen: bool = False):
     old_data = copy.deepcopy(data.dict())
+    old_data['endpoint'] = '/admin/problems-generate'  # ← ДОБАВИТЬ
 
     try:
         from ai_generator import (
@@ -880,23 +986,38 @@ async def problems_generate(data: ProblemsGenerator, request: Request):
             parse_explanation_response
         )
 
-        if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
+        if (old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS) and not force_regen:
             return ProblemsGenerator(**old_data)
 
-        if await request.is_disconnected():
-            raise HTTPException(status_code=499, detail="Client disconnected")
+        response = await request_ai(
+            old_data['prompt'],
+            old_data,
+            request,
+            stream=True,  # problems использует stream=True
+            use_cache=True,
+            force_regen=force_regen
+        )
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+        if not response:
+            raise HTTPException(status_code=500, detail="Failed to generate response")
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
 
         new_data = copy.deepcopy(old_data)
         previous_errors = copy.deepcopy(old_data['errors'])
-        result = parse_subtopics_response(old_data['outputSubtopics'], response, old_data['errors'],
-                                          "Procent opanowania")
-        result = parse_output_subtopics_response_filtered(old_data['outputSubtopics'], result, old_data['subtopics'],
-                                                 old_data['errors'])
+        result = parse_subtopics_response(
+            old_data['outputSubtopics'],
+            response,
+            old_data['errors'],
+            "Procent opanowania"
+        )
+        result = parse_output_subtopics_response_filtered(
+            old_data['outputSubtopics'],
+            result,
+            old_data['subtopics'],
+            old_data['errors']
+        )
         new_data['outputSubtopics'] = result
         new_data['explanation'] = parse_explanation_response(
             old_data['explanation'],
@@ -921,19 +1042,24 @@ async def problems_generate(data: ProblemsGenerator, request: Request):
         return ProblemsGenerator(**old_data)
 
 @app.post("/admin/chat-generate")
-async def chat_generate(data: ChatGenerator, request: Request):
+async def chat_generate(data: ChatGenerator, request: Request, force_regen: bool = False):
     old_data = copy.deepcopy(data.dict())
+    old_data['endpoint'] = '/admin/chat-generate'  # ← ДОБАВИТЬ
 
     try:
-        from ai_generator import (
-            parse_chat_response,
-            get_last_user_solution
+        from ai_generator import parse_chat_response, get_last_user_solution
+
+        response = await request_ai(
+            old_data['prompt'],
+            old_data,
+            request,
+            stream=False,
+            use_cache=True,
+            force_regen=force_regen
         )
 
-        if await request.is_disconnected():
-            raise HTTPException(status_code=499, detail="Client disconnected")
-
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+        if not response:
+            raise HTTPException(status_code=500, detail="Failed to generate response")
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -957,19 +1083,35 @@ async def chat_generate(data: ChatGenerator, request: Request):
         old_data['attempt'] += 1
         return ChatGenerator(**old_data)
 
-@app.post("/admin/literature-generate")
-async def literature_generate(data: LiteratureGenerator, request: Request):
+
+@app.post("/admin/words-generate")
+async def words_generate(
+        data: WordsGenerator,
+        request: Request,
+        force_regen: bool = False
+):
     old_data = copy.deepcopy(data.dict())
+    old_data['endpoint'] = '/admin/words-generate'
 
     try:
         from ai_generator import (
-            parse_literature_response
+            parse_words_response
         )
 
-        if await request.is_disconnected():
-            raise HTTPException(status_code=499, detail="Client disconnected")
+        if (old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS) and not force_regen:
+            return WordsGenerator(**old_data)
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+        response = await request_ai(
+            old_data['prompt'],
+            old_data,
+            request,
+            stream=False,
+            use_cache=True,
+            force_regen=force_regen
+        )
+
+        if not response:
+            raise HTTPException(status_code=500, detail="Failed to generate response")
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -977,229 +1119,75 @@ async def literature_generate(data: LiteratureGenerator, request: Request):
         new_data = copy.deepcopy(old_data)
         previous_errors = copy.deepcopy(old_data['errors'])
 
-        new_data['note'] = parse_literature_response(old_data['note'], response, old_data['errors'])
-
+        new_data['words'] = parse_words_response(old_data['words'], response, old_data['errors'])
         new_data['errors'] = old_data['errors']
         new_data['attempt'] = new_data['attempt'] + 1
 
-        if new_data['note'] != "" and sorted(previous_errors) == sorted(new_data['errors']):
+        if (len(new_data['words']) != 0 and
+                data.topic in ['Polite requests and offers', 'Past Simple', 'Present Perfect'] and
+                not force_regen):
+            logger.info(f"🏆 Topic '{data.topic}' generated successfully")
+
+            golden_dir = Path("ai_cache/golden")
+            golden_dir.mkdir(exist_ok=True)
+            golden_file = golden_dir / f"{data.topic.lower().replace(' ', '_')}.txt"
+            with open(golden_file, 'w', encoding='utf-8') as f:
+                f.write(response)
+
+        if len(new_data['words']) != 0 and sorted(previous_errors) == sorted(new_data['errors']):
             new_data['changed'] = "false"
 
-        return LiteratureGenerator(**new_data)
+        return WordsGenerator(**new_data)
+
     except RuntimeError as e:
         old_data['errors'].append(str(e))
         old_data['changed'] = 'true'
         old_data['attempt'] += 1
-        return LiteratureGenerator(**old_data)
-
-
-def filter_by_frequency(word_list, min_freq=20):
-    return [item for item in word_list if item[1] > min_freq]
-
-
-def normalize_frequencies(word_list):
-    if not word_list:
-        return word_list
-
-    max_freq = max(freq for _, freq in word_list)
-    if max_freq == 0:
-        return word_list
-
-    return [[word, int(freq * 100 / max_freq)] for word, freq in word_list]
-
-
-def normalize_frequencies_across_runs(all_runs):
-    for run in all_runs:
-        if not run:
-            continue
-        max_freq = max(freq for _, freq in run)
-        if max_freq > 0:
-            for i, (word, freq) in enumerate(run):
-                run[i][1] = int(freq * 100 / max_freq)
-    return all_runs
-
-
-def get_core_threshold(difficulty):
-    return 1.0
-
-
-def process_generations(lists, difficulty="B2"):
-    from collections import Counter
-    import statistics
-    import math
-
-    word_counter = Counter()
-    word_frequencies = {}
-
-    generation_sets = []
-    generation_sizes = []
-
-    for word_list in lists:
-        current_set = set()
-        generation_sizes.append(len(word_list))
-
-        for item in word_list:
-            if isinstance(item, list) and len(item) == 2:
-                word, freq = item
-                word_counter[word] += 1
-                word_frequencies.setdefault(word, []).append(freq)
-                current_set.add(word)
-
-        generation_sets.append(current_set)
-
-    total_generations = len(lists)
-    min_required = total_generations
-
-    core_words = []
-    core_words_set = set()
-
-    for word, count in word_counter.items():
-        if count >= min_required:
-            avg_freq = int(statistics.mean(word_frequencies[word]))
-            core_words.append([word, avg_freq])
-            core_words_set.add(word)
-
-    core_words.sort(key=lambda x: x[1], reverse=True)
-
-    unique_words_by_gen = []
-    for gen_set in generation_sets:
-        unique = gen_set - core_words_set
-        unique_words_by_gen.append(unique)
-
-    all_unique_words_dict = {}
-
-    for i, unique_set in enumerate(unique_words_by_gen):
-        for word in unique_set:
-            if word in word_frequencies:
-                avg_freq = int(statistics.mean(word_frequencies[word]))
-                all_unique_words_dict[word] = avg_freq
-
-    all_unique_words_list = [[word, freq] for word, freq in all_unique_words_dict.items()]
-    all_unique_words_list.sort(key=lambda x: x[1], reverse=True)
-
-    exam_cutoff = 30
-    critical_words = set()
-    filtered_unique = [
-        item for item in all_unique_words_list
-        if item[1] >= exam_cutoff or item[0] in critical_words
-    ]
-
-    if not filtered_unique and all_unique_words_list:
-        filtered_unique = all_unique_words_list[:10]
-
-    all_unique_words_list = filtered_unique
-
-    total_unique_count = 0
-
-    for i, gen_set in enumerate(generation_sets):
-        core_in_this_gen = gen_set.intersection(core_words_set)
-        unique_count = len(gen_set) - len(core_in_this_gen)
-        total_unique_count += max(0, unique_count)
-
-    avg_unique_to_add = total_unique_count // total_generations
-
-    top_unique_to_add = all_unique_words_list[:avg_unique_to_add]
-
-    final_list = core_words + top_unique_to_add
-    final_list.sort(key=lambda x: x[1], reverse=True)
-
-    return final_list
-
-def process_generations_deterministic(lists, difficulty="B2", core_required_runs=None):
-    from collections import Counter
-    import statistics
-
-    difficulty_based_limit = {
-        "A2": 60,
-        "B1": 35,
-        "B2": 20,
-        "B2+": 15
-    }
-
-    if core_required_runs is None:
-        core_required_runs = len(lists)
-
-    word_counter = Counter()
-    word_frequencies = {}
-    generation_sets = []
-
-    for word_list in lists:
-        current_set = set()
-        for item in word_list:
-            if isinstance(item, list) and len(item) == 2:
-                word, freq = item
-                word_counter[word] += 1
-                word_frequencies.setdefault(word, []).append(freq)
-                current_set.add(word)
-        generation_sets.append(current_set)
-
-    core_words = []
-    core_words_set = set()
-    for word, count in word_counter.items():
-        if count >= core_required_runs:
-            avg_freq = int(statistics.mean(word_frequencies[word]))
-            core_words.append([word, avg_freq])
-            core_words_set.add(word)
-
-    unique_words_dict = {}
-    for gen_set in generation_sets:
-        for word in gen_set - core_words_set:
-            if word in word_frequencies:
-                avg_freq = int(statistics.mean(word_frequencies[word]))
-                unique_words_dict[word] = avg_freq
-
-    all_unique_words_list = [[word, freq] for word, freq in unique_words_dict.items()]
-    all_unique_words_list.sort(key=lambda x: (-x[1], x[0]))
-
-    exam_cutoff = 30
-    filtered_unique = [item for item in all_unique_words_list if item[1] >= exam_cutoff]
-
-    final_list = core_words + filtered_unique
-    final_list.sort(key=lambda x: (-x[1], x[0]))
-
-    max_limit = difficulty_based_limit.get(difficulty, 50)
-    final_list = final_list[:max_limit]
-
-    return final_list
-
-
-@app.post("/admin/words-generate")
-async def words_generate(data: WordsGenerator, request: Request):
-    old_data = copy.deepcopy(data.dict())
-
-    target_generations = 5
-    min_frequency = 30
-    accumulated_lists = []
-
-    try:
-        from ai_generator import parse_words_response
-
-        for i in range(target_generations):
-            response = await request_ai(old_data['prompt'], old_data, request, stream=False)
-            new_words = parse_words_response([], response, old_data['errors'])
-
-            new_words = filter_by_frequency(new_words, min_freq=min_frequency)
-            new_words = normalize_frequencies(new_words)
-
-            accumulated_lists.append(new_words)
-            old_data['attempt'] = old_data['attempt'] + 1
-
-        final_list = []
-
-        if old_data['type'] != "":
-            final_list = process_generations_deterministic(accumulated_lists, difficulty=old_data['difficulty'])
-        else:
-            final_list = process_generations(accumulated_lists, difficulty=old_data['difficulty'])
-
-        new_data = copy.deepcopy(old_data)
-        new_data['words'] = final_list
-        new_data['changed'] = "false"
-        return WordsGenerator(**new_data)
-    except Exception as e:
-        old_data['errors'].append(str(e))
-        old_data['changed'] = 'true'
-        old_data['attempt'] += 1
         return WordsGenerator(**old_data)
+
+
+class CacheClearRequest(BaseModel):
+    topic_key: Optional[str] = None
+
+
+@app.post("/admin/cache/clear")
+async def clear_cache(request: CacheClearRequest):
+    try:
+        cache_manager.clear_cache(request.topic_key)
+        return {"status": "success", "message": "Cache cleared"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/admin/cache/stats")
+async def cache_stats():
+    try:
+        from pathlib import Path
+        cache_dir = Path("ai_cache/responses")
+        golden_dir = Path("ai_cache/golden")
+
+        cache_files = list(cache_dir.glob("*.cache")) if cache_dir.exists() else []
+        golden_files = list(golden_dir.glob("*.txt")) if golden_dir.exists() else []
+
+        cache_size = sum(f.stat().st_size for f in cache_files) / 1024  # KB
+
+        return {
+            "cache_count": len(cache_files),
+            "golden_standards_count": len(golden_files),
+            "cache_size_kb": round(cache_size, 2),
+            "cache_dir": str(cache_dir.absolute()),
+            "golden_standards": [f.stem for f in golden_files]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/admin/cache/prewarm")
+async def prewarm_cache():
+    return {
+        "status": "success",
+        "message": "Use specific endpoints with force_regen=false to warm the cache"
+    }
 
 if __name__ == "__main__":
     import uvicorn
