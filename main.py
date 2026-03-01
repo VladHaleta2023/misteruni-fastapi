@@ -280,6 +280,9 @@ class SubtopicsGenerator(BaseModel):
     section: str
     topic: str
     literature: str
+    information: str
+    accounts: str
+    balance: str
     subtopics: List[List]
     attempt: int
     prompt: str
@@ -302,6 +305,9 @@ class TopicExpansionGenerator(BaseModel):
     topic: str
     literature: str
     note: str
+    information: str
+    accounts: str
+    balance: str
     subtopics: List[str]
     attempt: int
     prompt: str
@@ -313,6 +319,9 @@ class FrequencyGenerator(BaseModel):
     section: str
     topic: str
     literature: str
+    information: str
+    accounts: str
+    balance: str
     frequency: int
     subtopics: List[str]
     outputSubtopics: List[List]
@@ -326,6 +335,9 @@ class TaskGenerator(BaseModel):
     section: str
     topic: str
     literature: str
+    information: str
+    accounts: str
+    balance: str
     subtopics: List[List]
     outputSubtopics: List[str]
     threshold: int
@@ -353,6 +365,9 @@ class SolutionGenerator(BaseModel):
     changed: str
     text: str
     solution: str
+    information: str
+    accounts: str
+    balance: str
     attempt: int
     prompt: str
     errors: List[str]
@@ -362,6 +377,9 @@ class OptionsGenerator(BaseModel):
     changed: str
     text: str
     solution: str
+    information: str
+    accounts: str
+    balance: str
     options: List[str]
     correctOptionIndex: int
     explanations: List[str]
@@ -378,6 +396,9 @@ class ProblemsGenerator(BaseModel):
     text: str
     explanation: str
     solution: str
+    information: str
+    accounts: str
+    balance: str
     options: List[str]
     subtopics: List[str]
     correctOption: str
@@ -400,6 +421,9 @@ class ChatGenerator(BaseModel):
     subject: str
     section: str
     topic: str
+    information: str
+    accounts: str
+    balance: str
     userSolution: str
     options: List[str]
     correctOption: str
@@ -1201,14 +1225,14 @@ async def words_generate(data: WordsGenerator, request: Request):
         old_data['attempt'] += 1
         return WordsGenerator(**old_data)
 
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(
-        "main:app",
-        host="0.0.0.0",
-        port=port,
-        reload=False,
-        timeout_keep_alive=900,
-        timeout_graceful_shutdown=900
-    )
+# if __name__ == "__main__":
+#     import uvicorn
+#
+#     uvicorn.run(
+#         "main:app",
+#         host="0.0.0.0",
+#         port=port,
+#         reload=False,
+#         timeout_keep_alive=900,
+#         timeout_graceful_shutdown=900
+#     )
