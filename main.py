@@ -957,15 +957,41 @@ async def chat_generate(data: ChatGenerator, request: Request):
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+        MAX_RETRIES = 3
+        retry_count = 0
+        response = None
+        parsed_chat = None
 
-        if await request.is_disconnected():
-            raise HTTPException(status_code=499, detail="Client disconnected")
+        while retry_count < MAX_RETRIES:
+            response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+
+            if await request.is_disconnected():
+                raise HTTPException(status_code=499, detail="Client disconnected")
+
+            if response and "[AI_QUESTION]" in response:
+                parsed_chat = parse_chat_response(old_data['chat'], response, old_data['errors'])
+                break
+            else:
+                retry_count += 1
+                print(f"Brak [AI_QUESTION] w odpowiedzi. Próba {retry_count}/{MAX_RETRIES}")
+
+                if retry_count < MAX_RETRIES:
+                    import asyncio
+                    await asyncio.sleep(1)
+                else:
+                    old_data['errors'].append("AI nie wygenerowało poprawnej odpowiedzi z [AI_QUESTION]")
+                    return ChatGenerator(**old_data)
+
+        if parsed_chat is None:
+            old_data['errors'].append("AI nie wygenerowało poprawnej odpowiedzi po kilku próbach")
+            old_data['changed'] = 'true'
+            old_data['attempt'] += 1
+            return ChatGenerator(**old_data)
 
         new_data = copy.deepcopy(old_data)
         previous_errors = copy.deepcopy(old_data['errors'])
 
-        new_data['chat'] = parse_chat_response(old_data['chat'], response, old_data['errors'])
+        new_data['chat'] = parsed_chat
         new_data['userSolution'] = get_last_user_solution(new_data['chat'], old_data['userSolution'])
 
         new_data['errors'] = old_data['errors']
@@ -1225,14 +1251,14 @@ async def words_generate(data: WordsGenerator, request: Request):
         old_data['attempt'] += 1
         return WordsGenerator(**old_data)
 
-# if __name__ == "__main__":
-#     import uvicorn
-#
-#     uvicorn.run(
-#         "main:app",
-#         host="0.0.0.0",
-#         port=port,
-#         reload=False,
-#         timeout_keep_alive=900,
-#         timeout_graceful_shutdown=900
-#     )
+if __name__ == "__main__":
+     import uvicorn
+
+     uvicorn.run(
+         "main:app",
+         host="0.0.0.0",
+         port=port,
+         reload=False,
+         timeout_keep_alive=900,
+         timeout_graceful_shutdown=900
+     )
