@@ -944,6 +944,81 @@ async def problems_generate(data: ProblemsGenerator, request: Request):
         old_data['attempt'] += 1
         return ProblemsGenerator(**old_data)
 
+def strip_chat_tags(text: str) -> str:
+    if text is None:
+        return text
+
+    text = re.sub(r'</?chat>', '', text, flags=re.IGNORECASE)
+
+    text = re.sub(r'\n\s*\n', '\n\n', text)
+
+    return text.strip()
+
+def ensure_chat_tags(text: str) -> str:
+    if text is None:
+        return text
+
+    text = text.strip()
+
+    if not text.startswith("<chat>"):
+        text = "<chat>\n" + text
+
+    if not text.endswith("</chat>"):
+        text = text + "\n</chat>"
+
+    return text
+
+def remove_user_solution_marker(response: str, errors: list) -> str:
+    try:
+        user_solution_match = re.search(r'\[AI_USER_SOLUTION\]', response, re.IGNORECASE)
+
+        if not user_solution_match:
+            return response
+
+        next_marker_match = re.search(r'\[AI_QUESTION\]', response[user_solution_match.end():], re.IGNORECASE)
+
+        if next_marker_match:
+            start_pos = user_solution_match.start()
+            end_pos = user_solution_match.end() + next_marker_match.start()
+
+            response = response[:start_pos] + response[end_pos:]
+        else:
+            response = response[:user_solution_match.start()]
+
+        response = re.sub(r'\n\s*\n', '\n\n', response)
+
+        return response.strip()
+    except Exception as e:
+        errors.append(f"Błąd podczas usuwania [AI_USER_SOLUTION]: {str(e)}")
+        return response
+
+def add_user_solution_marker(response: str, user_option: str, errors: list) -> str:
+    try:
+        question_match = re.search(r'\[AI_QUESTION\]', response, re.IGNORECASE)
+
+        if not question_match:
+            solution_text = f"\n[AI_USER_SOLUTION]\n{user_option}\n[AI_QUESTION]"
+            response = response.rstrip() + solution_text
+            return response
+
+        answer_match = re.search(r'\[AI_ANSWER\]', response, re.IGNORECASE)
+
+        if answer_match and answer_match.end() < question_match.start():
+            insert_pos = question_match.start()
+        else:
+            insert_pos = question_match.start()
+
+        solution_block = f"\n[AI_USER_SOLUTION]\n{user_option}\n"
+
+        response = response[:insert_pos] + solution_block + response[insert_pos:]
+
+        response = re.sub(r'\n{3,}', '\n\n', response)
+
+        return response.strip()
+    except Exception as e:
+        errors.append(f"Błąd podczas dodawania [AI_USER_SOLUTION]: {str(e)}")
+        return response
+
 @app.post("/admin/chat-generate")
 async def chat_generate(data: ChatGenerator, request: Request):
     old_data = copy.deepcopy(data.dict())
@@ -957,37 +1032,39 @@ async def chat_generate(data: ChatGenerator, request: Request):
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
 
-        MAX_RETRIES = 3
-        retry_count = 0
-        response = None
-        parsed_chat = None
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
 
-        while retry_count < MAX_RETRIES:
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
+        if response:
+            response = strip_chat_tags(response)
+            response = ensure_chat_tags(response)
+
+        if old_data['chat'] == "":
+            response = remove_user_solution_marker(response, old_data['errors'])
+
+        if old_data['chat'] == "" and old_data['userOption'] == old_data['correctOption']:
+            response = add_user_solution_marker(response, old_data['userOption'], old_data['errors'])
+
+        if "[AI_QUESTION]" not in response:
+            old_data['errors'] = ["Nie ma marker [AI_QUESTION] - on jest WYMAGANY!"]
             response = await request_ai(old_data['prompt'], old_data, request, stream=False)
 
             if await request.is_disconnected():
                 raise HTTPException(status_code=499, detail="Client disconnected")
 
-            if response and "[AI_QUESTION]" in response:
-                parsed_chat = parse_chat_response(old_data['chat'], response, old_data['errors'])
-                break
-            else:
-                retry_count += 1
-                print(f"Brak [AI_QUESTION] w odpowiedzi. Próba {retry_count}/{MAX_RETRIES}")
+            if response:
+                response = strip_chat_tags(response)
+                response = ensure_chat_tags(response)
 
-                if retry_count < MAX_RETRIES:
-                    import asyncio
-                    await asyncio.sleep(1)
-                else:
-                    old_data['errors'].append("AI nie wygenerowało poprawnej odpowiedzi z [AI_QUESTION]")
-                    return ChatGenerator(**old_data)
+            if old_data['chat'] == "":
+                response = remove_user_solution_marker(response, old_data['errors'])
 
-        if parsed_chat is None:
-            old_data['errors'].append("AI nie wygenerowało poprawnej odpowiedzi po kilku próbach")
-            old_data['changed'] = 'true'
-            old_data['attempt'] += 1
-            return ChatGenerator(**old_data)
+            if old_data['chat'] == "" and old_data['userOption'] == old_data['correctOption']:
+                response = add_user_solution_marker(response, old_data['userOption'], old_data['errors'])
 
+        parsed_chat = parse_chat_response(old_data['chat'], response, old_data['errors'])
         new_data = copy.deepcopy(old_data)
         previous_errors = copy.deepcopy(old_data['errors'])
 
@@ -1251,14 +1328,14 @@ async def words_generate(data: WordsGenerator, request: Request):
         old_data['attempt'] += 1
         return WordsGenerator(**old_data)
 
-if __name__ == "__main__":
-     import uvicorn
-
-     uvicorn.run(
-         "main:app",
-         host="0.0.0.0",
-         port=port,
-         reload=False,
-         timeout_keep_alive=900,
-         timeout_graceful_shutdown=900
-     )
+#if __name__ == "__main__":
+#     import uvicorn
+#
+#     uvicorn.run(
+#         "main:app",
+#         host="0.0.0.0",
+#         port=port,
+#         reload=False,
+#         timeout_keep_alive=900,
+#         timeout_graceful_shutdown=900
+#     )
