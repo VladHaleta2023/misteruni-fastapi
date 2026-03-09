@@ -1044,8 +1044,8 @@ async def chat_generate(data: ChatGenerator, request: Request):
         if old_data['chat'] == "":
             response = remove_user_solution_marker(response, old_data['errors'])
 
-        if old_data['chat'] == "" and old_data['userOption'] == old_data['correctOption']:
-            response = add_user_solution_marker(response, old_data['userOption'], old_data['errors'])
+        #if old_data['chat'] == "" and old_data['userOption'] == old_data['correctOption']:
+        #    response = add_user_solution_marker(response, old_data['userOption'], old_data['errors'])
 
         if "[AI_QUESTION]" not in response:
             old_data['errors'] = ["Nie ma marker [AI_QUESTION] - on jest WYMAGANY!"]
