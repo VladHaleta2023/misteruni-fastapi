@@ -430,6 +430,37 @@ def parse_note_response(old_note: str, response: str, errors: list) -> str:
         errors.append(f"Błąd nieoczekiwany podczas parsowania: {str(e)}")
         return old_note
 
+def parse_solution_guide_response(old_solution_guide: str, response: str, errors: list) -> str:
+    try:
+        response = response.replace('\r\n', '\n').strip()
+
+        start_match = re.search(r'Start\s*:', response, re.IGNORECASE)
+        end_match = re.search(r'End\s*:', response, re.IGNORECASE)
+
+        if not start_match:
+            errors.append("Błąd parsowania: brak etykiety Start:")
+            return old_solution_guide
+        if not end_match:
+            errors.append("Błąd parsowania: brak etykiety End:")
+            return old_solution_guide
+        if end_match.start() <= start_match.end():
+            errors.append("Błąd parsowania: etykieta End: znajduje się przed Start:")
+            return old_solution_guide
+
+        final_text = response[start_match.end(): end_match.start()].strip()
+
+        if not final_text:
+            errors.append("Błąd: przewodnik rozwiązania zadania jest pusty")
+            return old_solution_guide
+
+        if not validate_latex(final_text, errors):
+            errors.append(f"Błąd LaTeX w przewodniku rozwiązania zadania: '{final_text}'")
+            return old_solution_guide
+        return final_text
+    except Exception as e:
+        errors.append(f"Błąd nieoczekiwany podczas parsowania: {str(e)}")
+        return old_solution_guide
+
 def parse_frequency_response(old_frequency: int, response: str, errors: list) -> int:
     try:
         response = response.replace('\r\n', '\n').strip()
@@ -491,37 +522,37 @@ def parse_explanation_response(old_explanation: str, response: str, errors: list
         if not final_text:
             return old_explanation
 
-        polish_pattern = r"(\*\*.+?:\*\*)\n❓ NAD CZYM POPRACOWAĆ:\n(.+?)(?=\n\*\*|$)"
+        polish_pattern = r"(\*\*.+?:\*\*)\n❓ (.+?)(?=\n\*\*|$)"
         polish_matches = re.findall(polish_pattern, final_text, flags=re.DOTALL)
 
-        russian_pattern = r"(\*\*.+?:\*\*)\n❓ НАД ЧЕМ ПОРАБОТАТЬ:\n(.+?)(?=\n\*\*|$)"
+        russian_pattern = r"(\*\*.+?:\*\*)\n❓ (.+?)(?=\n\*\*|$)"
         russian_matches = re.findall(russian_pattern, final_text, flags=re.DOTALL)
 
         if polish_matches and not russian_matches:
             language = "pl"
             matches = polish_matches
-            work_on_label = "❓ NAD CZYM POPRACOWAĆ:"
-            task_score_label = "OCENA ZADANIA:"
-            subtopic_score_label = "OCENA PODTEMATU:"
+            work_on_label = "❓"
+            task_score_label = "OCENA:"
+            subtopic_score_label = "OCENA:"
         elif russian_matches and not polish_matches:
             language = "ru"
             matches = russian_matches
-            work_on_label = "❓ НАД ЧЕМ ПОРАБОТАТЬ:"
-            task_score_label = "ОЦЕНКА ЗАДАЧИ:"
-            subtopic_score_label = "ОЦЕНКА ПОДТЕМЫ:"
+            work_on_label = "❓"
+            task_score_label = "ОЦЕНКА:"
+            subtopic_score_label = "ОЦЕНКА:"
         elif polish_matches and russian_matches:
             if len(polish_matches) >= len(russian_matches):
                 language = "pl"
                 matches = polish_matches
-                work_on_label = "❓ NAD CZYM POPRACOWAĆ:"
-                task_score_label = "OCENA ZADANIA:"
-                subtopic_score_label = "OCENA PODTEMATU:"
+                work_on_label = "❓"
+                task_score_label = "OCENA:"
+                subtopic_score_label = "OCENA:"
             else:
                 language = "ru"
                 matches = russian_matches
-                work_on_label = "❓ НАД ЧЕМ ПОРАБОТАТЬ:"
-                task_score_label = "ОЦЕНКА ЗАДАЧИ:"
-                subtopic_score_label = "ОЦЕНКА ПОДТЕМЫ:"
+                work_on_label = "❓"
+                task_score_label = "ОЦЕНКА:"
+                subtopic_score_label = "ОЦЕНКА:"
         else:
             cyrillic_count = sum(1 for char in final_text if '\u0400' <= char <= '\u04FF')
             latin_count = sum(
@@ -529,17 +560,17 @@ def parse_explanation_response(old_explanation: str, response: str, errors: list
 
             if cyrillic_count > latin_count:
                 language = "ru"
-                work_on_label = "❓ НАД ЧЕМ ПОРАБОТАТЬ:"
-                task_score_label = "ОЦЕНКА ЗАДАЧИ:"
-                subtopic_score_label = "ОЦЕНКА ПОДТЕМЫ:"
-                pattern = r"(\*\*.+?:\*\*)\n(.+?)(?=\n\*\*|$)"
+                work_on_label = "❓"
+                task_score_label = "ОЦЕНКА:"
+                subtopic_score_label = "ОЦЕНКА:"
+                pattern = r"(\*\*.+?:\*\*)\n❓ (.+?)(?=\n\*\*|$)"
                 matches = re.findall(pattern, final_text, flags=re.DOTALL)
             else:
                 language = "pl"
-                work_on_label = "❓ NAD CZYM POPRACOWAĆ:"
-                task_score_label = "OCENA ZADANIA:"
-                subtopic_score_label = "OCENA PODTEMATU:"
-                pattern = r"(\*\*.+?:\*\*)\n(.+?)(?=\n\*\*|$)"
+                work_on_label = "❓"
+                task_score_label = "OCENA:"
+                subtopic_score_label = "OCENA:"
+                pattern = r"(\*\*.+?:\*\*)\n❓ (.+?)(?=\n\*\*|$)"
                 matches = re.findall(pattern, final_text, flags=re.DOTALL)
 
         if not matches:
@@ -578,7 +609,7 @@ def parse_explanation_response(old_explanation: str, response: str, errors: list
             else:
                 score_label = subtopic_score_label
 
-            new_final_text += f"{topic_name_in_match}\n{work_on_label}\n{explanation.strip()}\n{score_label} {new_percent}%\n\n"
+            new_final_text += f"{topic_name_in_match}\n{work_on_label} {explanation.strip()}\n{score_label} {new_percent}%\n\n"
 
         return new_final_text.strip()
     except Exception as e:
@@ -701,65 +732,6 @@ def parse_solution_response(old_solution: str, response: str, errors: list) -> s
     except Exception as e:
         errors.append(f"Błąd nieoczekiwany podczas parsowania: {str(e)}")
         return old_solution
-
-def parse_correct_option_index(old_index: int, response: str, options: list, errors: list) -> int:
-    try:
-        start_idx = response.find("correctOptionStart:")
-        end_idx = response.find("correctOptionEnd:", start_idx)
-
-        if start_idx == -1:
-            errors.append("Błąd parsowania: brak etykiety correctOptionStart:")
-            return old_index
-        if end_idx == -1:
-            errors.append("Błąd parsowania: brak etykiety correctOptionEnd:")
-            return old_index
-        if end_idx <= start_idx:
-            errors.append("Błąd parsowania: etykieta correctOptionEnd: znajduje się przed correctOptionStart:")
-            return old_index
-
-        correct_text = response[start_idx + len("correctOptionStart:"): end_idx].strip()
-
-        if not correct_text:
-            errors.append("Błąd: tekst prawidłowej opcji jest pusty")
-            return old_index
-
-        correct_text = correct_text.strip('"\' \n\t')
-
-        found_index = -1
-        for i, option in enumerate(options):
-            if option.strip() == correct_text.strip():
-                found_index = i
-                break
-
-        if found_index == -1:
-            for i, option in enumerate(options):
-                option_clean = ''.join(option.strip().split())
-                correct_clean = ''.join(correct_text.strip().split())
-
-                if option_clean == correct_clean:
-                    found_index = i
-                    break
-
-        if found_index == -1:
-            for i, option in enumerate(options):
-                if correct_text.strip() in option.strip() or option.strip() in correct_text.strip():
-                    found_index = i
-                    break
-
-        if found_index == -1:
-            errors.append(f"Błąd: nie znaleziono opcji '{correct_text}' wśród dostępnych opcji")
-            errors.append(f"Dostępne opcje: {options}")
-            return old_index
-
-        if found_index < 0 or found_index > 3:
-            errors.append(f"Błąd: obliczony indeks {found_index} poza zakresem 0-3")
-            return old_index
-
-        return found_index
-
-    except Exception as e:
-        errors.append(f"Błąd nieoczekiwany podczas parsowania poprawnej opcji: {str(e)}")
-        return old_index
 
 def parse_options_response(old_data: dict, response: str, errors: list) -> dict:
     final_data = {

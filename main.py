@@ -313,6 +313,20 @@ class TopicExpansionGenerator(BaseModel):
     prompt: str
     errors: List[str]
 
+class SolutionGuideGenerator(BaseModel):
+    changed: str
+    subject: str
+    section: str
+    topic: str
+    text: str
+    solutionGuide: str
+    information: str
+    accounts: str
+    balance: str
+    attempt: int
+    prompt: str
+    errors: List[str]
+
 class FrequencyGenerator(BaseModel):
     changed: str
     subject: str
@@ -338,7 +352,7 @@ class TaskGenerator(BaseModel):
     information: str
     accounts: str
     balance: str
-    subtopics: List[List]
+    subtopics: List[str]
     outputSubtopics: List[str]
     threshold: int
     text: str
@@ -651,6 +665,42 @@ async def topic_expansion_generate(data: TopicExpansionGenerator, request: Reque
         old_data['attempt'] += 1
         return TopicExpansionGenerator(**old_data)
 
+@app.post("/admin/solution-guide-generate")
+async def solution_guide_generate(data: SolutionGuideGenerator, request: Request):
+    old_data = copy.deepcopy(data.dict())
+
+    try:
+        from ai_generator import (
+            parse_solution_guide_response
+        )
+
+        if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
+            return SolutionGuideGenerator(**old_data)
+
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
+        new_data = copy.deepcopy(old_data)
+        previous_errors = copy.deepcopy(old_data['errors'])
+        new_data['solutionGuide'] = parse_solution_guide_response(old_data['solutionGuide'], response, old_data['errors'])
+        new_data['errors'] = old_data['errors']
+
+        logger.info(previous_errors)
+        logger.info(new_data['errors'])
+        new_data['attempt'] = new_data['attempt'] + 1
+
+        if new_data['solutionGuide'] != "" and sorted(previous_errors) == sorted(new_data['errors']):
+            new_data['changed'] = "false"
+
+        return SolutionGuideGenerator(**new_data)
+    except RuntimeError as e:
+        old_data['errors'].append(str(e))
+        old_data['changed'] = 'true'
+        old_data['attempt'] += 1
+        return SolutionGuideGenerator(**old_data)
+
 @app.post("/admin/frequency-generate")
 async def frequency_generate(data: FrequencyGenerator, request: Request):
     old_data = copy.deepcopy(data.dict())
@@ -857,8 +907,7 @@ async def options_generate(data: OptionsGenerator, request: Request):
 
     try:
         from ai_generator import (
-            parse_options_response,
-            parse_correct_option_index
+            parse_options_response
         )
 
         if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
@@ -878,12 +927,10 @@ async def options_generate(data: OptionsGenerator, request: Request):
 
         new_data['options'] = result['options']
         new_data['explanations'] = result['explanations']
-        resultCorrectIndex = parse_correct_option_index(old_data['correctOptionIndex'], response,
-                                                        new_data['options'], old_data['errors'])
-        new_data['correctOptionIndex'] = resultCorrectIndex
+        new_data['correctOptionIndex'] = new_data['randomOption'] - 1
         new_data['attempt'] = new_data['attempt'] + 1
 
-        if sorted(previous_errors) == sorted(new_data['errors']):
+        if sorted(old_data['options']) == sorted(new_data['options']):
             new_data['changed'] = "false"
 
         return OptionsGenerator(**new_data)
@@ -992,33 +1039,6 @@ def remove_user_solution_marker(response: str, errors: list) -> str:
         errors.append(f"Błąd podczas usuwania [AI_USER_SOLUTION]: {str(e)}")
         return response
 
-def add_user_solution_marker(response: str, user_option: str, errors: list) -> str:
-    try:
-        question_match = re.search(r'\[AI_QUESTION\]', response, re.IGNORECASE)
-
-        if not question_match:
-            solution_text = f"\n[AI_USER_SOLUTION]\n{user_option}\n[AI_QUESTION]"
-            response = response.rstrip() + solution_text
-            return response
-
-        answer_match = re.search(r'\[AI_ANSWER\]', response, re.IGNORECASE)
-
-        if answer_match and answer_match.end() < question_match.start():
-            insert_pos = question_match.start()
-        else:
-            insert_pos = question_match.start()
-
-        solution_block = f"\n[AI_USER_SOLUTION]\n{user_option}\n"
-
-        response = response[:insert_pos] + solution_block + response[insert_pos:]
-
-        response = re.sub(r'\n{3,}', '\n\n', response)
-
-        return response.strip()
-    except Exception as e:
-        errors.append(f"Błąd podczas dodawania [AI_USER_SOLUTION]: {str(e)}")
-        return response
-
 @app.post("/admin/chat-generate")
 async def chat_generate(data: ChatGenerator, request: Request):
     old_data = copy.deepcopy(data.dict())
@@ -1043,9 +1063,6 @@ async def chat_generate(data: ChatGenerator, request: Request):
 
         if old_data['chat'] == "":
             response = remove_user_solution_marker(response, old_data['errors'])
-
-        #if old_data['chat'] == "" and old_data['userOption'] == old_data['correctOption']:
-        #    response = add_user_solution_marker(response, old_data['userOption'], old_data['errors'])
 
         if "[AI_QUESTION]" not in response:
             old_data['errors'] = ["Nie ma marker [AI_QUESTION] - on jest WYMAGANY!"]
