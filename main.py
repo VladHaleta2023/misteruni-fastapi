@@ -408,6 +408,7 @@ class OptionsGenerator(BaseModel):
 class ProblemsGenerator(BaseModel):
     changed: str
     text: str
+    type: str
     explanation: str
     solution: str
     information: str
@@ -976,7 +977,8 @@ async def problems_generate(data: ProblemsGenerator, request: Request):
             new_data['outputSubtopics'],
             new_data['correctOption'],
             new_data['userOption'],
-            new_data['topic']
+            new_data['topic'],
+            new_data['type']
         )
         new_data['errors'] = old_data['errors']
         new_data['attempt'] = new_data['attempt'] + 1

@@ -501,7 +501,7 @@ def parse_frequency_response(old_frequency: int, response: str, errors: list) ->
 
 def parse_explanation_response(old_explanation: str, response: str, errors: list,
                                output_subtopics: list, correctOption: str, userOption: str,
-                               topic: str) -> str:
+                               topic: str, type: str) -> str:
     try:
         response = response.replace('\r\n', '\n').strip()
 
@@ -522,59 +522,19 @@ def parse_explanation_response(old_explanation: str, response: str, errors: list
         if not final_text:
             return old_explanation
 
-        polish_pattern = r"(\*\*.+?:\*\*)\n❓ (.+?)(?=\n\*\*|$)"
-        polish_matches = re.findall(polish_pattern, final_text, flags=re.DOTALL)
-
-        russian_pattern = r"(\*\*.+?:\*\*)\n❓ (.+?)(?=\n\*\*|$)"
-        russian_matches = re.findall(russian_pattern, final_text, flags=re.DOTALL)
-
-        if polish_matches and not russian_matches:
-            language = "pl"
-            matches = polish_matches
-            work_on_label = "❓"
-            task_score_label = "OCENA:"
-            subtopic_score_label = "OCENA:"
-        elif russian_matches and not polish_matches:
-            language = "ru"
-            matches = russian_matches
-            work_on_label = "❓"
-            task_score_label = "ОЦЕНКА:"
-            subtopic_score_label = "ОЦЕНКА:"
-        elif polish_matches and russian_matches:
-            if len(polish_matches) >= len(russian_matches):
-                language = "pl"
-                matches = polish_matches
-                work_on_label = "❓"
-                task_score_label = "OCENA:"
-                subtopic_score_label = "OCENA:"
-            else:
-                language = "ru"
-                matches = russian_matches
-                work_on_label = "❓"
-                task_score_label = "ОЦЕНКА:"
-                subtopic_score_label = "ОЦЕНКА:"
-        else:
-            cyrillic_count = sum(1 for char in final_text if '\u0400' <= char <= '\u04FF')
-            latin_count = sum(
-                1 for char in final_text if ('\u0041' <= char <= '\u005A') or ('\u0061' <= char <= '\u007A'))
-
-            if cyrillic_count > latin_count:
-                language = "ru"
-                work_on_label = "❓"
-                task_score_label = "ОЦЕНКА:"
-                subtopic_score_label = "ОЦЕНКА:"
-                pattern = r"(\*\*.+?:\*\*)\n❓ (.+?)(?=\n\*\*|$)"
-                matches = re.findall(pattern, final_text, flags=re.DOTALL)
-            else:
-                language = "pl"
-                work_on_label = "❓"
-                task_score_label = "OCENA:"
-                subtopic_score_label = "OCENA:"
-                pattern = r"(\*\*.+?:\*\*)\n❓ (.+?)(?=\n\*\*|$)"
-                matches = re.findall(pattern, final_text, flags=re.DOTALL)
+        pattern = r"(\*\*.+?:\*\*)\n❓ (.+?)(?=\n\*\*|$)"
+        matches = re.findall(pattern, final_text, flags=re.DOTALL)
 
         if not matches:
             return old_explanation
+
+        work_on_label = "❓"
+        if type == "Stories":
+            task_score_label = "Opowiadanie"
+            subtopic_score_label = "Opowiadanie"
+        else:
+            task_score_label = "Ocena:"
+            subtopic_score_label = "Ocena:"
 
         is_single_topic_match = (
                 len(output_subtopics) == 1 and
@@ -584,9 +544,7 @@ def parse_explanation_response(old_explanation: str, response: str, errors: list
 
         new_final_text = ""
         for i, match in enumerate(matches):
-            if language == "pl" and len(match) == 2:
-                topic_name_in_match, explanation = match
-            elif language == "ru" and len(match) == 2:
+            if len(match) == 2:
                 topic_name_in_match, explanation = match
             else:
                 topic_name_in_match = match[0] if match else ""
@@ -609,7 +567,7 @@ def parse_explanation_response(old_explanation: str, response: str, errors: list
             else:
                 score_label = subtopic_score_label
 
-            new_final_text += f"{topic_name_in_match}\n{work_on_label} {explanation.strip()}\n{score_label} {new_percent}%\n\n"
+            new_final_text += f"{topic_name_in_match}\n{work_on_label} {explanation.strip()}\n\n{score_label} {new_percent}%\n\n"
 
         return new_final_text.strip()
     except Exception as e:
