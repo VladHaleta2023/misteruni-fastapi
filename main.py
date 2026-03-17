@@ -141,7 +141,8 @@ async def request_ai(
         data: Dict[str, Any],
         request: Request,
         max_retries: int = 1,
-        stream: bool = False
+        stream: bool = False,
+        model: str = "deepseek-chat"
 ) -> Optional[str]:
     prompt_filled = fill_placeholders(prompt, data)
 
@@ -155,10 +156,11 @@ async def request_ai(
                 response = await asyncio.wait_for(
                     asyncio.to_thread(
                         lambda: client.chat.completions.create(
-                            model="deepseek-chat",
+                            model=model,
                             messages=[{"role": "user", "content": prompt_filled}],
                             temperature=0,
                             stream=True,
+                            web_search_options=True,
                             max_tokens=8000
                         )
                     ),
@@ -194,9 +196,10 @@ async def request_ai(
                 response = await asyncio.wait_for(
                     asyncio.to_thread(
                         lambda: client.chat.completions.create(
-                            model="deepseek-chat",
+                            model=model,
                             messages=[{"role": "user", "content": prompt_filled}],
                             temperature=0,
+                            web_search_options=True,
                             stream=False,
                             max_tokens=8000
                         )
@@ -575,7 +578,7 @@ async def subtopics_generate(data: SubtopicsGenerator, request: Request):
         if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
             return SubtopicsGenerator(**old_data)
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False, model="deepseek-reasoner")
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -642,7 +645,7 @@ async def topic_expansion_generate(data: TopicExpansionGenerator, request: Reque
         if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
             return TopicExpansionGenerator(**old_data)
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False, model="deepseek-reasoner")
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -678,7 +681,7 @@ async def solution_guide_generate(data: SolutionGuideGenerator, request: Request
         if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
             return SolutionGuideGenerator(**old_data)
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False, model="deepseek-reasoner")
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -764,7 +767,7 @@ async def task_generate(data: TaskGenerator, request: Request):
 
         logger.info(old_data['literature'])
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False, model="deepseek-reasoner")
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -843,7 +846,7 @@ async def interactive_task_generate(data: InteractiveTaskGenerator, request: Req
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False, model="deepseek-reasoner")
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -881,7 +884,7 @@ async def solution_generate(data: SolutionGenerator, request: Request):
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False, model="deepseek-reasoner")
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -917,7 +920,7 @@ async def options_generate(data: OptionsGenerator, request: Request):
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False, model="deepseek-reasoner")
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -1115,7 +1118,7 @@ async def literature_generate(data: LiteratureGenerator, request: Request):
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False, model="deepseek-reasoner")
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -1321,7 +1324,7 @@ async def words_generate(data: WordsGenerator, request: Request):
         from ai_generator import parse_words_response
 
         for i in range(target_generations):
-            response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+            response = await request_ai(old_data['prompt'], old_data, request, stream=False, model="deepseek-reasoner")
             new_words = parse_words_response([], response, old_data['errors'])
 
             new_words = filter_by_frequency(new_words, min_freq=min_frequency)
