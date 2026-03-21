@@ -693,8 +693,7 @@ def parse_solution_response(old_solution: str, response: str, errors: list) -> s
 
 def parse_options_response(old_data: dict, response: str, errors: list) -> dict:
     final_data = {
-        "options": old_data.get("options", []),
-        "explanations": []
+        "options": old_data.get("options", [])
     }
 
     try:
@@ -736,28 +735,6 @@ def parse_options_response(old_data: dict, response: str, errors: list) -> dict:
             other_lens = [len(opt) for opt in final_data['options'][1:]]
             if any(first_len > l for l in other_lens):
                 errors.append("Pierwszy prawidłowy wariant jest dłuższy niż pozostałe warianty, co może wskazywać na problem.")
-
-        explanations = []
-        for i in range(1, 5):
-            start_tag = f"option{i}Start:"
-            end_tag = f"option{i}End:"
-            start_pos = response.find(start_tag)
-            end_pos = response.find(end_tag, start_pos)
-
-            if start_pos == -1 or end_pos == -1:
-                errors.append(f"Brakuje bloku wyjaśnienia: {start_tag} lub {end_tag}")
-                explanations.append("")
-                continue
-
-            explanation_content = response[start_pos + len(start_tag): end_pos].strip()
-            if not explanation_content:
-                errors.append(f"Wyjaśnienie {i} jest puste.")
-            explanations.append(explanation_content)
-
-        if len(explanations) != 4:
-            errors.append(f"Niepoprawna liczba wyjaśnień: {len(explanations)}, oczekiwano 4.")
-
-        final_data["explanations"] = explanations
 
         return final_data
 
