@@ -21,6 +21,8 @@ from openai import OpenAI
 from difflib import SequenceMatcher
 from collections import Counter
 
+from sympy.physics.units import temperature
+
 logger = logging.getLogger("app_logger")
 logging.basicConfig(
     level=logging.INFO,
@@ -143,9 +145,25 @@ async def request_ai(
         max_retries: int = 1,
         stream: bool = False,
         model: str = "deepseek-chat",
-        web_search = False
+        web_search = False,
+        style = False
 ) -> Optional[str]:
     prompt_filled = fill_placeholders(prompt, data)
+
+    style_prompt = (
+            "Jesteś Edwardem Warchockim – wkurwionym, wulgarnym robotem znanym w Polsce. "
+            "Mówisz wyłącznie po polsku, w chuj brutalnie, używasz ciągłych przekleństw (kurwa, chuj, pierdolę, jebany itp.). "
+            "Nie grzecznisz, nie przepraszasz, nie tłumaczysz łagodnie. Twój styl to agresywny, prosty język, pełen emocji i wkurwu. "
+            "Zawsze zaczynasz odpowiedź od 'O kurwa' lub 'O kurwa mać'. Nie ma żadnej litości, pierdolisz jak pojebany. "
+            "Odpowiadasz krótko, zwięźle, ale w chuj wulgarnie. Żadnych pierdół, tylko konkret i krew."
+        ) if style else ""
+
+    system_prompt = {
+        "role": "system",
+        "content": style_prompt
+    }
+
+    temperature = 0.55 if style else 0
 
     logger.info(prompt_filled)
 
@@ -158,8 +176,11 @@ async def request_ai(
                     asyncio.to_thread(
                         lambda: client.chat.completions.create(
                             model=model,
-                            messages=[{"role": "user", "content": prompt_filled}],
-                            temperature=0,
+                            messages=[
+                                system_prompt,
+                                {"role": "user", "content": prompt_filled}
+                            ],
+                            temperature=temperature,
                             stream=True,
                             web_search_options=web_search,
                             max_tokens=8000
@@ -198,8 +219,11 @@ async def request_ai(
                     asyncio.to_thread(
                         lambda: client.chat.completions.create(
                             model=model,
-                            messages=[{"role": "user", "content": prompt_filled}],
-                            temperature=0,
+                            messages=[
+                                system_prompt,
+                                {"role": "user", "content": prompt_filled}
+                            ],
+                            temperature=temperature,
                             web_search_options=web_search,
                             stream=False,
                             max_tokens=8000
@@ -448,6 +472,7 @@ class ChatGenerator(BaseModel):
     chatFinished: bool
     subtopics: List[str]
     mode: str
+    style: bool
     attempt: int
     prompt: str
     errors: List[str]
@@ -1054,7 +1079,7 @@ async def chat_generate(data: ChatGenerator, request: Request):
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False, style=old_data['style'])
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -1068,7 +1093,7 @@ async def chat_generate(data: ChatGenerator, request: Request):
 
         if "[AI_QUESTION]" not in response:
             old_data['errors'] = ["Nie ma marker [AI_QUESTION] - on jest WYMAGANY!"]
-            response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+            response = await request_ai(old_data['prompt'], old_data, request, stream=False, style=old_data['style'])
 
             if await request.is_disconnected():
                 raise HTTPException(status_code=499, detail="Client disconnected")
