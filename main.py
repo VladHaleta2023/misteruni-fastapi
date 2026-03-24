@@ -21,8 +21,6 @@ from openai import OpenAI
 from difflib import SequenceMatcher
 from collections import Counter
 
-from sympy.physics.units import temperature
-
 logger = logging.getLogger("app_logger")
 logging.basicConfig(
     level=logging.INFO,
