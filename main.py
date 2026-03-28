@@ -161,8 +161,6 @@ async def request_ai(
         "content": style_prompt
     }
 
-    temperature = 0.55 if style else 0
-
     logger.info(prompt_filled)
 
     for attempt in range(max_retries + 1):
@@ -178,7 +176,7 @@ async def request_ai(
                                 system_prompt,
                                 {"role": "user", "content": prompt_filled}
                             ],
-                            temperature=temperature,
+                            temperature=0,
                             stream=True,
                             web_search_options=web_search,
                             max_tokens=8000
@@ -221,7 +219,7 @@ async def request_ai(
                                 system_prompt,
                                 {"role": "user", "content": prompt_filled}
                             ],
-                            temperature=temperature,
+                            temperature=0,
                             web_search_options=web_search,
                             stream=False,
                             max_tokens=8000
