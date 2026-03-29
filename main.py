@@ -22,7 +22,6 @@ from fastapi.responses import StreamingResponse
 from collections import Counter
 from azure.core.credentials import AzureKeyCredential
 from azure.cognitiveservices.speech import SpeechConfig, SpeechSynthesizer, AudioConfig, ResultReason
-from pydub import AudioSegment
 
 logger = logging.getLogger("app_logger")
 logging.basicConfig(
@@ -599,23 +598,22 @@ async def generate_tts(data: TTSRequest):
             voice = language_voice_map.get(data.language.lower(), "en-US-AriaNeural")
             speech_config.speech_synthesis_voice_name = voice
 
-            wav_path = f"/tmp/tts_{uuid.uuid4()}.wav"
-            audio_config = AudioConfig(filename=wav_path)
+            mp3_path = f"/tmp/tts_{uuid.uuid4()}.mp3"
+            audio_config = AudioConfig(filename=mp3_path)
             synthesizer = SpeechSynthesizer(speech_config=speech_config, audio_config=audio_config)
             result = synthesizer.speak_text_async(data.text).get()
 
             if result.reason != ResultReason.SynthesizingAudioCompleted:
                 raise HTTPException(status_code=500, detail="Azure TTS failed")
 
-            mp3_fp = BytesIO()
-            audio = AudioSegment.from_wav(wav_path)
-            audio.export(mp3_fp, format="mp3")
-            mp3_fp.seek(0)
+            with open(mp3_path, "rb") as f:
+                mp3_bytes = BytesIO(f.read())
+                mp3_bytes.seek(0)
 
             filename = f"tts_{data.id}_{data.part_id}_{uuid.uuid4()}.mp3"
             await asyncio.to_thread(
                 s3.upload_fileobj,
-                mp3_fp,
+                mp3_bytes,
                 BUCKET_NAME,
                 filename,
                 ExtraArgs={"ContentType": "audio/mpeg"}
@@ -1414,14 +1412,14 @@ async def words_generate(data: WordsGenerator, request: Request):
         old_data['attempt'] += 1
         return WordsGenerator(**old_data)
 
-if __name__ == "__main__":
-     import uvicorn
-
-     uvicorn.run(
-         "main:app",
-         host="0.0.0.0",
-         port=port,
-         reload=False,
-         timeout_keep_alive=900,
-         timeout_graceful_shutdown=900
-     )
+#if __name__ == "__main__":
+#     import uvicorn
+#
+#     uvicorn.run(
+#         "main:app",
+#         host="0.0.0.0",
+#         port=port,
+#         reload=False,
+#         timeout_keep_alive=900,
+#         timeout_graceful_shutdown=900
+#     )

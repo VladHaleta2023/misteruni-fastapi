@@ -9,5 +9,4 @@ openai
 numpy
 thinc
 aiohttp
-pydub
 azure-cognitiveservices-speech
