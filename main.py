@@ -21,8 +21,7 @@ from difflib import SequenceMatcher
 from fastapi.responses import StreamingResponse
 from collections import Counter
 from azure.core.credentials import AzureKeyCredential
-from azure.ai.textanalytics import TextAnalyticsClient
-from azure.cognitiveservices.speech import SpeechConfig, SpeechSynthesizer, AudioConfig
+from azure.cognitiveservices.speech import SpeechConfig, SpeechSynthesizer, AudioConfig, ResultReason
 from pydub import AudioSegment
 
 logger = logging.getLogger("app_logger")
@@ -62,7 +61,7 @@ REGION = os.getenv("AWS_REGION")
 
 MAX_FILE_SIZE = 10 * 1024 * 1024
 
-MAX_TEXT_LENGTH = 500
+MAX_TEXT_LENGTH = 5000
 
 tts_semaphore = asyncio.Semaphore(2)
 
@@ -605,7 +604,7 @@ async def generate_tts(data: TTSRequest):
             synthesizer = SpeechSynthesizer(speech_config=speech_config, audio_config=audio_config)
             result = synthesizer.speak_text_async(data.text).get()
 
-            if result.reason != result.Reason.SynthesizingAudioCompleted:
+            if result.reason != ResultReason.SynthesizingAudioCompleted:
                 raise HTTPException(status_code=500, detail="Azure TTS failed")
 
             mp3_fp = BytesIO()
@@ -1415,14 +1414,14 @@ async def words_generate(data: WordsGenerator, request: Request):
         old_data['attempt'] += 1
         return WordsGenerator(**old_data)
 
-#if __name__ == "__main__":
-#     import uvicorn
-#
-#     uvicorn.run(
-#         "main:app",
-#         host="0.0.0.0",
-#         port=port,
-#         reload=False,
-#         timeout_keep_alive=900,
-#         timeout_graceful_shutdown=900
-#     )
+if __name__ == "__main__":
+     import uvicorn
+
+     uvicorn.run(
+         "main:app",
+         host="0.0.0.0",
+         port=port,
+         reload=False,
+         timeout_keep_alive=900,
+         timeout_graceful_shutdown=900
+     )
