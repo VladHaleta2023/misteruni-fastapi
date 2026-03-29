@@ -10,3 +10,4 @@ openai
 numpy
 thinc
 aiohttp
+pyttsx3
