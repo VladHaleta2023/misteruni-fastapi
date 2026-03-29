@@ -21,6 +21,11 @@ from openai import OpenAI
 from difflib import SequenceMatcher
 from collections import Counter
 import time
+import requests
+
+url = "https://translate.google.com/translate_tts?ie=UTF-8&q=Hello&tl=en&client=gtx"
+r = requests.get(url)
+print(r.status_code, len(r.content))
 
 logger = logging.getLogger("app_logger")
 logging.basicConfig(
