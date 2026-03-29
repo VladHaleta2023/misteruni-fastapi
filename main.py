@@ -572,45 +572,33 @@ def split_into_sentences(data: SplitIntoSentencesRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Błąd serwera: {str(e)}")
 
-@app.post("/admin/tts")
-async def generate_tts_local(data: TTSRequest):
 
+@app.post("/admin/tts")
+async def generate_tts(data: TTSRequest):
     if len(data.text) > 500:
         raise HTTPException(status_code=400, detail="Text too long (max 500 chars)")
 
-    async with tts_semaphore:
-        try:
-            import pyttsx3
-            import tempfile
+    try:
+        mp3_fp = BytesIO()
+        tts = gTTS(text=data.text, lang=data.language)
+        tts.write_to_fp(mp3_fp)
+        mp3_fp.seek(0)
 
-            filename = f"tts_{data.id}_{data.part_id}_{uuid.uuid4()}.mp3"
+        filename = f"tts_{data.id}_{data.part_id}_{uuid.uuid4()}.mp3"
+        await asyncio.to_thread(
+            s3.upload_fileobj,
+            mp3_fp,
+            BUCKET_NAME,
+            filename,
+            ExtraArgs={"ContentType": "audio/mpeg"}
+        )
 
-            def generate():
-                engine = pyttsx3.init()
-                with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tmp:
-                    engine.save_to_file(data.text, tmp.name)
-                    engine.runAndWait()
-                    tmp.seek(0)
-                    mp3_fp = BytesIO(tmp.read())
-                mp3_fp.seek(0)
-                return mp3_fp
+        public_url = f"https://{BUCKET_NAME}.s3.{REGION}.amazonaws.com/{urllib.parse.quote(filename)}"
+        return {"url": public_url}
 
-            mp3_fp = await asyncio.to_thread(generate)
-
-            await asyncio.to_thread(
-                s3.upload_fileobj,
-                mp3_fp,
-                BUCKET_NAME,
-                filename,
-                ExtraArgs={"ContentType": "audio/mpeg"}
-            )
-
-            public_url = f"https://{BUCKET_NAME}.s3.{REGION}.amazonaws.com/{urllib.parse.quote(filename)}"
-            return {"url": public_url}
-
-        except Exception as e:
-            logger.error(f"TTS ERROR: {str(e)}")
-            raise HTTPException(status_code=500, detail=str(e))
+    except Exception as e:
+        logger.error(f"TTS ERROR: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/admin/subtopics-generate")
 async def subtopics_generate(data: SubtopicsGenerator, request: Request):
