@@ -11,3 +11,6 @@ numpy
 thinc
 aiohttp
 pyttsx3
+TTS==0.14.1
+scipy
+soundfile
