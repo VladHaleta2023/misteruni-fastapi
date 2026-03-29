@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 import os
 import re
 from fastapi.responses import FileResponse
-from gtts import gTTS
 import uuid
 import boto3
 import urllib.parse
@@ -19,13 +18,12 @@ import asyncio
 import random
 from openai import OpenAI
 from difflib import SequenceMatcher
+from fastapi.responses import StreamingResponse
 from collections import Counter
-import time
-import pyttsx3
+from azure.core.credentials import AzureKeyCredential
+from azure.ai.textanalytics import TextAnalyticsClient
+from azure.cognitiveservices.speech import SpeechConfig, SpeechSynthesizer, AudioConfig
 from pydub import AudioSegment
-
-logger = logging.getLogger("tts_logger")
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s", force=True)
 
 logger = logging.getLogger("app_logger")
 logging.basicConfig(
@@ -52,8 +50,6 @@ client = OpenAI(
 
 app = FastAPI()
 
-tts_semaphore = asyncio.Semaphore(2)
-
 s3 = boto3.client(
     's3',
     aws_access_key_id=os.getenv("AWS_ACCESS_KEY"),
@@ -66,10 +62,12 @@ REGION = os.getenv("AWS_REGION")
 
 MAX_FILE_SIZE = 10 * 1024 * 1024
 
-TTS_MODEL = "tts_models/multilingual/multi-dataset/your_tts"
-tts_model = TTS(TTS_MODEL)
-
 MAX_TEXT_LENGTH = 500
+
+tts_semaphore = asyncio.Semaphore(2)
+
+speech_key = os.getenv("AZURE_SPEECH_KEY")
+speech_region = os.getenv("AZURE_SPEECH_REGION")
 
 ALLOWED_EXTENSIONS = {
     '.wav', '.mp3', '.ogg', '.flac', '.m4a', '.aac', '.wma', '.opus',
@@ -590,35 +588,31 @@ async def generate_tts(data: TTSRequest):
 
     async with tts_semaphore:
         try:
-            # Инициализация движка pyttsx3
-            engine = pyttsx3.init()
-            engine.setProperty('rate', 150)  # скорость речи
+            if not speech_key or not speech_region:
+                raise HTTPException(status_code=500, detail="Azure TTS credentials not found")
 
-            # Подбираем голос по языку
-            voices = engine.getProperty('voices')
-            selected_voice = None
-            for voice in voices:
-                # pyttsx3 может иметь разные форматы идентификатора, проверяем наличие языка
-                if data.language.lower() in voice.id.lower() or data.language.lower() in str(voice.languages).lower():
-                    selected_voice = voice.id
-                    break
-            if selected_voice:
-                engine.setProperty('voice', selected_voice)
-            else:
-                logger.warning(f"No matching voice found for language '{data.language}', using default.")
+            speech_config = SpeechConfig(subscription=speech_key, region=speech_region)
+            language_voice_map = {
+                "en": "en-US-AriaNeural",
+                "pl": "pl-PL-MarekNeural",
+                "ru": "ru-RU-DariyaNeural"
+            }
+            voice = language_voice_map.get(data.language.lower(), "en-US-AriaNeural")
+            speech_config.speech_synthesis_voice_name = voice
 
-            # Генерация аудио в WAV во временной памяти
             wav_path = f"/tmp/tts_{uuid.uuid4()}.wav"
-            engine.save_to_file(data.text, wav_path)
-            engine.runAndWait()
+            audio_config = AudioConfig(filename=wav_path)
+            synthesizer = SpeechSynthesizer(speech_config=speech_config, audio_config=audio_config)
+            result = synthesizer.speak_text_async(data.text).get()
 
-            # Конвертируем WAV в MP3 через pydub
+            if result.reason != result.Reason.SynthesizingAudioCompleted:
+                raise HTTPException(status_code=500, detail="Azure TTS failed")
+
             mp3_fp = BytesIO()
             audio = AudioSegment.from_wav(wav_path)
             audio.export(mp3_fp, format="mp3")
             mp3_fp.seek(0)
 
-            # Загружаем в S3
             filename = f"tts_{data.id}_{data.part_id}_{uuid.uuid4()}.mp3"
             await asyncio.to_thread(
                 s3.upload_fileobj,
