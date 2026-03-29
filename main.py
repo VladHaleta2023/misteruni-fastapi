@@ -21,7 +21,8 @@ from openai import OpenAI
 from difflib import SequenceMatcher
 from collections import Counter
 import time
-from TTS.api import TTS
+import pyttsx3
+from pydub import AudioSegment
 
 logger = logging.getLogger("tts_logger")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s", force=True)
@@ -589,15 +590,35 @@ async def generate_tts(data: TTSRequest):
 
     async with tts_semaphore:
         try:
-            mp3_fp = BytesIO()
-            wav_path = f"/tmp/{uuid.uuid4()}.wav"
-            tts_model.tts_to_file(text=data.text, speaker=None, language=data.language, file_path=wav_path)
+            # Инициализация движка pyttsx3
+            engine = pyttsx3.init()
+            engine.setProperty('rate', 150)  # скорость речи
 
-            from pydub import AudioSegment
+            # Подбираем голос по языку
+            voices = engine.getProperty('voices')
+            selected_voice = None
+            for voice in voices:
+                # pyttsx3 может иметь разные форматы идентификатора, проверяем наличие языка
+                if data.language.lower() in voice.id.lower() or data.language.lower() in str(voice.languages).lower():
+                    selected_voice = voice.id
+                    break
+            if selected_voice:
+                engine.setProperty('voice', selected_voice)
+            else:
+                logger.warning(f"No matching voice found for language '{data.language}', using default.")
+
+            # Генерация аудио в WAV во временной памяти
+            wav_path = f"/tmp/tts_{uuid.uuid4()}.wav"
+            engine.save_to_file(data.text, wav_path)
+            engine.runAndWait()
+
+            # Конвертируем WAV в MP3 через pydub
+            mp3_fp = BytesIO()
             audio = AudioSegment.from_wav(wav_path)
             audio.export(mp3_fp, format="mp3")
             mp3_fp.seek(0)
 
+            # Загружаем в S3
             filename = f"tts_{data.id}_{data.part_id}_{uuid.uuid4()}.mp3"
             await asyncio.to_thread(
                 s3.upload_fileobj,

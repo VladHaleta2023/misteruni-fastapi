@@ -11,6 +11,5 @@ numpy
 thinc
 aiohttp
 pyttsx3
-TTS
 scipy
 soundfile
