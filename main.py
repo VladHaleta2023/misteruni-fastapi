@@ -497,6 +497,7 @@ class WordsGenerator(BaseModel):
     topic: str
     type: str
     difficulty: str
+    information: str
     words: List[List]
     attempt: int
     prompt: str
@@ -1341,25 +1342,28 @@ async def words_generate(data: WordsGenerator, request: Request):
     try:
         from ai_generator import parse_words_response
 
-        for i in range(target_generations):
-            response = await request_ai(old_data['prompt'], old_data, request, stream=False, model="deepseek-reasoner", web_search=True)
-            new_words = parse_words_response([], response, old_data['errors'])
+        #for i in range(target_generations):
+        #    response = await request_ai(old_data['prompt'], old_data, request, stream=False, model="deepseek-chat")
+        #    new_words = parse_words_response([], response, old_data['errors'])
+        #
+        #    new_words = filter_by_frequency(new_words, min_freq=min_frequency)
+        #    new_words = normalize_frequencies(new_words)
+        #
+        #    accumulated_lists.append(new_words)
+        #    old_data['attempt'] = old_data['attempt'] + 1
+        #
+        #final_list = []
+        #
+        #if old_data['type'] != "":
+        #    final_list = process_generations_deterministic(accumulated_lists, difficulty=old_data['difficulty'])
+        #else:
+        #    final_list = process_generations(accumulated_lists, difficulty=old_data['difficulty'])
 
-            new_words = filter_by_frequency(new_words, min_freq=min_frequency)
-            new_words = normalize_frequencies(new_words)
-
-            accumulated_lists.append(new_words)
-            old_data['attempt'] = old_data['attempt'] + 1
-
-        final_list = []
-
-        if old_data['type'] != "":
-            final_list = process_generations_deterministic(accumulated_lists, difficulty=old_data['difficulty'])
-        else:
-            final_list = process_generations(accumulated_lists, difficulty=old_data['difficulty'])
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False, model="deepseek-chat")
+        new_words = parse_words_response([], response, old_data['errors'])
 
         new_data = copy.deepcopy(old_data)
-        new_data['words'] = final_list
+        new_data['words'] = new_words
         new_data['changed'] = "false"
         return WordsGenerator(**new_data)
     except Exception as e:
