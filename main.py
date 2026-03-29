@@ -20,6 +20,7 @@ import random
 from openai import OpenAI
 from difflib import SequenceMatcher
 from collections import Counter
+import time
 
 logger = logging.getLogger("app_logger")
 logging.basicConfig(
@@ -45,6 +46,8 @@ client = OpenAI(
 )
 
 app = FastAPI()
+
+tts_semaphore = asyncio.Semaphore(2)
 
 s3 = boto3.client(
     's3',
@@ -570,21 +573,51 @@ def split_into_sentences(data: SplitIntoSentencesRequest):
         raise HTTPException(status_code=500, detail=f"Błąd serwera: {str(e)}")
 
 @app.post("/admin/tts")
-def generate_tts(data: TTSRequest):
-    try:
-        filename = f"tts_{data.id}_{data.part_id}_{uuid.uuid4()}.mp3"
-        mp3_fp = BytesIO()
+async def generate_tts(data: TTSRequest):
 
-        tts = gTTS(text=data.text, lang=data.language)
-        tts.write_to_fp(mp3_fp)
-        mp3_fp.seek(0)
+    if len(data.text) > 500:
+        raise HTTPException(status_code=400, detail="Text too long (max 500 chars)")
 
-        s3.upload_fileobj(mp3_fp, BUCKET_NAME, filename, ExtraArgs={"ContentType": "audio/mpeg"})
+    async with tts_semaphore:
+        try:
+            filename = f"tts_{data.id}_{data.part_id}_{uuid.uuid4()}.mp3"
 
-        public_url = f"https://{BUCKET_NAME}.s3.{REGION}.amazonaws.com/{urllib.parse.quote(filename)}"
-        return {"url": public_url}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Błąd generacji TTS lub upload do S3: {str(e)}")
+            def generate():
+                for i in range(3):  # retry
+                    try:
+                        mp3_fp = BytesIO()
+                        tts = gTTS(text=data.text, lang=data.language)
+                        tts.write_to_fp(mp3_fp)
+                        mp3_fp.seek(0)
+                        return mp3_fp
+                    except Exception as e:
+                        if "429" in str(e):
+                            time.sleep(2 ** i)
+                        else:
+                            raise
+
+                raise Exception("TTS failed after retries")
+
+            mp3_fp = await asyncio.to_thread(generate)
+
+            await asyncio.to_thread(
+                s3.upload_fileobj,
+                mp3_fp,
+                BUCKET_NAME,
+                filename,
+                ExtraArgs={"ContentType": "audio/mpeg"}
+            )
+
+            public_url = f"https://{BUCKET_NAME}.s3.{REGION}.amazonaws.com/{urllib.parse.quote(filename)}"
+            return {"url": public_url}
+
+        except Exception as e:
+            logger.error(f"TTS ERROR: {str(e)}")
+
+            if "429" in str(e):
+                raise HTTPException(status_code=429, detail="TTS rate limit exceeded")
+
+            raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/admin/subtopics-generate")
 async def subtopics_generate(data: SubtopicsGenerator, request: Request):
