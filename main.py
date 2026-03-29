@@ -21,11 +21,6 @@ from openai import OpenAI
 from difflib import SequenceMatcher
 from collections import Counter
 import time
-import requests
-
-url = "https://translate.google.com/translate_tts?ie=UTF-8&q=Hello&tl=en&client=gtx"
-r = requests.get(url)
-print(r.status_code, len(r.content))
 
 logger = logging.getLogger("app_logger")
 logging.basicConfig(
@@ -578,30 +573,27 @@ def split_into_sentences(data: SplitIntoSentencesRequest):
         raise HTTPException(status_code=500, detail=f"Błąd serwera: {str(e)}")
 
 @app.post("/admin/tts")
-async def generate_tts(data: TTSRequest):
+async def generate_tts_local(data: TTSRequest):
 
     if len(data.text) > 500:
         raise HTTPException(status_code=400, detail="Text too long (max 500 chars)")
 
     async with tts_semaphore:
         try:
+            import pyttsx3
+            import tempfile
+
             filename = f"tts_{data.id}_{data.part_id}_{uuid.uuid4()}.mp3"
 
             def generate():
-                for i in range(3):  # retry
-                    try:
-                        mp3_fp = BytesIO()
-                        tts = gTTS(text=data.text, lang=data.language)
-                        tts.write_to_fp(mp3_fp)
-                        mp3_fp.seek(0)
-                        return mp3_fp
-                    except Exception as e:
-                        if "429" in str(e):
-                            time.sleep(2 ** i)
-                        else:
-                            raise
-
-                raise Exception("TTS failed after retries")
+                engine = pyttsx3.init()
+                with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tmp:
+                    engine.save_to_file(data.text, tmp.name)
+                    engine.runAndWait()
+                    tmp.seek(0)
+                    mp3_fp = BytesIO(tmp.read())
+                mp3_fp.seek(0)
+                return mp3_fp
 
             mp3_fp = await asyncio.to_thread(generate)
 
@@ -618,10 +610,6 @@ async def generate_tts(data: TTSRequest):
 
         except Exception as e:
             logger.error(f"TTS ERROR: {str(e)}")
-
-            if "429" in str(e):
-                raise HTTPException(status_code=429, detail="TTS rate limit exceeded")
-
             raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/admin/subtopics-generate")
