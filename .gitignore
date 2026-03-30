@@ -38,3 +38,5 @@ prisma/
 node_modules/
 
 __pydantic__/
+
+maturago-google-tts.json
