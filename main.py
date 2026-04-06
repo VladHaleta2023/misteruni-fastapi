@@ -460,6 +460,7 @@ class ProblemsGenerator(BaseModel):
     errors: List[str]
 
 class ChatGenerator(BaseModel):
+    explanation: str
     changed: str
     text: str
     solution: str
@@ -897,7 +898,8 @@ async def interactive_task_generate(data: InteractiveTaskGenerator, request: Req
         from ai_generator import (
             parse_interactive_task_text_response,
             parse_interactive_task_translate_response,
-            parse_output_words_response
+            parse_output_words_response,
+            remove_markdown
         )
 
         if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
@@ -907,6 +909,8 @@ async def interactive_task_generate(data: InteractiveTaskGenerator, request: Req
             raise HTTPException(status_code=499, detail="Client disconnected")
 
         response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+        if response:
+            response = remove_markdown(response)
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -1014,13 +1018,31 @@ async def problems_generate(data: ProblemsGenerator, request: Request):
             parse_explanation_response
         )
 
+        user_solution = old_data.get('userSolution', '')
+        subtopics_list = old_data.get('subtopics', [])
+
         if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
             return ProblemsGenerator(**old_data)
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+        if user_solution is None or user_solution.strip() == '':
+            start_end_parts = []
+            for subtopic in subtopics_list:
+                start_end_parts.append(f"{subtopic};100")
+
+            response_start_end = "Start:\n" + "\n".join(start_end_parts) + "\nEnd:"
+
+            explanation_parts = []
+            for subtopic in subtopics_list:
+                explanation_parts.append(f"**{subtopic}:**\n❓ Uczeń nie udzielił odpowiedzi. Brak możliwości oceny.")
+
+            response_explanation = "explanationStart:\n" + "\n".join(explanation_parts) + "\nexplanationEnd:"
+
+            response = response_start_end + "\n\n" + response_explanation
+        else:
+            response = await request_ai(old_data['prompt'], old_data, request, stream=False)
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -1030,7 +1052,7 @@ async def problems_generate(data: ProblemsGenerator, request: Request):
         result = parse_subtopics_response(old_data['outputSubtopics'], response, old_data['errors'],
                                           "Procent opanowania")
         result = parse_output_subtopics_response_filtered(old_data['outputSubtopics'], result, old_data['subtopics'],
-                                                 old_data['errors'])
+                                                          old_data['errors'])
         new_data['outputSubtopics'] = result
         new_data['explanation'] = parse_explanation_response(
             old_data['explanation'],
@@ -1141,9 +1163,6 @@ async def chat_generate(data: ChatGenerator, request: Request):
 
             if old_data['chat'] == "":
                 response = remove_user_solution_marker(response, old_data['errors'])
-
-            if old_data['chat'] == "" and old_data['userOption'] == old_data['correctOption']:
-                response = add_user_solution_marker(response, old_data['userOption'], old_data['errors'])
 
         parsed_chat = parse_chat_response(old_data['chat'], response, old_data['errors'])
         new_data = copy.deepcopy(old_data)

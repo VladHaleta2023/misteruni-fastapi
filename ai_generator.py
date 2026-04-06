@@ -861,3 +861,33 @@ def parse_output_words_response(
     except Exception as e:
         errors.append(f"Błąd nieoczekiwany podczas parsowania wyrazów: {str(e)}")
         return old_words
+
+def remove_markdown(text: str) -> str:
+    if not text:
+        return text
+
+    text = re.sub(r'\*\*(.*?)\*\*', r'\1', text)
+    text = re.sub(r'__(.*?)__', r'\1', text)
+
+    text = re.sub(r'\*(.*?)\*', r'\1', text)
+    text = re.sub(r'_(.*?)_', r'\1', text)
+
+    text = re.sub(r'^#{1,6}\s+', '', text, flags=re.MULTILINE)
+
+    text = re.sub(r'\[(.*?)\]\(.*?\)', r'\1', text)
+
+    text = re.sub(r'!\[.*?\]\(.*?\)', '', text)
+
+    text = re.sub(r'```.*?```', '', text, flags=re.DOTALL)
+    text = re.sub(r'`(.*?)`', r'\1', text)
+
+    text = re.sub(r'^\s*[-*+]\s+', '', text, flags=re.MULTILINE)
+    text = re.sub(r'^\s*\d+\.\s+', '', text, flags=re.MULTILINE)
+
+    text = re.sub(r'^>\s+', '', text, flags=re.MULTILINE)
+
+    text = re.sub(r'^[-*_]{3,}\s*$', '', text, flags=re.MULTILINE)
+
+    text = re.sub(r'\n{3,}', '\n\n', text)
+
+    return text.strip()
