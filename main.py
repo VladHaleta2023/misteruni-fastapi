@@ -471,6 +471,7 @@ class ChatGenerator(BaseModel):
     accounts: str
     balance: str
     userSolution: str
+    originalSolution: str
     options: List[str]
     correctOption: str
     userOption: str
@@ -1138,7 +1139,18 @@ async def chat_generate(data: ChatGenerator, request: Request):
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
 
+        previous_chat = old_data['chat']
+        old_data['chat'] = f"""[AI_QUESTION]
+{old_data['text']}
+
+[STUDENT_ANSWER]
+{old_data['originalSolution']}
+
+{old_data['chat']}
+"""
+
         response = await request_ai(old_data['prompt'], old_data, request, stream=False, style=old_data['style'])
+        old_data['chat'] = previous_chat
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -1147,8 +1159,8 @@ async def chat_generate(data: ChatGenerator, request: Request):
             response = strip_chat_tags(response)
             response = ensure_chat_tags(response)
 
-        if old_data['chat'] == "":
-            response = remove_user_solution_marker(response, old_data['errors'])
+        #if old_data['chat'] == "":
+        #    response = remove_user_solution_marker(response, old_data['errors'])
 
         if "[AI_QUESTION]" not in response:
             old_data['errors'] = ["Nie ma marker [AI_QUESTION] - on jest WYMAGANY!"]
@@ -1161,8 +1173,8 @@ async def chat_generate(data: ChatGenerator, request: Request):
                 response = strip_chat_tags(response)
                 response = ensure_chat_tags(response)
 
-            if old_data['chat'] == "":
-                response = remove_user_solution_marker(response, old_data['errors'])
+            #if old_data['chat'] == "":
+            #    response = remove_user_solution_marker(response, old_data['errors'])
 
         parsed_chat = parse_chat_response(old_data['chat'], response, old_data['errors'])
         new_data = copy.deepcopy(old_data)
