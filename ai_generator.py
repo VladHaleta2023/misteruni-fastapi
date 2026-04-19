@@ -337,6 +337,34 @@ def parse_task_response(old_text: str, response: str, errors: list) -> str:
         errors.append(f"Błąd nieoczekiwany podczas parsowania: {str(e)}")
         return old_text
 
+def parse_translate_response(old_translate: str, response: str, errors: list) -> str:
+    try:
+        response = response.replace('\r\n', '\n').strip()
+
+        start_match = re.search(r'Start\s*:', response, re.IGNORECASE)
+        end_match = re.search(r'End\s*:', response, re.IGNORECASE)
+
+        if not start_match:
+            errors.append("Błąd parsowania: brak etykiety Start:")
+            return old_translate
+        if not end_match:
+            errors.append("Błąd parsowania: brak etykiety End:")
+            return old_translate
+        if end_match.start() <= start_match.end():
+            errors.append("Błąd parsowania: etykieta End: znajduje się przed Start:")
+            return old_translate
+
+        final_translate = response[start_match.end(): end_match.start()].strip()
+
+        if not final_translate:
+            errors.append("Błąd: tekst zadania jest pusty")
+            return old_translate
+
+        return final_translate
+    except Exception as e:
+        errors.append(f"Błąd nieoczekiwany podczas parsowania: {str(e)}")
+        return old_translate
+
 def parse_chat_response(old_chat: str, response: str, errors: list) -> str:
     try:
         response = response.replace('\r\n', '\n').strip()

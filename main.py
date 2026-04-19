@@ -501,6 +501,14 @@ class VocabluaryGenerator(BaseModel):
     prompt: str
     errors: List[str]
 
+class VocabluaryGuideGenerator(BaseModel):
+    changed: str
+    text: str
+    translate: str
+    attempt: int
+    prompt: str
+    errors: List[str]
+
 class WordsGenerator(BaseModel):
     changed: str
     subject: str
@@ -890,6 +898,42 @@ async def vocabluary_generate(data: VocabluaryGenerator, request: Request):
         old_data['changed'] = 'true'
         old_data['attempt'] += 1
         return VocabluaryGenerator(**old_data)
+
+@app.post("/admin/vocabluary-guide-generate")
+async def vocabluary_guide_generate(data: VocabluaryGuideGenerator, request: Request):
+    old_data = copy.deepcopy(data.dict())
+
+    try:
+        from ai_generator import (
+            parse_translate_response
+        )
+
+        if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
+            return VocabluaryGuideGenerator(**old_data)
+
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False, model="deepseek-reasoner")
+
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
+        new_data = copy.deepcopy(old_data)
+        previous_errors = copy.deepcopy(old_data['errors'])
+        new_data['translate'] = parse_translate_response(old_data['translate'], response, old_data['errors'])
+        new_data['errors'] = old_data['errors']
+        new_data['attempt'] = new_data['attempt'] + 1
+
+        if new_data['translate'] != "" and sorted(previous_errors) == sorted(new_data['errors']):
+            new_data['changed'] = "false"
+
+        return VocabluaryGuideGenerator(**new_data)
+    except RuntimeError as e:
+        old_data['errors'].append(str(e))
+        old_data['changed'] = 'true'
+        old_data['attempt'] += 1
+        return VocabluaryGuideGenerator(**old_data)
 
 @app.post("/admin/interactive-task-generate")
 async def interactive_task_generate(data: InteractiveTaskGenerator, request: Request):
