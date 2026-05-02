@@ -4,9 +4,9 @@ from typing import List
 from enum import Enum
 
 class SubjectDetailLevel(str, Enum):
-    MANDATORY = "MANDATORY"
-    DESIRABLE = "DESIRABLE"
-    OPTIONAL = "OPTIONAL"
+    BASIC = "BASIC"
+    EXPANDED = "EXPANDED"
+    ACADEMIC = "ACADEMIC"
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -128,10 +128,8 @@ def parse_subtopics_response(
                 errors.append(f"Błąd LaTeX w podtemacie: '{line}'")
                 has_error = True
                 continue
-            if "%" in score_str:
-                errors.append(f"{percent_message} nie może zawierać '%': '{score_str}' w podtemacie '{line}'")
-                has_error = True
-                continue
+
+            score_str = score_str.replace('%', '').strip()
 
             try:
                 if score_str == "":
@@ -324,14 +322,6 @@ def parse_task_response(old_text: str, response: str, errors: list) -> str:
             errors.append(f"Błąd LaTeX w tekście zadania: '{final_text}'")
             return old_text
 
-        def remove_answer_variants(text):
-            pattern = r'(^|\s)[A-Da-d1-4ivxIVX]+[\)\.\-:]'
-            cleaned = re.sub(pattern, '', text)
-            cleaned = re.sub(r'\s+', ' ', cleaned).strip()
-            return cleaned
-
-        final_text = remove_answer_variants(final_text)
-
         return final_text
     except Exception as e:
         errors.append(f"Błąd nieoczekiwany podczas parsowania: {str(e)}")
@@ -420,12 +410,6 @@ def parse_literature_response(old_note: str, response: str, errors: list) -> str
     except Exception as e:
         errors.append(f"Błąd nieoczekiwany podczas parsowania: {str(e)}")
         return old_note
-
-def get_last_user_solution(chat_text: str, current_user_solution: str) -> str:
-    matches = re.findall(r'\[AI_USER_SOLUTION\](.*?)(?=\n\[|$)', chat_text, re.DOTALL)
-    if matches:
-        return matches[-1].strip()
-    return current_user_solution
 
 def parse_note_response(old_note: str, response: str, errors: list) -> str:
     try:
@@ -526,7 +510,6 @@ def parse_frequency_response(old_frequency: int, response: str, errors: list) ->
         errors.append(f"Błąd nieoczekiwany podczas parsowania frequency: {str(e)}")
         return old_frequency
 
-
 def parse_explanation_response(old_explanation: str, response: str, errors: list,
                                output_subtopics: list, correctOption: str, userOption: str,
                                topic: str, type: str) -> str:
@@ -598,6 +581,34 @@ def parse_explanation_response(old_explanation: str, response: str, errors: list
             new_final_text += f"{topic_name_in_match}\n{work_on_label} {explanation.strip()}\n\n{score_label} {new_percent}%\n\n"
 
         return new_final_text.strip()
+    except Exception as e:
+        errors.append(f"Błąd nieoczekiwany podczas parsowania: {str(e)}")
+        return old_explanation
+
+def parse_writing_explanation(old_explanation: str, response: str, errors: list) -> str:
+    try:
+        response = response.replace('\r\n', '\n').strip()
+
+        start_match = re.search(r'explanationStart\s*:', response, re.IGNORECASE)
+        end_match = re.search(r'explanationEnd\s*:', response, re.IGNORECASE)
+
+        if not start_match:
+            errors.append("Błąd parsowania: brak etykiety explanationStart:")
+            return old_explanation
+        if not end_match:
+            errors.append("Błąd parsowania: brak etykiety explanationEnd:")
+            return old_explanation
+        if end_match.start() <= start_match.end():
+            errors.append("Błąd parsowania: etykieta explanationEnd znajduje się przed explanationStart:")
+            return old_explanation
+
+        final_text = response[start_match.end(): end_match.start()].strip()
+
+        if not final_text:
+            return old_explanation
+
+        return final_text
+
     except Exception as e:
         errors.append(f"Błąd nieoczekiwany podczas parsowania: {str(e)}")
         return old_explanation
@@ -687,37 +698,6 @@ def parse_interactive_task_translate_response(old_translate: str, response: str,
     except Exception as e:
         errors.append(f"Błąd nieoczekiwany podczas parsowania: {str(e)}")
         return old_translate
-
-def parse_solution_response(old_solution: str, response: str, errors: list) -> str:
-    try:
-        start_idx = response.find("Start:")
-        end_idx = response.find("End:", start_idx)
-
-        if start_idx == -1:
-            errors.append("Błąd parsowania: brak etykiety Start:")
-            return old_solution
-        if end_idx == -1:
-            errors.append("Błąd parsowania: brak etykiety End:")
-            return old_solution
-        if end_idx <= start_idx:
-            errors.append("Błąd parsowania: etykieta End: znajduje się przed Start:")
-            return old_solution
-
-        final_solution = response[start_idx + len("Start:"): end_idx].strip()
-
-        if not final_solution:
-            errors.append("Błąd: rozwiązanie zadania jest puste")
-            return old_solution
-
-        if not validate_latex(final_solution, errors):
-            errors.append(f"Błąd LaTeX w rozwiązaniu zadania: '{final_solution}'")
-            return old_solution
-
-        return final_solution
-
-    except Exception as e:
-        errors.append(f"Błąd nieoczekiwany podczas parsowania: {str(e)}")
-        return old_solution
 
 def parse_options_response(old_data: dict, response: str, errors: list) -> dict:
     final_data = {
