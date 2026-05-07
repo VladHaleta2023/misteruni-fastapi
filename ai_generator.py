@@ -442,7 +442,7 @@ def parse_note_response(old_note: str, response: str, errors: list) -> str:
         errors.append(f"Błąd nieoczekiwany podczas parsowania: {str(e)}")
         return old_note
 
-def parse_solution_guide_response(old_solution_guide: str, response: str, errors: list) -> str:
+def parse_solution_response(old_solution: str, response: str, errors: list) -> str:
     try:
         response = response.replace('\r\n', '\n').strip()
 
@@ -451,27 +451,27 @@ def parse_solution_guide_response(old_solution_guide: str, response: str, errors
 
         if not start_match:
             errors.append("Błąd parsowania: brak etykiety Start:")
-            return old_solution_guide
+            return old_solution
         if not end_match:
             errors.append("Błąd parsowania: brak etykiety End:")
-            return old_solution_guide
+            return old_solution
         if end_match.start() <= start_match.end():
             errors.append("Błąd parsowania: etykieta End: znajduje się przed Start:")
-            return old_solution_guide
+            return old_solution
 
         final_text = response[start_match.end(): end_match.start()].strip()
 
         if not final_text:
-            errors.append("Błąd: przewodnik rozwiązania zadania jest pusty")
-            return old_solution_guide
+            errors.append("Błąd: rozwiązanie zadania jest pusty")
+            return old_solution
 
         if not validate_latex(final_text, errors):
-            errors.append(f"Błąd LaTeX w przewodniku rozwiązania zadania: '{final_text}'")
-            return old_solution_guide
+            errors.append(f"Błąd LaTeX w rozwiązaniu zadania: '{final_text}'")
+            return old_solution
         return final_text
     except Exception as e:
         errors.append(f"Błąd nieoczekiwany podczas parsowania: {str(e)}")
-        return old_solution_guide
+        return old_solution
 
 def parse_frequency_response(old_frequency: int, response: str, errors: list) -> int:
     try:
