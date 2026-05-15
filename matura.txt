@@ -1,0 +1,266 @@
+Zadanie 1. (0–1)
+Dokończ zdanie. Wybierz właściwą odpowiedź spośród podanych.
+Liczba \(\sqrt{\dfrac{25}{8}} \cdot \sqrt{2} + 2^{-1}\) jest równa
+
+A. 1  
+B. 2  
+C. 3  
+D. 4
+
+Zadanie 2. (0–1)
+Klient wpłacił do banku 10 000 zł na lokatę dwuletnią. Po każdym rocznym okresie oszczędzania bank dolicza odsetki w wysokości 6% od kwoty bieżącego kapitału znajdującego się na lokacie – zgodnie z procentem składanym.
+Dokończ zdanie. Wybierz właściwą odpowiedź spośród podanych.
+Po dwóch latach oszczędzania łączna wartość doliczonych odsetek na tej lokacie (bez uwzględniania podatków) jest równa
+A. 1200 zł  
+B. 1236 zł  
+C. 1836 zł  
+D. 3600 zł
+
+Zadanie 3. (0–1)
+Dokończ zdanie. Wybierz właściwą odpowiedź spośród podanych.
+Liczba \(\sqrt{5\sqrt{5}}\) jest równa
+A. \(\dfrac{1}{5^4}\)  
+B. \(\dfrac{1}{5^2}\)  
+C. \(\dfrac{3}{4}\)  
+D. 5
+
+Zadanie 4. (0–1)
+Dokończ zdanie. Wybierz właściwą odpowiedź spośród podanych.
+Liczba \(\log_8 4 - \log_8 32\) jest równa
+A. \(-2\)  
+B. \(-1\)  
+C. 1  
+D. 2
+
+Zadanie 5. (0–1)
+Oceń prawdziwość poniższych stwierdzeń. Wybierz P, jeśli stwierdzenie jest prawdziwe, albo F – jeśli jest fałszywe.
+5.1. Liczba naturalna \(4^{12} \cdot 5^{24}\) jest podzielna przez 20.
+A. Prawda
+B. Fałsz
+5.2. Liczba naturalna \(4^{12} \cdot 5^{24}\) jest w zapisie dziesiętnym liczbą 25-cyfrową.
+A. Prawda
+B. Fałsz
+
+Zadanie 6. (0–1)
+Dokończ zdanie. Wybierz właściwą odpowiedź spośród podanych.
+Wartość wyrażenia \(x^2 + 10x + 25\) dla \(x = \sqrt{2} - 5\) jest równa
+A. 2  
+B. \(\sqrt{2}\)  
+C. \(2 - 20\sqrt{2}\)  
+D. \(62 - 10\sqrt{2}\)
+
+Zadanie 7. (0–2)
+Wykaż, że dla każdej liczby całkowitej \(n\) liczba \(7n^2 + 21n\) jest podzielna przez 14.
+
+Zadanie 8. (0–1)
+Dane jest równanie  
+\[3(x + 3)(x - m)(2x + 4) = 0\]  
+gdzie \(x\) jest niewiadomą, natomiast \(m\) jest pewną liczbą rzeczywistą.
+Suma wszystkich rozwiązań tego równania jest równa 0.
+Dokończ zdanie. Wybierz właściwą odpowiedź spośród podanych.
+Liczba \(m\) jest równa
+A. \(-7\)  
+B. 2  
+C. 5  
+D. 7
+
+Zadanie 9. (0–1)
+Dokończ zdanie. Wybierz właściwą odpowiedź spośród podanych.
+Rozwiązaniem równania  
+\[\dfrac{x + 2}{3x - 1} = \dfrac{2}{5}\]  
+jest liczba
+A. \(\dfrac{1}{3}\)  
+B. \(\dfrac{8}{11}\)  
+C. 3  
+D. 12
+
+Zadanie 10. (0–2)
+Rozwiąż nierówność  
+\[3x^2 + 4x \geq 6x + 8\]  
+Zapisz obliczenia.
+
+Zadanie 11. (0–2)
+Na przedstawienie w pewnym teatrze sprzedawano bilety według poniższego cennika:
+| Rodzaj biletu | Cena w złotych |
+|---------------|----------------|
+| Normalny      | 35             |
+| Ulgowy        | 25             |
+Na to przedstawienie sprzedano łącznie 200 biletów.  
+Po opłaceniu kosztów związanych z organizacją przedstawienia w wysokości 25% wpływów ze sprzedaży biletów organizatorom pozostało 4665 zł.
+Oblicz liczbę biletów ulgowych sprzedanych na to przedstawienie. Zapisz obliczenia.
+
+Zadanie 12.
+Funkcja \(f\) jest określona następująco:
+\[
+f(x) = 
+\begin{cases} 
+x + 2 & \text{dla } x \in [-4, 2] \\
+-x + 5 & \text{dla } x \in (2, 5)
+\end{cases}
+\]
+
+Zadanie 12.1. (0–2)
+Uzupełnij zdania. Wpisz odpowiednie liczby w wykropkowanych miejscach.
+1. Rozwiązaniem równania \(f(x) = 3\) jest liczba ……… .  
+2. Największa wartość funkcji \(f\) w przedziale \([2, 3]\) jest równa ……… .
+
+Zadanie 12.2. (0–2)
+Uzupełnij zdania. Wpisz odpowiednie przedziały.
+1. Zbiorem wartości funkcji \(f\) jest przedział …………… .  
+2. Zbiorem wszystkich argumentów, dla których funkcja \(f\) przyjmuje wartości większe od 1, jest przedział …………… .
+
+Zadanie 13.
+Funkcja liniowa \(f\) jest określona wzorem \(f(x) = ax + b\).
+
+Zadanie 13.1. (0–1)
+Oceń prawdziwość stwierdzeń:
+- Współczynnik \(a\) we wzorze funkcji \(f\) jest liczbą dodatnią.  
+- Współczynnik \(b\) we wzorze funkcji \(f\) jest liczbą dodatnią.
+
+Zadanie 13.2. (0–1)
+Tangens kąta o mierze \(\alpha\) jest równy
+A. \(-\dfrac{3}{2}\)  
+B. \(-\dfrac{2}{3}\)  
+C. \(\dfrac{2}{3}\)  
+D. \(\dfrac{3}{2}\)
+
+Zadanie 14. (0–4)
+W kartezjańskim układzie współrzędnych wykresem funkcji kwadratowej \(f\) jest parabola o wierzchołku w punkcie \(W = (3, -2)\).
+Funkcja kwadratowa \(g\) jest określona wzorem \(g(x) = f(x + 1)\).
+Jednym z miejsc zerowych funkcji \(g\) jest liczba 0.
+Wyznacz wzór funkcji \(f\) w postaci ogólnej. Zapisz obliczenia.
+
+Zadanie 15. (0–3)
+Ciąg \((a_n)\) jest określony wzorem \(a_n = 3n + 5\) dla każdej liczby naturalnej \(n \geq 1\).
+Trzywyrazowy ciąg \((a_1, a_9, a_k)\) jest geometryczny.
+Oblicz \(k\). Zapisz obliczenia.
+
+Zadanie 16. (0–1)
+Ciąg arytmetyczny \((a_n)\) jest określony dla każdej liczby naturalnej \(n \geq 1\).  
+W tym ciągu \(a_1 = 1\) oraz \(a_5 = 17\).
+Dziewiąty wyraz ciągu \((a_n)\) jest równy
+A. 29  
+B. 33  
+C. 34  
+D. 37
+
+Zadanie 17. (0–1)
+Ciąg geometryczny \((a_n)\) jest określony dla każdej liczby naturalnej \(n \geq 1\).
+Wyrazy trzeci i szósty tego ciągu spełniają warunek \(a_3 \cdot a_6 = 18\).
+Iloczyn \(a_2 \cdot a_7\) jest równy ……… .
+
+Zadanie 18. (0–1)
+Dany jest trójkąt prostokątny \(ABC\), w którym bok \(AC\) jest przeciwprostokątną oraz \(|BC| = 2\) i \(|AC| = 2\sqrt{10}\). Oznaczmy kąt \(BCA\) przez \(\gamma\).
+Sinus kąta \(\gamma\) jest równy
+A. \(\dfrac{1}{\sqrt{10}}\)  
+B. \(\dfrac{1}{3}\)  
+C. \(\dfrac{3}{\sqrt{10}}\)  
+D. \(\dfrac{\sqrt{10}}{\sqrt{11}}\)
+
+Zadanie 19. (0–1)
+Punkty \(A, B, C\) oraz \(D\) leżą na okręgu o środku w punkcie \(O\).  
+Punkt \(B\) leży na krótszym łuku \(AC\).  
+Kąt \(CDA\) ma miarę \(50^\circ\), a kąt \(COB\) ma miarę \(30^\circ\).
+Miara kąta ostrego \(BOA\) jest równa
+A. \(50^\circ\)  
+B. \(60^\circ\)  
+C. \(70^\circ\)  
+D. \(100^\circ\)
+
+Zadanie 20. (0–1)
+Na płaszczyźnie dane są cztery proste: \(k, l, m\) oraz \(n\). Proste \(k\) oraz \(l\) są równoległe.  
+Ponadto \(|OA| = 12\), \(|OB| = 6\) oraz \(|OC| = 8\).
+Odcinek \(OD\) ma długość
+A. 4
+B. 9  
+C. 10  
+D. 16
+
+Zadanie 21. (0–2)
+Dany jest trójkąt \(KLM\), w którym \(|KM| = a\) oraz \(|LM| = b\).  
+Dwusieczna kąta \(LMK\) przecina bok \(KL\) w punkcie \(N\).
+Wykaz, że stosunek pola trójkąta \(KNM\) do pola trójkąta \(NLM\) jest równy \(\dfrac{a}{b}\).
+
+Zadanie 22. (0–1)
+W okrąg \(O\) o promieniu \(9\sqrt{3}\) wpisano trójkąt równoboczny \(T\).
+Bok trójkąta \(T\) ma długość ……… .
+
+Zadanie 23. (0–1)
+Kąt \(\alpha\) jest ostry i spełnia warunek  
+\[\dfrac{3\sin\alpha + 4\cos\alpha}{4\cos\alpha} = 6.\]
+Tangens kąta \(\alpha\) jest równy
+A. \(\dfrac{5}{8}\)  
+B. \(\dfrac{8}{3}\)  
+C. \(\dfrac{32}{5}\)  
+D. \(\dfrac{20}{3}\)
+
+Zadanie 24. (0–2)
+W kartezjańskim układzie współrzędnych punkty \(A = (0, -3)\), \(B = (2, 1)\) oraz \(C = (0, 2)\) są wierzchołkami trójkąta prostokątnego.
+
+24.1. Pole trójkąta \(ABC\) jest równe  
+A. 3 B. 5 C. 6 D. 10
+
+24.2. Środek okręgu opisanego na trójkącie \(ABC\) ma współrzędne  
+A. \(\left(\dfrac{2}{3}, 0\right)\) B. \(\left(-\dfrac{1}{2}, 0\right)\) C. \(\left(0, -\dfrac{2}{3}\right)\) D. \(\left(0, -\dfrac{1}{2}\right)\)
+
+Zadanie 25. (0–1)
+W kartezjańskim układzie współrzędnych dany jest okrąg \(O\) o środku w punkcie \(S = (1, -3)\) i promieniu 5.
+- Punkt \(A = (4, -7)\) leży na okręgu \(O\).  
+- Okrąg \(O\) jest określony równaniem \((x - 1)^2 + (y + 3)^2 = 5\).
+
+Zadanie 26. (0–1)
+Dana jest prosta \(k\): \(y = -\dfrac{1}{3}x + 2\).  
+Prosta \(l\) jest równoległa do prostej \(k\) i przechodzi przez punkt \((2, -2)\).
+Prosta \(l\) przecina oś \(Oy\) w punkcie
+A. \((0, -3)\)  
+B. \(\left(0, -\dfrac{1}{2}\right)\)  
+C. \((0, -1)\)  
+D. \(\left(0, -\dfrac{4}{3}\right)\)
+
+Zadanie 27. (0–2)
+Dany jest ostrosłup prawidłowy czworokątny, w którym przekątna podstawy ma długość \(8\sqrt{3}\).  
+Krawędź boczna tego ostrosłupa jest nachylona do płaszczyzny podstawy pod kątem \(30^\circ\).
+Oblicz objętość tego ostrosłupa. Zapisz obliczenia.
+
+Zadanie 28. (0–1)
+Stożek i walec mają równe wysokości. Promień podstawy stożka jest dwa razy większy od promienia podstawy walca.
+Stosunek objętości stożka do objętości walca jest równy
+A. \(\dfrac{1}{12}\)  
+B. \(\dfrac{1}{6}\)  
+C. \(\dfrac{2}{3}\)  
+D. \(\dfrac{4}{3}\)
+
+Zadanie 29. (0–1)
+Wszystkich liczb naturalnych trzycyfrowych nieparzystych, w których zapisie dziesiętnym występują tylko cyfry 0, 1, 2, 3, 4, 5, 6, jest
+A. \(6 \cdot 7 \cdot 3\)  
+B. \(6 \cdot 7 \cdot 7\)  
+C. \(7 \cdot 7 \cdot 3\)  
+D. \(7 \cdot 7 \cdot 7\)
+
+Zadanie 30. (0–2)
+Dane są dwa zbiory cyfr: \(X = \{1, 3, 5, 7, 9\}\) oraz \(Y = \{0, 2, 4, 6, 8\}\).
+Losujemy jedną cyfrę ze zbioru \(X\), a następnie jedną ze zbioru \(Y\). Powstaje liczba dwucyfrowa.
+Oblicz prawdopodobieństwo, że otrzymana liczba dwucyfrowa będzie podzielna przez 6.
+
+Zadanie 31. (0–1)
+Na dwóch diagramach przedstawiono wyniki sprawdzianu ze statystyki w klasach IVA i IVB.
+Oceń prawdziwość stwierdzeń dotyczących średniej arytmetycznej i mediany ocen w obu klasach (P/F).
+
+Zadanie 32. (0–1)
+Średnia arytmetyczna trzech liczb \(a, b, c\) jest równa 2.  
+Średnia arytmetyczna czterech liczb \(d, e, f, g\) jest równa 5,5.
+Średnia arytmetyczna siedmiu liczb \(a, b, c, d, e, f, g\) jest równa
+A. 3,5  
+B. 3,75  
+C. 4  
+D. 4,25
+
+Zadanie 33.
+W chwili \(t = 0\) z poziomu ziemi wyrzucono piłeczkę pionowo do góry. Wysokość piłeczki opisuje wzór  
+\[h(t) = -4,9t^2 + 14,7t\]
+
+33.1. Piłeczka po raz pierwszy uderzy w ziemię w chwili
+A. \(t = 1,5\) s B. \(t = 2\) s C. \(t = 2,5\) s D. \(t = 3\) s
+
+33.2. Piłeczka osiągnęła największą wysokość w chwili  
+A. \(t = 1,5\) s B. \(t = 2\) s C. \(t = 2,5\) s D. \(t = 3\) s

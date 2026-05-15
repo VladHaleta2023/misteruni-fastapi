@@ -612,8 +612,26 @@ async def generate_tts(data: TTSRequest):
             synthesizer = SpeechSynthesizer(speech_config=speech_config, audio_config=audio_config)
             result = synthesizer.speak_text_async(data.text).get()
 
-            if result.reason != ResultReason.SynthesizingAudioCompleted:
-                raise HTTPException(status_code=500, detail="Azure TTS failed")
+            logger.info(f"TTS RESULT REASON: {result.reason}")
+
+            if result.reason == ResultReason.Canceled:
+                cancellation = result.cancellation_details
+
+                logger.error(f"CANCEL REASON: {cancellation.reason}")
+
+                if cancellation.error_details:
+                    logger.error(f"AZURE ERROR DETAILS: {cancellation.error_details}")
+
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Azure TTS canceled: {cancellation.error_details}"
+                )
+
+            elif result.reason != ResultReason.SynthesizingAudioCompleted:
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Unexpected TTS result: {result.reason}"
+                )
 
             with open(mp3_path, "rb") as f:
                 mp3_bytes = BytesIO(f.read())
@@ -1285,14 +1303,14 @@ async def words_generate(data: WordsGenerator, request: Request):
         old_data['attempt'] += 1
         return WordsGenerator(**old_data)
 
-#if __name__ == "__main__":
-#     import uvicorn
-#
-#     uvicorn.run(
-#         "main:app",
-#         host="0.0.0.0",
-#         port=port,
-#         reload=False,
-#         timeout_keep_alive=900,
-#         timeout_graceful_shutdown=900
-#     )
+if __name__ == "__main__":
+     import uvicorn
+
+     uvicorn.run(
+         "main:app",
+         host="0.0.0.0",
+         port=port,
+         reload=False,
+         timeout_keep_alive=900,
+         timeout_graceful_shutdown=900
+     )
