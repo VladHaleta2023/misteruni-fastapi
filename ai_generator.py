@@ -820,6 +820,51 @@ def parse_output_subtopics_response(old_subtopics: list, subtopics: list, respon
         errors.append(f"Błąd nieoczekiwany podczas parsowania podtematów: {str(e)}")
         return old_subtopics
 
+def parse_output_exam_topics_response(old_topics: list, response: str, errors: list) -> list:
+    try:
+        start_idx = response.find("Start:")
+        end_idx = response.find("End:", start_idx)
+
+        if start_idx == -1:
+            errors.append("Błąd parsowania: brak etykiety Start:")
+            return old_topics
+        if end_idx == -1:
+            errors.append("Błąd parsowania: brak etykiety End:")
+            return old_topics
+
+        content = response[start_idx + len("Start:"): end_idx].strip()
+        if not content:
+            errors.append("Błąd parsowania: brak tematów pomiędzy Start: a End:")
+            return old_topics
+
+        lines = [line.strip() for line in content.splitlines() if line.strip()]
+        extracted_topics = []
+
+        for line in lines:
+            try:
+                topic_id = int(line)
+                extracted_topics.append(topic_id)
+            except ValueError:
+                errors.append(f"Błąd konwersji: '{line}' nie jest poprawną liczbą całkowitą")
+                continue
+
+        if not extracted_topics:
+            errors.append("Brak ID tematów do przetworzenia.")
+            return old_topics
+
+        unique_topics = []
+        seen = set()
+        for topic in extracted_topics:
+            if topic not in seen:
+                seen.add(topic)
+                unique_topics.append(topic)
+
+        return unique_topics if unique_topics else old_topics
+
+    except Exception as e:
+        errors.append(f"Błąd nieoczekiwany podczas parsowania tematów: {str(e)}")
+        return old_topics
+
 def parse_output_words_response(
     old_words: list,
     words: list,

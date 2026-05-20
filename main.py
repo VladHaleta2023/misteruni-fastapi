@@ -128,9 +128,15 @@ def is_copy_combined(student_answer, correct_answer,
             key_phrases_match >= key_phrases_threshold)
 
 def fill_placeholders(prompt: str, data: Dict[str, Any]) -> str:
+    def json_replacer(match: re.Match) -> str:
+        key = match.group(1)
+        value = data.get(key, {})
+        return json.dumps(value, ensure_ascii=False)
+
     def replacer(match: re.Match) -> str:
         key = match.group(1)
         value = data.get(key, "")
+
         if isinstance(value, list):
             if not value:
                 return f"{key}Start:\n{value}\n{key}End:"
@@ -142,8 +148,11 @@ def fill_placeholders(prompt: str, data: Dict[str, Any]) -> str:
                     lines.append(str(item))
             return f"{key}Start:\n" + "\n".join(lines) + f"\n{key}End:"
         return str(value)
-    pattern = r"\{\$(\w+)\$\}"
-    return re.sub(pattern, replacer, prompt)
+
+    prompt = re.sub(r"\{#(\w+)#\}", json_replacer, prompt)
+    prompt = re.sub(r"\{\$(\w+)\$\}", replacer, prompt)
+
+    return prompt
 
 async def request_ai(
         prompt: str,
@@ -388,6 +397,25 @@ class TaskGenerator(BaseModel):
     outputSubtopics: List[str]
     threshold: int
     text: str
+    attempt: int
+    prompt: str
+    errors: List[str]
+
+class ExamTopics(BaseModel):
+    id: int
+    name: str
+    frequency: int
+    percent: int
+    time: int
+    type: str
+
+class ExamGenerator(BaseModel):
+    changed: str
+    subject: str
+    examTemplates: str
+    totalTimeSpentSeconds: int
+    topics: List[ExamTopics]
+    outputTopics: List[int]
     attempt: int
     prompt: str
     errors: List[str]
@@ -911,6 +939,43 @@ async def task_generate(data: TaskGenerator, request: Request):
         old_data['attempt'] += 1
         return TaskGenerator(**old_data)
 
+@app.post("/admin/exam-generate")
+async def exam_generate(data: ExamGenerator, request: Request):
+    old_data = copy.deepcopy(data.dict())
+
+    try:
+        from ai_generator import (
+            parse_output_exam_topics_response
+        )
+
+        if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
+            return ExamGenerator(**old_data)
+
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
+        new_data = copy.deepcopy(old_data)
+        previous_errors = copy.deepcopy(old_data['errors'])
+        new_data['outputTopics'] = parse_output_exam_topics_response(old_data['outputTopics'],
+                                                                       response, old_data['errors'])
+        new_data['errors'] = old_data['errors']
+        new_data['attempt'] = new_data['attempt'] + 1
+
+        if sorted(previous_errors) == sorted(new_data['errors']):
+            new_data['changed'] = "false"
+
+        return ExamGenerator(**new_data)
+    except RuntimeError as e:
+        old_data['errors'].append(str(e))
+        old_data['changed'] = 'true'
+        old_data['attempt'] += 1
+        return ExamGenerator(**old_data)
+
 @app.post("/admin/writing-generate")
 async def writing_generate(data: WritingGenerator, request: Request):
     old_data = copy.deepcopy(data.dict())
@@ -1303,14 +1368,14 @@ async def words_generate(data: WordsGenerator, request: Request):
         old_data['attempt'] += 1
         return WordsGenerator(**old_data)
 
-if __name__ == "__main__":
-     import uvicorn
-
-     uvicorn.run(
-         "main:app",
-         host="0.0.0.0",
-         port=port,
-         reload=False,
-         timeout_keep_alive=900,
-         timeout_graceful_shutdown=900
-     )
+#if __name__ == "__main__":
+#     import uvicorn
+#
+#     uvicorn.run(
+#         "main:app",
+#         host="0.0.0.0",
+#         port=port,
+#         reload=False,
+#         timeout_keep_alive=900,
+#         timeout_graceful_shutdown=900
+#     )
