@@ -442,12 +442,54 @@ def parse_note_response(old_note: str, response: str, errors: list) -> str:
         errors.append(f"Błąd nieoczekiwany podczas parsowania: {str(e)}")
         return old_note
 
+def ensure_start_end_markers(response: str) -> str:
+    response = response.replace('\r\n', '\n').strip()
+
+    has_start = re.search(r'Start\s*:', response, re.IGNORECASE)
+    has_end = re.search(r'End\s*:', response, re.IGNORECASE)
+
+    has_krok1 = re.search(r'^\*\*Krok 1:\*\*', response, re.MULTILINE | re.IGNORECASE)
+    has_answer = re.search(r'\*\*Odpowiedź:\*\*', response, re.IGNORECASE)
+
+    if not has_start and not has_end:
+        if has_krok1 and has_answer:
+            return f"Start:\n{response}\nEnd:"
+        else:
+            return f"Start:\n**Odpowiedź:**\n{response}\nEnd:"
+
+    if not has_start and has_end:
+        end_pos = has_end.start()
+        before_end = response[:end_pos].strip()
+        markers_part = response[end_pos:]
+
+        if before_end:
+            return f"Start:\n{before_end}\n{markers_part}"
+        else:
+            return f"Start:\n{markers_part}"
+
+    if has_start and not has_end:
+        start_pos = has_start.end()
+        after_start = response[start_pos:].strip()
+        before_start = response[:start_pos]
+
+        return f"{before_start}{after_start}\nEnd:"
+    return response
+
 def parse_solution_response(old_solution: str, response: str, errors: list) -> str:
     try:
         response = response.replace('\r\n', '\n').strip()
+        has_start = re.search(r'Start\s*:', response, re.IGNORECASE)
+        has_end = re.search(r'End\s*:', response, re.IGNORECASE)
 
-        start_match = re.search(r'Start\s*:', response, re.IGNORECASE)
-        end_match = re.search(r'End\s*:', response, re.IGNORECASE)
+        if not has_start or not has_end:
+            errors.append("UWAGA: Brak znaczników Start:/End:, dodaję automatycznie")
+            response = ensure_start_end_markers(response)
+
+            start_match = re.search(r'Start\s*:', response, re.IGNORECASE)
+            end_match = re.search(r'End\s*:', response, re.IGNORECASE)
+        else:
+            start_match = has_start
+            end_match = has_end
 
         if not start_match:
             errors.append("Błąd parsowania: brak etykiety Start:")
@@ -462,7 +504,7 @@ def parse_solution_response(old_solution: str, response: str, errors: list) -> s
         final_text = response[start_match.end(): end_match.start()].strip()
 
         if not final_text:
-            errors.append("Błąd: rozwiązanie zadania jest pusty")
+            errors.append("Błąd: rozwiązanie zadania jest puste")
             return old_solution
 
         if not validate_latex(final_text, errors):

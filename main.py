@@ -165,6 +165,11 @@ async def request_ai(
 ) -> Optional[str]:
     prompt_filled = fill_placeholders(prompt, data)
 
+    if model == "deepseek-chat":
+        max_tokens = 8192
+    else:
+        max_tokens = 32768
+
     logger.info(prompt_filled)
 
     for attempt in range(max_retries + 1):
@@ -177,12 +182,13 @@ async def request_ai(
                         lambda: client.chat.completions.create(
                             model=model,
                             messages=[
+                                {"role": "system", "content": "Jesteś deterministycznym asystentem. ZAWSZE zwracasz odpowiedź w DOKŁADNIE wymaganym formacie. NIGDY nie dodajesz komentarzy, wstępów ani zakończeń."},
                                 {"role": "user", "content": prompt_filled}
                             ],
                             temperature=0,
                             stream=True,
                             web_search_options=web_search,
-                            max_tokens=16384
+                            max_tokens=max_tokens
                         )
                     ),
                     timeout=900
@@ -219,12 +225,13 @@ async def request_ai(
                         lambda: client.chat.completions.create(
                             model=model,
                             messages=[
+                                {"role": "system", "content": "Jesteś deterministycznym asystentem. ZAWSZE zwracasz odpowiedź w DOKŁADNIE wymaganym formacie. NIGDY nie dodajesz komentarzy, wstępów ani zakończeń."},
                                 {"role": "user", "content": prompt_filled}
                             ],
                             temperature=0,
                             web_search_options=web_search,
                             stream=False,
-                            max_tokens=16384
+                            max_tokens=max_tokens
                         )
                     ),
                     timeout=900
@@ -319,6 +326,7 @@ class SubtopicsStatusGenerator(BaseModel):
     subject: str
     section: str
     topic: str
+    difficulty: str
     subtopics: List[List]
     attempt: int
     prompt: str
@@ -390,6 +398,7 @@ class TaskGenerator(BaseModel):
     section: str
     topic: str
     literature: str
+    difficulty: str
     information: str
     accounts: str
     balance: str
@@ -426,6 +435,7 @@ class WritingGenerator(BaseModel):
     section: str
     topic: str
     literature: str
+    difficulty: str
     information: str
     accounts: str
     balance: str
@@ -456,6 +466,7 @@ class OptionsGenerator(BaseModel):
     information: str
     accounts: str
     balance: str
+    difficulty: str
     options: List[str]
     correctOptionIndex: int
     attempt: int
@@ -509,6 +520,23 @@ class ChatGenerator(BaseModel):
     subtopics: List[str]
     attempt: int
     prompt: str
+    errors: List[str]
+
+class ChatTheoryGenerator(BaseModel):
+    changed: str
+    text: str
+    subject: str
+    section: str
+    topic: str
+    information: str
+    accounts: str
+    balance: str
+    options: List[str]
+    chat: str
+    subtopics: List[str]
+    attempt: int
+    prompt: str
+    note: str
     errors: List[str]
 
 class LiteratureGenerator(BaseModel):
@@ -693,7 +721,7 @@ async def subtopics_generate(data: SubtopicsGenerator, request: Request):
         if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
             return SubtopicsGenerator(**old_data)
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False, model="deepseek-reasoner", web_search=True)
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False, model="deepseek-reasoner")
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -760,7 +788,7 @@ async def topic_expansion_generate(data: TopicExpansionGenerator, request: Reque
         if old_data['changed'] == "false" or old_data['attempt'] > MAX_ATTEMPTS:
             return TopicExpansionGenerator(**old_data)
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False, web_search=True)
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -954,7 +982,7 @@ async def exam_generate(data: ExamGenerator, request: Request):
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False, model="deepseek-reasoner")
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -1308,6 +1336,56 @@ async def chat_generate(data: ChatGenerator, request: Request):
         old_data['changed'] = 'true'
         old_data['attempt'] += 1
         return ChatGenerator(**old_data)
+
+@app.post("/admin/chat-theory-generate")
+async def chat_theory_generate(data: ChatTheoryGenerator, request: Request):
+    old_data = copy.deepcopy(data.dict())
+
+    try:
+        from ai_generator import (
+            parse_chat_response
+        )
+
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+
+        if await request.is_disconnected():
+            raise HTTPException(status_code=499, detail="Client disconnected")
+
+        if response:
+            response = strip_chat_tags(response)
+            response = ensure_chat_tags(response)
+
+        if "[AI_ANSWER]" not in response:
+            old_data['errors'] = ["Nie ma marker [AI_ANSWER] - on jest WYMAGANY!"]
+            response = await request_ai(old_data['prompt'], old_data, request, stream=False)
+
+            if await request.is_disconnected():
+                raise HTTPException(status_code=499, detail="Client disconnected")
+
+            if response:
+                response = strip_chat_tags(response)
+                response = ensure_chat_tags(response)
+
+        parsed_chat = parse_chat_response(old_data['chat'], response, old_data['errors'])
+        new_data = copy.deepcopy(old_data)
+        previous_errors = copy.deepcopy(old_data['errors'])
+
+        new_data['chat'] = parsed_chat
+        new_data['errors'] = old_data['errors']
+        new_data['attempt'] = new_data['attempt'] + 1
+
+        if new_data['chat'] != "" and sorted(previous_errors) == sorted(new_data['errors']):
+            new_data['changed'] = "false"
+
+        return ChatTheoryGenerator(**new_data)
+    except RuntimeError as e:
+        old_data['errors'].append(str(e))
+        old_data['changed'] = 'true'
+        old_data['attempt'] += 1
+        return ChatTheoryGenerator(**old_data)
 
 @app.post("/admin/literature-generate")
 async def literature_generate(data: LiteratureGenerator, request: Request):
