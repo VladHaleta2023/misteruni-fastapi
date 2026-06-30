@@ -129,7 +129,7 @@ def parse_subtopics_response(
                 has_error = True
                 continue
 
-            score_str = score_str.replace('%', '').strip()
+            score_str = score_str.replace('%', '').replace(',', '.').strip()
 
             try:
                 if score_str == "":
@@ -137,7 +137,7 @@ def parse_subtopics_response(
                     has_error = True
                     continue
 
-                score = int(score_str)
+                score = int(round(float(score_str)))
             except ValueError:
                 errors.append(f"{percent_message} nie jest liczbą całkowitą: '{score_str}' w podtemacie '{line}'")
                 has_error = True
@@ -583,8 +583,8 @@ def parse_explanation_response(old_explanation: str, response: str, errors: list
 
         work_on_label = "❓"
         if type == "Stories":
-            task_score_label = "Opowiadanie"
-            subtopic_score_label = "Opowiadanie"
+            task_score_label = "Ocena:"
+            subtopic_score_label = "Ocena:"
         else:
             task_score_label = "Ocena:"
             subtopic_score_label = "Ocena:"
@@ -609,7 +609,7 @@ def parse_explanation_response(old_explanation: str, response: str, errors: list
             if output_subtopics:
                 for subtopic_name, error in output_subtopics:
                     if subtopic_name == topic_name_clean:
-                        percent_error = float(error)
+                        percent_error = int(error)
                         break
 
             bonus = 20 if correctOption == userOption else 0

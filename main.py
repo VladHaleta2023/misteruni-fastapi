@@ -1230,6 +1230,9 @@ async def problems_generate(data: ProblemsGenerator, request: Request):
                                           "Procent opanowania")
         result = parse_output_subtopics_response_filtered(old_data['outputSubtopics'], result, old_data['subtopics'],
                                                           old_data['errors'])
+
+        logger.info(result)
+
         new_data['outputSubtopics'] = result
 
         if new_data['type'] == "Writing":
