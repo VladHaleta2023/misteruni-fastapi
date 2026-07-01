@@ -1302,7 +1302,7 @@ async def chat_generate(data: ChatGenerator, request: Request):
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False, model="deepseek-reasoner", web_search=True)
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False, model="deepseek-reasoner")
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -1352,7 +1352,7 @@ async def chat_theory_generate(data: ChatTheoryGenerator, request: Request):
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False, model="deepseek-reasoner", web_search=True)
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False, model="deepseek-reasoner")
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
@@ -1402,7 +1402,7 @@ async def literature_generate(data: LiteratureGenerator, request: Request):
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
 
-        response = await request_ai(old_data['prompt'], old_data, request, stream=False, model="deepseek-reasoner", web_search=True)
+        response = await request_ai(old_data['prompt'], old_data, request, stream=False, model="deepseek-reasoner")
 
         if await request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
